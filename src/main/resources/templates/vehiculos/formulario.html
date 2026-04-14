@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Formulario Vehiculo')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container mt-4">
+    <section>
+        <h1 th:text="${vehiculo.id != null ? 'Editar Vehiculo' : 'Nuevo Vehiculo'}">Formulario</h1>
+        <hr>
+        <form th:action="@{/vehiculos/guardar}" th:object="${vehiculo}" method="post"
+              enctype="multipart/form-data" class="row g-3" novalidate>
+            <input type="hidden" th:field="*{id}">
+
+            <!-- Modelo -->
+            <div class="col-md-6">
+                <label for="modelo" class="form-label">Modelo</label>
+                <select class="form-select" id="modelo" th:field="*{modelo.id}" required>
+                    <option value="">-- Seleccionar modelo --</option>
+                    <option th:each="m : ${modelos}" th:value="${m.id}"
+                            th:text="${m.marca.nombre + ' ' + m.nombre}"></option>
+                </select>
+            </div>
+
+            <!-- Categoria -->
+            <div class="col-md-6">
+                <label for="categoriaVehiculo" class="form-label">Categoria</label>
+                <select class="form-select" id="categoriaVehiculo" th:field="*{categoriaVehiculo.id}" required>
+                    <option value="">-- Seleccionar categoria --</option>
+                    <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"></option>
+                </select>
+            </div>
+
+            <!-- Matricula -->
+            <div class="col-md-3">
+                <label for="matricula" class="form-label">Matricula</label>
+                <input type="text" class="form-control"
+                       th:classappend="${#fields.hasErrors('matricula')} ? 'is-invalid'"
+                       id="matricula" th:field="*{matricula}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('matricula')}" th:errors="*{matricula}"></div>
+            </div>
+
+            <!-- Anio -->
+            <div class="col-md-3">
+                <label for="anio" class="form-label">Anio</label>
+                <input type="number" class="form-control"
+                       th:classappend="${#fields.hasErrors('anio')} ? 'is-invalid'"
+                       id="anio" th:field="*{anio}" min="1990" max="2030">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('anio')}" th:errors="*{anio}"></div>
+            </div>
+
+            <!-- Color -->
+            <div class="col-md-3">
+                <label for="color" class="form-label">Color</label>
+                <input type="text" class="form-control"
+                       th:classappend="${#fields.hasErrors('color')} ? 'is-invalid'"
+                       id="color" th:field="*{color}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></div>
+            </div>
+
+            <!-- Kilometraje -->
+            <div class="col-md-3">
+                <label for="kilometraje" class="form-label">Kilometraje</label>
+                <input type="number" class="form-control"
+                       th:classappend="${#fields.hasErrors('kilometraje')} ? 'is-invalid'"
+                       id="kilometraje" th:field="*{kilometraje}" min="0">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('kilometraje')}" th:errors="*{kilometraje}"></div>
+            </div>
+
+            <!-- Precio dia -->
+            <div class="col-md-4">
+                <label for="precioDia" class="form-label">Precio / dia (€)</label>
+                <input type="number" step="0.01" class="form-control"
+                       th:classappend="${#fields.hasErrors('precioDia')} ? 'is-invalid'"
+                       id="precioDia" th:field="*{precioDia}" min="0.01">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('precioDia')}" th:errors="*{precioDia}"></div>
+            </div>
+
+            <!-- Sucursal -->
+            <div class="col-md-4">
+                <label for="sucursal" class="form-label">Sucursal</label>
+                <select class="form-select" id="sucursal" th:field="*{sucursal.id}" required>
+                    <option value="">-- Seleccionar sucursal --</option>
+                    <option th:each="s : ${sucursales}" th:value="${s.id}"
+                            th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
+                </select>
+            </div>
+
+            <!-- Foto -->
+            <div class="col-md-4">
+                <label for="foto" class="form-label">Foto</label>
+                <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+                <small th:if="${vehiculo.rutaFoto != null}" class="form-text text-muted">Ya tiene foto asignada.</small>
+            </div>
+
+            <!-- Extras (checkboxes) -->
+            <div class="col-md-12" th:if="${!extras.isEmpty()}">
+                <label class="form-label">Extras</label>
+                <div class="row">
+                    <div th:each="extra : ${extras}" class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   th:field="*{extras}" th:value="${extra.id}">
+                            <label class="form-check-label"
+                                   th:text="${extra.nombre + ' (' + extra.precioDia + ' €/dia)'}"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar</button>
+                <a th:href="@{/vehiculos}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+

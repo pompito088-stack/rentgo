@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Vehiculos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container mt-4">
+    <section>
+        <h1>Vehiculos</h1>
+        <a th:if="${esAdmin}" th:href="@{/vehiculos/nuevo}" class="btn btn-success mb-3">
+            <i class="bi bi-plus-circle me-1"></i>Nuevo Vehiculo
+        </a>
+        <div class="row g-3">
+            <div th:each="v : ${vehiculos}" class="col-md-4">
+                <article class="card h-100">
+                    <img th:if="${v.rutaFoto != null}" th:src="@{${v.rutaFoto}}"
+                         class="card-img-top" alt="Foto vehiculo" style="height:200px;object-fit:cover;">
+                    <div th:if="${v.rutaFoto == null}" class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"
+                         style="height:200px;">
+                        <i class="bi bi-car-front" style="font-size:3rem;"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre}"></h5>
+                        <p class="card-text">
+                            <span class="badge bg-info" th:text="${v.categoriaVehiculo.nombre}"></span><br>
+                            <strong>Matricula:</strong> <span th:text="${v.matricula}"></span><br>
+                            <strong>Anio:</strong> <span th:text="${v.anio}"></span><br>
+                            <strong>Color:</strong> <span th:text="${v.color}"></span><br>
+                            <strong>Precio/dia:</strong> <span th:text="${v.precioDia}"></span>€
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-eye"></i> Detalle
+                        </a>
+                        <span th:if="${esAdmin}">
+                            <a th:href="@{/vehiculos/editar/{id}(id=${v.id})}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <a th:href="@{/vehiculos/eliminar/{id}(id=${v.id})}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Estas seguro de eliminar este vehiculo?')">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                        </span>
+                    </div>
+                </article>
+            </div>
+            <div th:if="${#lists.isEmpty(vehiculos)}" class="col-12">
+                <p class="text-center text-muted">No hay vehiculos registrados.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+

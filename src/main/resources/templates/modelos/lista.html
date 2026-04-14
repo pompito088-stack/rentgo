@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Modelos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container mt-4">
+    <section>
+        <h1>Modelos</h1>
+        <a th:href="@{/modelos/nuevo}" class="btn btn-success mb-3"><i class="bi bi-plus-circle me-1"></i>Nuevo Modelo</a>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="modelo : ${modelos}">
+                    <td th:text="${modelo.id}"></td>
+                    <td th:text="${modelo.marca.nombre}"></td>
+                    <td th:text="${modelo.nombre}"></td>
+                    <td>
+                        <a th:href="@{/modelos/editar/{id}(id=${modelo.id})}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a th:href="@{/modelos/eliminar/{id}(id=${modelo.id})}" class="btn btn-danger btn-sm"
+                           onclick="return confirm('Estas seguro de eliminar este modelo?')">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(modelos)}">
+                    <td colspan="4" class="text-center">No hay modelos registrados.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+

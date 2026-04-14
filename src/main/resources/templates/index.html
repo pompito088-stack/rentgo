@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Inicio')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container mt-4">
+
+    <!-- ===== SALUDO ===== -->
+    <section class="mb-4">
+        <h1>Bienvenido, <span th:text="${usuario.nombre}"></span></h1>
+        <p class="lead text-muted" th:text="${esAdmin} ? 'Panel de administracion' : 'Sistema de alquiler de vehiculos'"></p>
+        <hr>
+    </section>
+
+    <!-- ===== DASHBOARD ADMIN ===== -->
+    <section th:if="${esAdmin}">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <article class="card border-primary h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people-fill text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-2">Usuarios</h5>
+                        <p class="card-text">Gestiona los usuarios del sistema.</p>
+                        <a th:href="@{/usuarios}" class="btn btn-primary">Ver Usuarios</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="card border-success h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-car-front-fill text-success" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-2">Vehiculos</h5>
+                        <p class="card-text">Anade y gestiona vehiculos.</p>
+                        <a th:href="@{/vehiculos}" class="btn btn-success">Ver Vehiculos</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="card border-warning h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check-fill text-warning" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-2">Reservas</h5>
+                        <p class="card-text">Consulta todas las reservas.</p>
+                        <a th:href="@{/reservas}" class="btn btn-warning">Ver Reservas</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="card border-info h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-tags-fill text-info" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-2">Tipos de Usuario</h5>
+                        <p class="card-text">Gestiona los roles del sistema.</p>
+                        <a th:href="@{/tipo-usuarios}" class="btn btn-info">Ver Tipos</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="card border-secondary h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-building-fill text-secondary" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-2">Sucursales</h5>
+                        <p class="card-text">Administra las sucursales.</p>
+                        <a th:href="@{/sucursales}" class="btn btn-secondary">Ver Sucursales</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="card border-dark h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-wrench-adjustable-circle-fill text-dark" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-2">Mantenimientos</h5>
+                        <p class="card-text">Control de mantenimientos.</p>
+                        <a th:href="@{/mantenimientos}" class="btn btn-dark">Ver Mantenimientos</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== VISTA CLIENTE ===== -->
+    <section th:if="${!esAdmin}">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <article class="card border-primary h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-car-front-fill text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Explorar Vehiculos</h5>
+                        <p class="card-text">Descubre nuestra flota de vehiculos disponibles para alquilar.</p>
+                        <a th:href="@{/vehiculos}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search me-1"></i>Ver Vehiculos
+                        </a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="card border-success h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check-fill text-success" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Mis Reservas</h5>
+                        <p class="card-text">Consulta el estado de tus reservas actuales y pasadas.</p>
+                        <a th:href="@{/reservas}" class="btn btn-success btn-lg">
+                            <i class="bi bi-list-check me-1"></i>Ver Reservas
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

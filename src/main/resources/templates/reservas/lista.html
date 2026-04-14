@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container mt-4">
+    <section>
+        <h1 th:text="${esAdmin} ? 'Todas las Reservas' : 'Mis Reservas'">Reservas</h1>
+        <a th:href="@{/reservas/nuevo}" class="btn btn-success mb-3"><i class="bi bi-plus-circle me-1"></i>Nueva Reserva</a>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th th:if="${esAdmin}">Usuario</th>
+                    <th>Vehiculo</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Precio Total</th>
+                    <th>Estado</th>
+                    <th th:if="${esAdmin}">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${reservas}">
+                    <td th:text="${r.id}"></td>
+                    <td th:if="${esAdmin}" th:text="${r.usuario.nombre + ' ' + r.usuario.apellidos}"></td>
+                    <td th:text="${r.vehiculo.modelo.marca.nombre + ' ' + r.vehiculo.modelo.nombre}"></td>
+                    <td th:text="${r.fechaInicio}"></td>
+                    <td th:text="${r.fechaFin}"></td>
+                    <td th:text="${r.precioTotal + ' €'}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${r.estado == 'confirmada'} ? 'bg-success' :
+                                              (${r.estado == 'pendiente'} ? 'bg-warning text-dark' :
+                                              (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
+                              th:text="${r.estado}"></span>
+                    </td>
+                    <td th:if="${esAdmin}">
+                        <a th:href="@{/reservas/editar/{id}(id=${r.id})}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a th:href="@{/reservas/eliminar/{id}(id=${r.id})}" class="btn btn-danger btn-sm"
+                           onclick="return confirm('Estas seguro de eliminar esta reserva?')">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(reservas)}">
+                    <td th:colspan="${esAdmin} ? 8 : 6" class="text-center">No hay reservas registradas.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+
