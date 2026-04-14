@@ -1,0 +1,114 @@
+=============================================
+         ¿QUÉ ES JPA? - Explicación
+=============================================
+
+JPA = Java Persistence API
+
+Es una ESPECIFICACIÓN de Java (un estándar) que define cómo mapear
+OBJETOS JAVA ↔ TABLAS DE BASE DE DATOS. No es una librería en sí,
+es un conjunto de reglas que luego implementan frameworks como
+HIBERNATE (que es el que usa Spring Boot por defecto).
+
+---------------------------------------------
+¿QUÉ PROBLEMA RESUELVE?
+---------------------------------------------
+
+Sin JPA (como en el proyecto anterior con JDBC puro), hacías esto a mano:
+
+    String sql = "SELECT * FROM usuarios WHERE id = ?";
+    PreparedStatement ps = connection.prepareStatement(sql);
+    ps.setInt(1, id);
+    ResultSet rs = ps.executeQuery();
+    if (rs.next()) {
+        Usuario u = new Usuario();
+        u.setId(rs.getInt("id"));
+        u.setNombre(rs.getString("nombre"));
+        u.setEmail(rs.getString("email"));
+        // ... campo por campo
+    }
+
+Con JPA, eso se convierte en:
+
+    Usuario u = usuarioRepository.findById(id);
+    // ¡Ya está! JPA hizo el SELECT y mapeó los datos solo
+
+---------------------------------------------
+¿CÓMO FUNCIONA?
+---------------------------------------------
+
+JPA usa ANOTACIONES en tus clases Java para saber qué tabla
+y qué columnas representan:
+
+    @Entity                          // "Esta clase es una tabla"
+    @Table(name = "usuarios")       // "La tabla se llama 'usuarios'"
+    public class Usuario {
+
+        @Id                          // "Este campo es la PRIMARY KEY"
+        @GeneratedValue(strategy = GenerationType.IDENTITY)  // "Es AUTO_INCREMENT"
+        private Integer id;
+
+        @Column(name = "nombre")     // "Mapea a la columna 'nombre'"
+        private String nombre;
+
+        @Column(name = "email")
+        private String email;
+    }
+
+Con eso, JPA ya sabe:
+  - Usuario    → tabla usuarios
+  - id         → columna id (PK, auto increment)
+  - nombre     → columna nombre
+  - email      → columna email
+
+---------------------------------------------
+¿QUÉ HACE AUTOMÁTICAMENTE?
+---------------------------------------------
+
+  Operación Java                  SQL que genera JPA por ti
+  ───────────────────────         ─────────────────────────────────────
+  repository.findAll()            SELECT * FROM usuarios
+  repository.findById(5)          SELECT * FROM usuarios WHERE id = 5
+  repository.save(usuario)        INSERT INTO usuarios (...) VALUES (...)
+  repository.save(usuario) [edit] UPDATE usuarios SET ... WHERE id = ?
+  repository.deleteById(5)        DELETE FROM usuarios WHERE id = 5
+
+  ¡No escribes ni una línea de SQL! JPA genera todo.
+
+---------------------------------------------
+¿Y LAS RELACIONES ENTRE TABLAS?
+---------------------------------------------
+
+JPA también maneja las foreign keys con anotaciones:
+
+    // En la clase Vehiculo
+    @ManyToOne                              // "Muchos vehículos → una marca"
+    @JoinColumn(name = "id_modelo")         // "La FK se llama id_modelo"
+    private Modelo modelo;
+
+Cuando cargas un vehículo, JPA automáticamente carga también
+su modelo asociado haciendo el JOIN por ti.
+
+---------------------------------------------
+RESUMEN VISUAL
+---------------------------------------------
+
+  TU CÓDIGO JAVA          JPA/HIBERNATE           BASE DE DATOS
+  ─────────────          ─────────────           ─────────────
+  @Entity Usuario   →    Genera SQL         →    tabla usuarios
+  repository.save() →    INSERT INTO...     →    nueva fila
+  repository.find() ←    SELECT FROM...     ←    lee filas
+  @ManyToOne        →    JOIN               →    foreign keys
+
+---------------------------------------------
+¿POR QUÉ NECESITAS LA DEPENDENCIA DE MYSQL?
+---------------------------------------------
+
+JPA es GENÉRICO — funciona con cualquier base de datos
+(MySQL, PostgreSQL, Oracle...). Pero necesita un DRIVER para
+hablar con tu base de datos específica. Por eso tienes dos dependencias:
+
+  - spring-boot-starter-data-jpa → JPA + Hibernate (el traductor Java ↔ SQL)
+  - mysql-connector-j            → el driver MySQL (el "cable" que conecta con tu MySQL)
+
+=============================================
+
