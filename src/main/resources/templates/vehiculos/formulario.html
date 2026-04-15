@@ -58,6 +58,60 @@
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></div>
             </div>
 
+            <!-- Plazas -->
+            <div class="col-md-3">
+                <label for="plazas" class="form-label">Plazas</label>
+                <input type="number" class="form-control"
+                       th:classappend="${#fields.hasErrors('plazas')} ? 'is-invalid'"
+                       id="plazas" th:field="*{plazas}" min="1" max="9">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('plazas')}" th:errors="*{plazas}"></div>
+            </div>
+
+            <!-- Puertas -->
+            <div class="col-md-3">
+                <label for="puertas" class="form-label">Puertas</label>
+                <input type="number" class="form-control"
+                       th:classappend="${#fields.hasErrors('puertas')} ? 'is-invalid'"
+                       id="puertas" th:field="*{puertas}" min="1" max="6">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('puertas')}" th:errors="*{puertas}"></div>
+            </div>
+
+            <!-- Etiqueta -->
+            <div class="col-md-3">
+                <label for="etiqueta" class="form-label">Etiqueta</label>
+                <select class="form-select"
+                        th:classappend="${#fields.hasErrors('etiqueta')} ? 'is-invalid'"
+                        id="etiqueta" th:field="*{etiqueta}">
+                    <option value="">-- Seleccionar etiqueta --</option>
+                    <option th:each="etiquetaItem : ${etiquetas}" th:value="${etiquetaItem}" th:text="${etiquetaItem}"></option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('etiqueta')}" th:errors="*{etiqueta}"></div>
+            </div>
+
+            <!-- Transmision -->
+            <div class="col-md-3">
+                <label for="transmision" class="form-label">Transmision</label>
+                <select class="form-select"
+                        th:classappend="${#fields.hasErrors('transmision')} ? 'is-invalid'"
+                        id="transmision" th:field="*{transmision}">
+                    <option value="">-- Seleccionar transmision --</option>
+                    <option th:each="transmisionItem : ${transmisiones}" th:value="${transmisionItem}" th:text="${transmisionItem}"></option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('transmision')}" th:errors="*{transmision}"></div>
+            </div>
+
+            <!-- Combustion -->
+            <div class="col-md-6">
+                <label for="combustion" class="form-label">Combustion</label>
+                <select class="form-select"
+                        th:classappend="${#fields.hasErrors('combustion')} ? 'is-invalid'"
+                        id="combustion" th:field="*{combustion}">
+                    <option value="">-- Seleccionar combustion --</option>
+                    <option th:each="combustionItem : ${combustiones}" th:value="${combustionItem}" th:text="${combustionItem}"></option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('combustion')}" th:errors="*{combustion}"></div>
+            </div>
+
             <!-- Kilometraje -->
             <div class="col-md-3">
                 <label for="kilometraje" class="form-label">Kilometraje</label>

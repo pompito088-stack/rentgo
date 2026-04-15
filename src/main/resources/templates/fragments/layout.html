@@ -48,6 +48,9 @@
                     <a class="nav-link" th:href="@{/reservas}"><i class="bi bi-calendar-check me-1"></i>Reservas</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:href="@{/extras}"><i class="bi bi-stars me-1"></i>Extras</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{/sucursales}"><i class="bi bi-building me-1"></i>Sucursales</a>
                 </li>
             </ul>
@@ -64,17 +67,20 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/reservas}"><i class="bi bi-calendar-check me-1"></i>Mis Reservas</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/extras}"><i class="bi bi-stars me-1"></i>Extras</a>
+                </li>
             </ul>
 
             <!-- ===== Info usuario + Logout ===== -->
             <ul class="navbar-nav" th:if="${session.usuarioLogueado != null}">
                 <li class="nav-item">
-                    <span class="nav-link disabled text-light">
+                    <a class="nav-link text-light" th:href="@{/mi-perfil}" title="Ver mi perfil">
                         <i class="bi bi-person-circle me-1"></i>
                         <span th:text="${session.usuarioLogueado.nombre}"></span>
                         <span class="badge bg-primary ms-1"
                               th:text="${session.usuarioLogueado.admin ? 'Admin' : 'Cliente'}"></span>
-                    </span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/logout}"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>

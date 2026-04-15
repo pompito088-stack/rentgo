@@ -155,6 +155,20 @@ public class VehiculoController {
         model.addAttribute("categorias", categoriaService.listarTodas());
         model.addAttribute("sucursales", sucursalService.listarTodas());
         model.addAttribute("extras", extraService.listarTodos());
+        model.addAttribute("etiquetas", new String[]{"sin_etiqueta", "B", "C", "ECO", "CERO"});
+        model.addAttribute("transmisiones", new String[]{"manual", "automatica"});
+        model.addAttribute("combustiones", new String[]{
+                "gasolina",
+                "diesel",
+                "hibrido_gasolina",
+                "hibrido_diesel",
+                "hibrido_enchufable_gasolina",
+                "hibrido_enchufable_diesel",
+                "electrico",
+                "glp",
+                "gnc",
+                "hidrogeno"
+        });
     }
 }
 

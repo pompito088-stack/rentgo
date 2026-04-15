@@ -11,10 +11,8 @@
 **Por cada clase o archivo creado/modificado, se debe hacer un commit individual y subirlo al repositorio de GitHub.**
 
 Esto significa:
-- Si se crean 12 clases, se hacen **12 commits separados**, uno por cada clase.
 - Cada commit debe tener un mensaje claro y profesional (ej: `feat: add Usuario entity`, `feat: add VehiculoController`).
 - Después de cada commit se ejecuta `git push` para subir al repositorio remoto.
-- No se acumulan cambios en un solo commit masivo.
 
 ### Regla de lectura previa
 

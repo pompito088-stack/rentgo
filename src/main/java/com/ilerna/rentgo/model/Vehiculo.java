@@ -32,6 +32,38 @@ public class Vehiculo {
     @Column(name = "color", nullable = false, length = 30)
     private String color;
 
+    @NotNull(message = "Las plazas son obligatorias")
+    @Min(value = 1, message = "El vehiculo debe tener al menos 1 plaza")
+    @Max(value = 9, message = "El vehiculo no puede tener mas de 9 plazas")
+    @Column(name = "plazas", nullable = false)
+    private Byte plazas;
+
+    @NotNull(message = "Las puertas son obligatorias")
+    @Min(value = 1, message = "El vehiculo debe tener al menos 1 puerta")
+    @Max(value = 6, message = "El vehiculo no puede tener mas de 6 puertas")
+    @Column(name = "puertas", nullable = false)
+    private Byte puertas;
+
+    @NotBlank(message = "La etiqueta es obligatoria")
+    @Pattern(regexp = "^(sin_etiqueta|B|C|ECO|CERO)$",
+            message = "La etiqueta debe ser sin_etiqueta, B, C, ECO o CERO")
+    @Column(name = "etiqueta", nullable = false)
+    private String etiqueta;
+
+    @NotBlank(message = "La transmision es obligatoria")
+    @Pattern(regexp = "^(manual|automatica)$",
+            message = "La transmision debe ser manual o automatica")
+    @Column(name = "transmision", nullable = false)
+    private String transmision;
+
+    @NotBlank(message = "La combustion es obligatoria")
+    @Pattern(
+        regexp = "^(gasolina|diesel|hibrido_gasolina|hibrido_diesel|hibrido_enchufable_gasolina|hibrido_enchufable_diesel|electrico|glp|gnc|hidrogeno)$",
+        message = "Selecciona un tipo de combustion valido"
+    )
+    @Column(name = "combustion", nullable = false)
+    private String combustion;
+
     @NotNull(message = "El kilometraje es obligatorio")
     @Min(value = 0, message = "El kilometraje no puede ser negativo")
     @Column(name = "kilometraje", nullable = false)
@@ -99,6 +131,36 @@ public class Vehiculo {
     }
     public void setColor(String color) {
         this.color = color;
+    }
+    public Byte getPlazas() {
+        return plazas;
+    }
+    public void setPlazas(Byte plazas) {
+        this.plazas = plazas;
+    }
+    public Byte getPuertas() {
+        return puertas;
+    }
+    public void setPuertas(Byte puertas) {
+        this.puertas = puertas;
+    }
+    public String getEtiqueta() {
+        return etiqueta;
+    }
+    public void setEtiqueta(String etiqueta) {
+        this.etiqueta = etiqueta;
+    }
+    public String getTransmision() {
+        return transmision;
+    }
+    public void setTransmision(String transmision) {
+        this.transmision = transmision;
+    }
+    public String getCombustion() {
+        return combustion;
+    }
+    public void setCombustion(String combustion) {
+        this.combustion = combustion;
     }
     public Integer getKilometraje() {
         return kilometraje;

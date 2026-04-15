@@ -23,11 +23,20 @@
                         <h5 class="card-title" th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre}"></h5>
                         <p class="card-text">
                             <span class="badge bg-info" th:text="${v.categoriaVehiculo.nombre}"></span><br>
+                            <span class="badge bg-secondary me-1" th:text="${v.etiqueta}"></span>
+                            <span class="badge bg-dark" th:text="${v.transmision}"></span><br>
                             <strong>Matricula:</strong> <span th:text="${v.matricula}"></span><br>
                             <strong>Anio:</strong> <span th:text="${v.anio}"></span><br>
                             <strong>Color:</strong> <span th:text="${v.color}"></span><br>
+                            <strong>Plazas:</strong> <span th:text="${v.plazas}"></span> |
+                            <strong>Puertas:</strong> <span th:text="${v.puertas}"></span><br>
+                            <strong>Combustion:</strong> <span th:text="${v.combustion}"></span><br>
                             <strong>Precio/dia:</strong> <span th:text="${v.precioDia}"></span>€
                         </p>
+                        <div th:if="${!v.extras.isEmpty()}" class="small">
+                            <strong>Extras:</strong>
+                            <span th:each="extra : ${v.extras}" class="badge bg-success me-1 mb-1" th:text="${extra.nombre}"></span>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}" class="btn btn-primary btn-sm">
