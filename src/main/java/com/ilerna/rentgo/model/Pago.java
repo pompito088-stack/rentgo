@@ -6,10 +6,13 @@ import java.time.LocalDate;
 /**
  * Entidad que representa la tabla pagos en la base de datos.
  * Cada pago esta asociado a una unica reserva (relacion 1:1).
+ * El estado_pago siempre es "realizado" porque el pago se genera
+ * automaticamente al confirmar la reserva.
  */
 @Entity
 @Table(name = "pagos")
 public class Pago {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -27,9 +30,9 @@ public class Pago {
     @Column(name = "metodo_pago", nullable = false)
     private String metodoPago;
 
-    @NotBlank(message = "El estado del pago es obligatorio")
+    /** Estado fijo: siempre "realizado" al crear el pago automaticamente. */
     @Column(name = "estado_pago", nullable = false)
-    private String estadoPago;
+    private String estadoPago = "realizado";
 
     /** Relacion OneToOne con Reserva. Cada pago pertenece a una unica reserva. */
     @OneToOne
@@ -81,4 +84,3 @@ public class Pago {
         return "Pago #" + id + " - " + importe + "€ (" + estadoPago + ")";
     }
 }
-

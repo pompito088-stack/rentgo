@@ -1,53 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/layout :: head('RentGo - Sucursales')}"></head>
-<body>
-<nav th:replace="~{fragments/layout :: navbar}"></nav>
-
-<main class="container mt-4">
-    <section>
-        <h1>Sucursales</h1>
-        <a th:href="@{/sucursales/nuevo}" class="btn btn-success mb-3"><i class="bi bi-plus-circle me-1"></i>Nueva Sucursal</a>
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Ciudad</th>
-                    <th>Direccion</th>
-                    <th>Email</th>
-                    <th>Telefono</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="suc : ${sucursales}">
-                    <td th:text="${suc.id}"></td>
-                    <td th:text="${suc.nombre}"></td>
-                    <td th:text="${suc.ciudad}"></td>
-                    <td th:text="${suc.direccion}"></td>
-                    <td th:text="${suc.email}"></td>
-                    <td th:text="${suc.telefono}"></td>
-                    <td>
-                        <a th:href="@{/sucursales/editar/{id}(id=${suc.id})}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a th:href="@{/sucursales/eliminar/{id}(id=${suc.id})}" class="btn btn-danger btn-sm"
-                           onclick="return confirm('Estas seguro de eliminar esta sucursal?')">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(sucursales)}">
-                    <td colspan="7" class="text-center">No hay sucursales registradas.</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-</main>
-
-<footer th:replace="~{fragments/layout :: footer}"></footer>
+<body class="admin-layout">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title"><i class="bi bi-building me-2" style="color:var(--teal-600)"></i>Sucursales</h1>
+        <div class="topbar-right">
+            <a th:href="@{/sucursales/nuevo}" class="btn btn-teal btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>Nueva Sucursal
+            </a>
+        </div>
+    </header>
+    <main class="admin-page-content">
+        <section class="admin-table">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Nombre</th><th>Ciudad</th><th>Direccion</th><th>Email</th><th>Telefono</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="suc : ${sucursales}">
+                        <td th:text="${suc.id}"></td>
+                        <td class="fw-500" th:text="${suc.nombre}"></td>
+                        <td th:text="${suc.ciudad}"></td>
+                        <td th:text="${suc.direccion}"></td>
+                        <td th:text="${suc.email}"></td>
+                        <td th:text="${suc.telefono}"></td>
+                        <td>
+                            <a th:href="@{/sucursales/editar/{id}(id=${suc.id})}" class="btn btn-warning btn-sm me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a th:href="@{/sucursales/eliminar/{id}(id=${suc.id})}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Eliminar esta sucursal?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(sucursales)}">
+                        <td colspan="7" class="text-center text-muted py-4">No hay sucursales registradas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>
-

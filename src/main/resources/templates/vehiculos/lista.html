@@ -1,68 +1,260 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Vehiculos')}"></head>
-<body>
+<head th:replace="~{fragments/layout :: head('RentGo - Vehículos disponibles')}"></head>
+
+<!-- ===== ADMIN VIEW ===== -->
+<body class="admin-layout" th:if="${esAdmin}">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title"><i class="bi bi-car-front me-2" style="color:var(--teal-600)"></i>Vehículos</h1>
+        <div class="topbar-right">
+            <a th:href="@{/vehiculos/nuevo}" class="btn btn-teal btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>Nuevo Vehículo
+            </a>
+        </div>
+    </header>
+
+    <main class="admin-page-content">
+        <section class="row g-3" aria-label="Lista de vehículos">
+            <article th:each="v : ${vehiculos}" class="col-md-6 col-xl-4">
+                <div class="admin-card h-100 p-0" style="overflow:hidden;">
+                    <img th:if="${v.rutaFoto != null}" th:src="@{${v.rutaFoto}}"
+                         alt="Foto vehículo" style="width:100%;height:180px;object-fit:cover;">
+                    <div th:if="${v.rutaFoto == null}"
+                         style="height:180px;background:var(--teal-100);display:flex;align-items:center;justify-content:center;">
+                        <i class="bi bi-car-front" style="font-size:3rem;color:var(--teal-600);"></i>
+                    </div>
+                    <div class="p-3">
+                        <h3 style="font-size:1rem;font-weight:600;margin-bottom:.5rem;"
+                            th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre}"></h3>
+                        <div class="mb-2">
+                            <span class="badge" style="background:var(--teal-100);color:var(--teal-700);" th:text="${v.categoriaVehiculo.nombre}"></span>
+                            <span class="badge bg-secondary ms-1" th:text="${v.etiqueta}"></span>
+                            <span class="badge bg-dark ms-1" th:text="${v.transmision}"></span>
+                        </div>
+                        <dl class="row mb-0" style="font-size:.82rem;row-gap:.1rem;">
+                            <dt class="col-5 text-muted fw-normal">Matrícula</dt><dd class="col-7 mb-0" th:text="${v.matricula}"></dd>
+                            <dt class="col-5 text-muted fw-normal">Año</dt><dd class="col-7 mb-0" th:text="${v.anio}"></dd>
+                            <dt class="col-5 text-muted fw-normal">Plazas / Puertas</dt><dd class="col-7 mb-0" th:text="${v.plazas + ' / ' + v.puertas}"></dd>
+                            <dt class="col-5 text-muted fw-normal">Precio/día</dt><dd class="col-7 mb-0 fw-bold" th:text="${v.precioDia + ' €'}"></dd>
+                            <dt class="col-5 text-muted fw-normal">Disponibilidad</dt>
+                            <dd class="col-7 mb-0">
+                                <span th:if="${v.disponibilidad == 'disponible'}" class="badge bg-success">Disponible</span>
+                                <span th:if="${v.disponibilidad == 'alquilado'}" class="badge bg-warning text-dark">Alquilado</span>
+                                <span th:if="${v.disponibilidad == 'mantenimiento'}" class="badge bg-danger">Mantenimiento</span>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="p-3 pt-0 d-flex gap-2">
+                        <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}" class="btn btn-outline-teal btn-sm">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a th:href="@{/vehiculos/editar/{id}(id=${v.id})}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a th:href="@{/vehiculos/eliminar/{id}(id=${v.id})}" class="btn btn-danger btn-sm"
+                           onclick="return confirm('¿Eliminar este vehículo?')">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            <div th:if="${#lists.isEmpty(vehiculos)}" class="col-12 text-center text-muted py-5">
+                <i class="bi bi-car-front" style="font-size:3rem;"></i>
+                <p class="mt-2">No hay vehículos registrados.</p>
+            </div>
+        </section>
+    </main>
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+
+<!-- ===== CLIENTE VIEW ===== -->
+<body class="client-layout" th:unless="${esAdmin}">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="container mt-4">
-    <section>
-        <h1>Vehiculos</h1>
-        <a th:if="${esAdmin}" th:href="@{/vehiculos/nuevo}" class="btn btn-success mb-3">
-            <i class="bi bi-plus-circle me-1"></i>Nuevo Vehiculo
-        </a>
-        <div class="row g-3">
-            <div th:each="v : ${vehiculos}" class="col-md-4">
-                <article class="card h-100">
-                    <img th:if="${v.rutaFoto != null}" th:src="@{${v.rutaFoto}}"
-                         class="card-img-top" alt="Foto vehiculo" style="height:200px;object-fit:cover;">
-                    <div th:if="${v.rutaFoto == null}" class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"
-                         style="height:200px;">
-                        <i class="bi bi-car-front" style="font-size:3rem;"></i>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre}"></h5>
-                        <p class="card-text">
-                            <span class="badge bg-info" th:text="${v.categoriaVehiculo.nombre}"></span><br>
-                            <span class="badge bg-secondary me-1" th:text="${v.etiqueta}"></span>
-                            <span class="badge bg-dark" th:text="${v.transmision}"></span><br>
-                            <strong>Matricula:</strong> <span th:text="${v.matricula}"></span><br>
-                            <strong>Anio:</strong> <span th:text="${v.anio}"></span><br>
-                            <strong>Color:</strong> <span th:text="${v.color}"></span><br>
-                            <strong>Plazas:</strong> <span th:text="${v.plazas}"></span> |
-                            <strong>Puertas:</strong> <span th:text="${v.puertas}"></span><br>
-                            <strong>Combustion:</strong> <span th:text="${v.combustion}"></span><br>
-                            <strong>Precio/dia:</strong> <span th:text="${v.precioDia}"></span>€
-                        </p>
-                        <div th:if="${!v.extras.isEmpty()}" class="small">
-                            <strong>Extras:</strong>
-                            <span th:each="extra : ${v.extras}" class="badge bg-success me-1 mb-1" th:text="${extra.nombre}"></span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-eye"></i> Detalle
-                        </a>
-                        <span th:if="${esAdmin}">
-                            <a th:href="@{/vehiculos/editar/{id}(id=${v.id})}" class="btn btn-warning btn-sm">
-                                <i class="bi bi-pencil"></i> Editar
-                            </a>
-                            <a th:href="@{/vehiculos/eliminar/{id}(id=${v.id})}" class="btn btn-danger btn-sm"
-                               onclick="return confirm('Estas seguro de eliminar este vehiculo?')">
-                                <i class="bi bi-trash"></i> Eliminar
-                            </a>
-                        </span>
-                    </div>
-                </article>
-            </div>
-            <div th:if="${#lists.isEmpty(vehiculos)}" class="col-12">
-                <p class="text-center text-muted">No hay vehiculos registrados.</p>
+<main>
+    <!-- Cabecera hero mini -->
+    <div style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2.5rem 0 2rem;color:#fff;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
+                    <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
+                    <li class="breadcrumb-item active" style="color:#fff;">Vehículos</li>
+                </ol>
+            </nav>
+            <h1 style="font-size:1.8rem;font-weight:800;margin:0;">Nuestra flota</h1>
+            <p style="opacity:.85;margin:.3rem 0 0;font-size:.95rem;">Elige el vehículo perfecto para tu próximo viaje</p>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <!-- Barra de filtros -->
+        <div class="filter-bar">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <span style="font-size:.82rem;font-weight:600;color:#6b7280;margin-right:.25rem;">
+                    <i class="bi bi-funnel me-1"></i>Filtrar:
+                </span>
+                <button class="filter-pill active" data-filter="todos" onclick="filtrarVehiculos('todos', this)">
+                    <i class="bi bi-grid-3x3-gap"></i> Todos
+                </button>
+                <button class="filter-pill" data-filter="Turismo" onclick="filtrarVehiculos('Turismo', this)">
+                    <i class="bi bi-car-front"></i> Turismo
+                </button>
+                <button class="filter-pill" data-filter="SUV" onclick="filtrarVehiculos('SUV', this)">
+                    <i class="bi bi-truck-front"></i> SUV
+                </button>
+                <button class="filter-pill" data-filter="Furgoneta" onclick="filtrarVehiculos('Furgoneta', this)">
+                    <i class="bi bi-minecart-loaded"></i> Furgoneta
+                </button>
+                <button class="filter-pill" data-filter="Deportivo" onclick="filtrarVehiculos('Deportivo', this)">
+                    <i class="bi bi-lightning-charge"></i> Deportivo
+                </button>
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    <label for="ordenPrecio" class="text-muted" style="font-size:.82rem;white-space:nowrap;">Ordenar por:</label>
+                    <select id="ordenPrecio" class="form-select form-select-sm" style="width:auto;" onchange="ordenarVehiculos(this.value)">
+                        <option value="">Defecto</option>
+                        <option value="asc">Precio ↑</option>
+                        <option value="desc">Precio ↓</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </section>
+
+        <!-- Contador resultados -->
+        <p class="text-muted mb-3" style="font-size:.85rem;">
+            <span id="contador"></span> vehículo(s) encontrado(s)
+        </p>
+
+        <!-- Grid de vehículos -->
+        <section class="row g-4" id="vehiculosGrid" aria-label="Listado de vehículos disponibles">
+            <article th:each="v : ${vehiculos}"
+                     class="col-sm-6 col-xl-4 vehiculo-item"
+                     th:attr="data-categoria=${v.categoriaVehiculo.nombre}, data-precio=${v.precioDia}">
+                <div class="vehicle-card">
+                    <!-- Imagen -->
+                    <img th:if="${v.rutaFoto != null}" th:src="@{${v.rutaFoto}}"
+                         class="vc-img" th:alt="${'Foto de ' + v.modelo.marca.nombre + ' ' + v.modelo.nombre}">
+                    <div th:if="${v.rutaFoto == null}" class="vc-img-placeholder">
+                        <i class="bi bi-car-front" style="font-size:3.5rem;color:var(--teal-400);"></i>
+                    </div>
+
+                    <!-- Cuerpo -->
+                    <div class="vc-body">
+                        <!-- Badges -->
+                        <div class="mb-2 d-flex flex-wrap gap-1">
+                            <span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-size:.72rem;" th:text="${v.categoriaVehiculo.nombre}"></span>
+                            <span class="badge bg-light text-dark border" style="font-size:.72rem;" th:text="${v.etiqueta}"></span>
+                            <span class="badge bg-light text-dark border" style="font-size:.72rem;" th:text="${v.transmision}"></span>
+                        </div>
+
+                        <h2 class="vc-title" th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre}"></h2>
+
+                        <!-- Precio -->
+                        <div class="vc-price">
+                            <span th:text="${v.precioDia}"></span> €
+                            <span>/día</span>
+                        </div>
+
+                        <!-- Specs -->
+                        <div class="vc-specs">
+                            <span><i class="bi bi-people-fill"></i> <span th:text="${v.plazas}"></span> plazas</span>
+                            <span><i class="bi bi-door-open-fill"></i> <span th:text="${v.puertas}"></span> puertas</span>
+                            <span><i class="bi bi-fuel-pump-fill"></i> <span th:text="${v.combustion}"></span></span>
+                            <span><i class="bi bi-calendar3"></i> <span th:text="${v.anio}"></span></span>
+                        </div>
+
+                        <!-- Disponibilidad -->
+                        <div class="mb-2">
+                            <span th:if="${v.disponibilidad == 'disponible'}" class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Disponible</span>
+                            <span th:if="${v.disponibilidad == 'alquilado'}" class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Alquilado</span>
+                            <span th:if="${v.disponibilidad == 'mantenimiento'}" class="badge bg-danger"><i class="bi bi-wrench me-1"></i>En mantenimiento</span>
+                        </div>
+
+                        <!-- Extras si tiene -->
+                        <div th:if="${!v.extras.isEmpty()}" class="mb-2">
+                            <span th:each="extra : ${v.extras}" class="badge bg-light text-dark border me-1" style="font-size:.7rem;" th:text="${extra.nombre}"></span>
+                        </div>
+
+                        <!-- Sucursal -->
+                        <p class="mt-auto mb-0" style="font-size:.78rem;color:#9ca3af;">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            <span th:text="${v.sucursal.nombre + ' · ' + v.sucursal.ciudad}"></span>
+                        </p>
+                    </div>
+
+                    <!-- Footer card -->
+                    <div class="vc-footer">
+                        <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}"
+                           class="btn btn-sm w-100 text-white fw-600"
+                           style="background:var(--teal-600);border-radius:8px;">
+                            <i class="bi bi-eye me-1"></i>Ver detalle y reservar
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Sin resultados -->
+            <div id="sinResultados" class="col-12 text-center py-5 d-none">
+                <i class="bi bi-search" style="font-size:3rem;color:#d1d5db;"></i>
+                <p class="mt-3 text-muted">No hay vehículos para el filtro seleccionado.</p>
+                <button class="btn btn-outline-secondary btn-sm" onclick="filtrarVehiculos('todos', document.querySelector('[data-filter=todos]'))">
+                    Ver todos
+                </button>
+            </div>
+
+            <div th:if="${#lists.isEmpty(vehiculos)}" class="col-12 text-center text-muted py-5">
+                <i class="bi bi-car-front" style="font-size:3rem;"></i>
+                <p class="mt-2">No hay vehículos disponibles en este momento.</p>
+            </div>
+        </section>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+
+<script>
+    function filtrarVehiculos(categoria, btn) {
+        // Actualiza pills activas
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+
+        const items = document.querySelectorAll('.vehiculo-item');
+        let visibles = 0;
+        items.forEach(item => {
+            const cat = item.dataset.categoria || '';
+            const mostrar = categoria === 'todos' || cat === categoria;
+            item.style.display = mostrar ? '' : 'none';
+            if (mostrar) visibles++;
+        });
+        actualizarContador(visibles);
+        document.getElementById('sinResultados').classList.toggle('d-none', visibles > 0);
+    }
+
+    function ordenarVehiculos(orden) {
+        const grid = document.getElementById('vehiculosGrid');
+        const items = [...grid.querySelectorAll('.vehiculo-item')];
+        items.sort((a, b) => {
+            const pa = parseFloat(a.dataset.precio) || 0;
+            const pb = parseFloat(b.dataset.precio) || 0;
+            return orden === 'asc' ? pa - pb : pb - pa;
+        });
+        items.forEach(i => grid.appendChild(i));
+    }
+
+    function actualizarContador(n) {
+        const c = document.getElementById('contador');
+        if (c) c.textContent = n;
+    }
+
+    // Contador inicial
+    document.addEventListener('DOMContentLoaded', () => {
+        actualizarContador(document.querySelectorAll('.vehiculo-item').length);
+    });
+</script>
 </body>
 </html>
 

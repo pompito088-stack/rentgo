@@ -3,6 +3,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 /**
  * Entidad que representa la tabla reservas en la base de datos.
  * Operacion principal del negocio: une usuario, vehiculo y sucursales con fechas.
@@ -18,9 +21,15 @@ public class Reserva {
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
+    @Column(name = "hora_inicio", nullable = false)
+    private LocalTime horaInicio = LocalTime.of(9, 0);
+
     @NotNull(message = "La fecha de fin es obligatoria")
     @Column(name = "fecha_fin", nullable = false)
     private LocalDate fechaFin;
+
+    @Column(name = "hora_fin", nullable = false)
+    private LocalTime horaFin = LocalTime.of(9, 0);
 
     @NotNull(message = "La fecha de reserva es obligatoria")
     @Column(name = "fecha_reserva", nullable = false)
@@ -58,6 +67,18 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name = "id_sucursal_devolucion", nullable = false)
     private Sucursal sucursalDevolucion;
+
+    /**
+     * Extras elegidos por el cliente al hacer la reserva.
+     * Tabla intermedia reservas_extras.
+     */
+    @ManyToMany
+    @JoinTable(
+        name = "reservas_extras",
+        joinColumns = @JoinColumn(name = "id_reserva"),
+        inverseJoinColumns = @JoinColumn(name = "id_extra")
+    )
+    private Set<Extra> extras = new HashSet<>();
 
     // Constructor vacio (obligatorio para JPA)
     public Reserva() {
@@ -128,6 +149,24 @@ public class Reserva {
     }
     public void setSucursalDevolucion(Sucursal sucursalDevolucion) {
         this.sucursalDevolucion = sucursalDevolucion;
+    }
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
+    public Set<Extra> getExtras() {
+        return extras;
+    }
+    public void setExtras(Set<Extra> extras) {
+        this.extras = extras;
     }
     @Override
     public String toString() {

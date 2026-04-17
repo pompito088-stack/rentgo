@@ -24,9 +24,13 @@ public class WebConfig implements WebMvcConfigurer {
         // Convierte la ruta relativa a ruta absoluta del sistema de archivos
         Path uploadDir = Paths.get(uploadPath).toAbsolutePath();
 
-        // Mapea las peticiones /img/vehiculos/** a la carpeta de uploads en disco
+        // Mapea /img/vehiculos/** a la carpeta static/img/vehiculos en disco
+        // Así Spring sirve los archivos subidos en runtime sin necesidad de reiniciar
         registry.addResourceHandler("/img/vehiculos/**")
-                .addResourceLocations("file:" + uploadDir.toString() + "/");
+                .addResourceLocations("file:" + uploadDir + "/");
+
+        // Mantener los recursos estáticos normales del classpath
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
     }
 }
-

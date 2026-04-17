@@ -32,7 +32,6 @@ public class Mantenimiento {
     @Column(name = "coste", nullable = false, precision = 10, scale = 2)
     private BigDecimal coste;
 
-    @NotBlank(message = "El estado es obligatorio")
     @Column(name = "estado", nullable = false)
     private String estado;
 
@@ -80,6 +79,20 @@ public class Mantenimiento {
     }
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    /**
+     * Calcula el estado segun la fecha actual y las fechas del mantenimiento.
+     * pendiente  → hoy es anterior a fechaInicio
+     * en_proceso → hoy esta entre fechaInicio y fechaFin (inclusive)
+     * finalizado → hoy es posterior a fechaFin
+     */
+    public String calcularEstadoPorFecha() {
+        LocalDate hoy = LocalDate.now();
+        if (fechaInicio == null || fechaFin == null) return "pendiente";
+        if (hoy.isBefore(fechaInicio)) return "pendiente";
+        if (!hoy.isAfter(fechaFin)) return "en_proceso";
+        return "finalizado";
     }
     public Vehiculo getVehiculo() {
         return vehiculo;

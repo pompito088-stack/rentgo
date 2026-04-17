@@ -1,5 +1,6 @@
 package com.ilerna.rentgo.controller;
 
+import com.ilerna.rentgo.model.Marca;
 import com.ilerna.rentgo.model.Modelo;
 import com.ilerna.rentgo.model.Usuario;
 import com.ilerna.rentgo.service.MarcaService;
@@ -80,6 +81,26 @@ public class ModeloController {
         if (noEsAdmin(session)) return "redirect:/login";
         modeloService.eliminar(id);
         return "redirect:/modelos";
+    }
+
+    /**
+     * Endpoint rapido para crear un modelo desde el formulario de vehiculos.
+     * Tras guardar, redirige de vuelta al formulario de vehiculos.
+     */
+    @PostMapping("/guardar-rapido")
+    public String guardarRapido(@RequestParam String nombre,
+                                @RequestParam Integer marcaId,
+                                HttpSession session) {
+        if (noEsAdmin(session)) return "redirect:/login";
+        if (nombre != null && !nombre.isBlank() && marcaId != null) {
+            marcaService.buscarPorId(marcaId).ifPresent(marca -> {
+                Modelo modelo = new Modelo();
+                modelo.setNombre(nombre.trim());
+                modelo.setMarca(marca);
+                modeloService.guardar(modelo);
+            });
+        }
+        return "redirect:/vehiculos/nuevo";
     }
 }
 

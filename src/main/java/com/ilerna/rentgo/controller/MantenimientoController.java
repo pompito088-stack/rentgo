@@ -47,7 +47,6 @@ public class MantenimientoController {
         if (noEsAdmin(session)) return "redirect:/login";
         model.addAttribute("mantenimiento", new Mantenimiento());
         model.addAttribute("vehiculos", vehiculoService.listarTodos());
-        model.addAttribute("estados", new String[]{"pendiente", "en_proceso", "finalizado"});
         return "mantenimientos/formulario";
     }
 
@@ -58,7 +57,6 @@ public class MantenimientoController {
         if (mantenimiento.isPresent()) {
             model.addAttribute("mantenimiento", mantenimiento.get());
             model.addAttribute("vehiculos", vehiculoService.listarTodos());
-            model.addAttribute("estados", new String[]{"pendiente", "en_proceso", "finalizado"});
             return "mantenimientos/formulario";
         }
         return "redirect:/mantenimientos";
@@ -73,7 +71,6 @@ public class MantenimientoController {
 
         if (result.hasErrors()) {
             model.addAttribute("vehiculos", vehiculoService.listarTodos());
-            model.addAttribute("estados", new String[]{"pendiente", "en_proceso", "finalizado"});
             return "mantenimientos/formulario";
         }
 
@@ -82,7 +79,6 @@ public class MantenimientoController {
                 && mantenimiento.getFechaFin().isBefore(mantenimiento.getFechaInicio())) {
             result.rejectValue("fechaFin", "error.mantenimiento", "La fecha de fin debe ser posterior a la de inicio.");
             model.addAttribute("vehiculos", vehiculoService.listarTodos());
-            model.addAttribute("estados", new String[]{"pendiente", "en_proceso", "finalizado"});
             return "mantenimientos/formulario";
         }
 

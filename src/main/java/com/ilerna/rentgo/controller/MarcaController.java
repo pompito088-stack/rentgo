@@ -80,5 +80,20 @@ public class MarcaController {
         marcaService.eliminar(id);
         return "redirect:/marcas";
     }
+
+    /**
+     * Endpoint rapido para crear una marca desde el formulario de vehiculos.
+     * Tras guardar, redirige de vuelta al formulario de vehiculos.
+     */
+    @PostMapping("/guardar-rapido")
+    public String guardarRapido(@RequestParam String nombre, HttpSession session) {
+        if (noEsAdmin(session)) return "redirect:/login";
+        if (nombre != null && !nombre.isBlank() && marcaService.buscarPorNombre(nombre.trim()).isEmpty()) {
+            Marca marca = new Marca();
+            marca.setNombre(nombre.trim());
+            marcaService.guardar(marca);
+        }
+        return "redirect:/vehiculos/nuevo";
+    }
 }
 

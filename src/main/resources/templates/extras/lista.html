@@ -1,50 +1,72 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/layout :: head('RentGo - Extras')}"></head>
-<body>
-<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
+<!-- ===== ADMIN VIEW ===== -->
+<body class="admin-layout" th:if="${esAdmin}">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title"><i class="bi bi-stars me-2" style="color:var(--teal-600)"></i>Extras</h1>
+        <div class="topbar-right">
+            <a th:href="@{/extras/nuevo}" class="btn btn-teal btn-sm"><i class="bi bi-plus-lg me-1"></i>Nuevo Extra</a>
+        </div>
+    </header>
+    <main class="admin-page-content">
+        <section class="admin-table">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>ID</th><th>Nombre</th><th>Descripcion</th><th>Precio/dia</th><th>Acciones</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="extra : ${extras}">
+                        <td th:text="${extra.id}"></td>
+                        <td class="fw-500" th:text="${extra.nombre}"></td>
+                        <td th:text="${extra.descripcion}"></td>
+                        <td th:text="${extra.precioDia + ' €'}"></td>
+                        <td>
+                            <a th:href="@{/extras/editar/{id}(id=${extra.id})}" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i></a>
+                            <a th:href="@{/extras/eliminar/{id}(id=${extra.id})}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Eliminar este extra?')"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(extras)}">
+                        <td colspan="5" class="text-center text-muted py-4">No hay extras registrados.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+
+<!-- ===== CLIENTE VIEW ===== -->
+<body class="client-layout" th:unless="${esAdmin}">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 <main class="container mt-4">
     <section>
-        <h1>Extras</h1>
-        <p class="text-muted">Consulta los extras disponibles para complementar cada reserva.</p>
-        <a th:if="${esAdmin}" th:href="@{/extras/nuevo}" class="btn btn-success mb-3"><i class="bi bi-plus-circle me-1"></i>Nuevo Extra</a>
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Precio/dia</th>
-                    <th th:if="${esAdmin}">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="extra : ${extras}">
-                    <td th:text="${extra.id}"></td>
-                    <td th:text="${extra.nombre}"></td>
-                    <td th:text="${extra.descripcion}"></td>
-                    <td th:text="${extra.precioDia + ' €'}"></td>
-                    <td th:if="${esAdmin}">
-                        <a th:href="@{/extras/editar/{id}(id=${extra.id})}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a th:href="@{/extras/eliminar/{id}(id=${extra.id})}" class="btn btn-danger btn-sm"
-                           onclick="return confirm('Estas seguro de eliminar este extra?')">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(extras)}">
-                    <td th:colspan="${esAdmin} ? 5 : 4" class="text-center">No hay extras registrados.</td>
-                </tr>
-            </tbody>
-        </table>
+        <h1 class="mb-1">Extras disponibles</h1>
+        <p class="text-muted mb-4">Complementa tu reserva con estos servicios adicionales.</p>
+        <div class="row g-3">
+            <article th:each="extra : ${extras}" class="col-md-4">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-stars" style="font-size:2rem;color:var(--teal-600)"></i>
+                        <h5 class="mt-2 mb-1" th:text="${extra.nombre}"></h5>
+                        <p class="text-muted small" th:text="${extra.descripcion}"></p>
+                        <p class="fw-bold mb-0" style="color:var(--teal-600);" th:text="${extra.precioDia + ' €/dia'}"></p>
+                    </div>
+                </div>
+            </article>
+            <div th:if="${#lists.isEmpty(extras)}" class="col-12 text-center text-muted py-5">
+                No hay extras disponibles en este momento.
+            </div>
+        </div>
     </section>
 </main>
-
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>
-

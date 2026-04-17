@@ -1,110 +1,267 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Formulario Reserva')}"></head>
-<body>
+<head th:replace="~{fragments/layout :: head('RentGo - Nueva Reserva')}"></head>
+<body class="client-layout">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="container mt-4">
-    <section>
-        <h1 th:text="${reserva.id != null ? 'Editar Reserva' : 'Nueva Reserva'}">Formulario</h1>
-        <hr>
-        <form th:action="@{/reservas/guardar}" th:object="${reserva}" method="post" class="row g-3" novalidate>
-            <input type="hidden" th:field="*{id}">
-            <input type="hidden" th:field="*{fechaReserva}">
+<main>
+    <!-- Mini hero -->
+    <div style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
+                    <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/reservas}" style="color:rgba(255,255,255,.7);text-decoration:none;">Reservas</a></li>
+                    <li class="breadcrumb-item active" style="color:#fff;" th:text="${reserva.id != null ? 'Editar reserva' : 'Nueva reserva'}"></li>
+                </ol>
+            </nav>
+            <h1 style="font-size:1.6rem;font-weight:800;margin:0;">
+                <i class="bi bi-calendar-plus me-2"></i>
+                <span th:text="${reserva.id != null ? 'Editar Reserva' : 'Nueva Reserva'}"></span>
+            </h1>
+        </div>
+    </div>
 
-            <!-- Usuario (solo admin) -->
-            <div class="col-md-6" th:if="${esAdmin}">
-                <label for="usuario" class="form-label">Usuario</label>
-                <select class="form-select" id="usuario" th:field="*{usuario.id}" required>
-                    <option value="">-- Seleccionar usuario --</option>
-                    <option th:each="u : ${usuarios}" th:value="${u.id}"
-                            th:text="${u.nombre + ' ' + u.apellidos + ' (' + u.email + ')'}"></option>
-                </select>
-            </div>
+    <div class="container py-4">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-8">
+                <form th:action="@{/reservas/guardar}" th:object="${reserva}" method="post" novalidate>
+                    <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{fechaReserva}">
 
-            <!-- Vehiculo -->
-            <div class="col-md-6">
-                <label for="vehiculo" class="form-label">Vehiculo</label>
-                <select class="form-select" id="vehiculo" th:field="*{vehiculo.id}" required>
-                    <option value="">-- Seleccionar vehiculo --</option>
-                    <option th:each="v : ${vehiculos}" th:value="${v.id}"
-                            th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre + ' (' + v.matricula + ')'}"></option>
-                </select>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('vehiculo')}" th:errors="*{vehiculo}"></div>
-            </div>
+                    <!-- BLOQUE 1: Vehículo, fechas y horas -->
+                    <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
+                        <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
+                            <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">1</span>
+                            Selecciona el vehículo y fechas
+                        </h2>
+                        <div class="row g-3">
+                            <!-- Vehículo -->
+                            <div class="col-12">
+                                <label for="vehiculo" class="form-label">Vehículo</label>
+                                <select class="form-select" id="vehiculo" th:field="*{vehiculo.id}" required>
+                                    <option value="">— Seleccionar vehículo —</option>
+                                    <option th:each="v : ${vehiculos}" th:value="${v.id}"
+                                            th:attr="data-precio=${v.precioDia}"
+                                            th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre + ' (' + v.matricula + ') · ' + v.precioDia + '€/día'}"></option>
+                                </select>
+                            </div>
+                            <!-- Fecha y hora inicio -->
+                            <div class="col-md-6">
+                                <label for="fechaInicio" class="form-label">Fecha de recogida</label>
+                                <input type="date" class="form-control"
+                                       th:classappend="${#fields.hasErrors('fechaInicio')} ? 'is-invalid'"
+                                       id="fechaInicio" th:field="*{fechaInicio}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="horaInicio" class="form-label">Hora de recogida</label>
+                                <input type="time" class="form-control" id="horaInicio" name="horaInicio"
+                                       th:value="${reserva.horaInicio != null ? reserva.horaInicio : '09:00'}"
+                                       required>
+                            </div>
+                            <!-- Fecha y hora fin -->
+                            <div class="col-md-6">
+                                <label for="fechaFin" class="form-label">Fecha de devolución</label>
+                                <input type="date" class="form-control"
+                                       th:classappend="${#fields.hasErrors('fechaFin')} ? 'is-invalid'"
+                                       id="fechaFin" th:field="*{fechaFin}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="horaFin" class="form-label">Hora de devolución</label>
+                                <input type="time" class="form-control" id="horaFin" name="horaFin"
+                                       th:value="${reserva.horaFin != null ? reserva.horaFin : '09:00'}"
+                                       required>
+                            </div>
+                        </div>
+                    </section>
 
-            <!-- Fecha Inicio -->
-            <div class="col-md-3">
-                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                <input type="date" class="form-control"
-                       th:classappend="${#fields.hasErrors('fechaInicio')} ? 'is-invalid'"
-                       id="fechaInicio" th:field="*{fechaInicio}">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></div>
-            </div>
+                    <!-- BLOQUE 2: Sucursales -->
+                    <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
+                        <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
+                            <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">2</span>
+                            Sucursales de recogida y devolución
+                        </h2>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="sucursalRecogida" class="form-label">
+                                    <i class="bi bi-geo-alt-fill me-1" style="color:var(--teal-500);"></i>Sucursal de recogida
+                                </label>
+                                <select class="form-select" id="sucursalRecogida" th:field="*{sucursalRecogida.id}" required>
+                                    <option value="">— Seleccionar sucursal —</option>
+                                    <option th:each="s : ${sucursales}" th:value="${s.id}"
+                                            th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="sucursalDevolucion" class="form-label">
+                                    <i class="bi bi-geo-alt me-1" style="color:#6b7280;"></i>Sucursal de devolución
+                                </label>
+                                <select class="form-select" id="sucursalDevolucion" th:field="*{sucursalDevolucion.id}" required>
+                                    <option value="">— Seleccionar sucursal —</option>
+                                    <option th:each="s : ${sucursales}" th:value="${s.id}"
+                                            th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="observaciones" class="form-label">Observaciones <span class="text-muted">(opcional)</span></label>
+                                <textarea class="form-control" id="observaciones" th:field="*{observaciones}" rows="2"
+                                          placeholder="Indica cualquier necesidad especial..."></textarea>
+                            </div>
+                        </div>
+                    </section>
 
-            <!-- Fecha Fin -->
-            <div class="col-md-3">
-                <label for="fechaFin" class="form-label">Fecha Fin</label>
-                <input type="date" class="form-control"
-                       th:classappend="${#fields.hasErrors('fechaFin')} ? 'is-invalid'"
-                       id="fechaFin" th:field="*{fechaFin}">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></div>
-            </div>
+                    <!-- BLOQUE 3: Extras -->
+                    <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
+                        <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
+                            <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">3</span>
+                            Extras opcionales
+                        </h2>
+                        <div class="row g-2">
+                            <div class="col-md-6" th:each="extra : ${extras}">
+                                <div class="form-check border rounded p-2" style="cursor:pointer;">
+                                    <input class="form-check-input extra-check" type="checkbox"
+                                           name="extrasIds" th:value="${extra.id}"
+                                           th:id="${'extra-' + extra.id}"
+                                           th:attr="data-precio=${extra.precioDia}"
+                                           th:checked="${reserva.extras != null and reserva.extras.contains(extra)}">
+                                    <label class="form-check-label w-100" th:for="${'extra-' + extra.id}">
+                                        <span class="fw-600" th:text="${extra.nombre}"></span>
+                                        <span class="text-muted ms-1" style="font-size:.82rem;" th:text="${extra.precioDia + '€/día'}"></span>
+                                        <br>
+                                        <small class="text-muted" th:text="${extra.descripcion}"></small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-            <!-- Precio Total -->
-            <div class="col-md-3">
-                <label for="precioTotal" class="form-label">Precio Total (€)</label>
-                <input type="number" step="0.01" class="form-control"
-                       th:classappend="${#fields.hasErrors('precioTotal')} ? 'is-invalid'"
-                       id="precioTotal" th:field="*{precioTotal}" min="0">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('precioTotal')}" th:errors="*{precioTotal}"></div>
-            </div>
+                    <!-- BLOQUE 4: Pago -->
+                    <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
+                        <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
+                            <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">4</span>
+                            Método de pago
+                        </h2>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="metodoPago" class="form-label">Método de pago</label>
+                                <select class="form-select" id="metodoPago" name="metodoPago" required>
+                                    <option value="">— Seleccionar método —</option>
+                                    <option th:each="m : ${metodosPago}" th:value="${m}"
+                                            th:text="${m == 'tarjeta_credito' ? 'Tarjeta de crédito' :
+                                                      (m == 'tarjeta_debito' ? 'Tarjeta de débito' : 'PayPal')}"></option>
+                                </select>
+                            </div>
+                            <input type="hidden" th:field="*{estado}">
+                        </div>
+                    </section>
 
-            <!-- Estado -->
-            <div class="col-md-3">
-                <label for="estado" class="form-label">Estado</label>
-                <select class="form-select" id="estado" th:field="*{estado}">
-                    <option th:each="e : ${estados}" th:value="${e}" th:text="${e}"></option>
-                </select>
-            </div>
+                    <!-- RESUMEN PRECIO -->
+                    <div id="resumenPrecio" style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1.5px solid var(--teal-100);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;display:none;">
+                        <h3 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;">
+                            <i class="bi bi-receipt me-1" style="color:var(--teal-600);"></i>Resumen del presupuesto
+                        </h3>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
+                            <span class="text-muted">Precio por día (vehículo)</span>
+                            <span id="rPrecioDia" class="fw-500">—</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
+                            <span class="text-muted">Número de días</span>
+                            <span id="rDias" class="fw-500">—</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;" id="filaExtras" style="display:none;">
+                            <span class="text-muted">Extras/día</span>
+                            <span id="rExtras" class="fw-500">—</span>
+                        </div>
+                        <hr style="border-color:var(--teal-100);margin:.75rem 0;">
+                        <div class="d-flex justify-content-between">
+                            <span style="font-weight:700;color:#111827;">Total estimado</span>
+                            <span id="rTotal" style="font-size:1.3rem;font-weight:800;color:var(--teal-600);">—</span>
+                        </div>
+                        <input type="number" step="0.01" id="precioTotal" th:field="*{precioTotal}" class="d-none" min="0">
+                    </div>
 
-            <!-- Sucursal Recogida -->
-            <div class="col-md-6">
-                <label for="sucursalRecogida" class="form-label">Sucursal Recogida</label>
-                <select class="form-select" id="sucursalRecogida" th:field="*{sucursalRecogida.id}" required>
-                    <option value="">-- Seleccionar sucursal --</option>
-                    <option th:each="s : ${sucursales}" th:value="${s.id}"
-                            th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
-                </select>
-            </div>
+                    <!-- Aviso legal -->
+                    <div class="alert alert-info d-flex align-items-start gap-2 mb-3" style="border-radius:12px;font-size:.85rem;">
+                        <i class="bi bi-info-circle-fill mt-1" style="color:#3b82f6;flex-shrink:0;"></i>
+                        <span>Al pulsar <strong>Confirmar y Reservar</strong> aceptas las condiciones de alquiler y se procesará el pago del importe total indicado.</span>
+                    </div>
 
-            <!-- Sucursal Devolucion -->
-            <div class="col-md-6">
-                <label for="sucursalDevolucion" class="form-label">Sucursal Devolucion</label>
-                <select class="form-select" id="sucursalDevolucion" th:field="*{sucursalDevolucion.id}" required>
-                    <option value="">-- Seleccionar sucursal --</option>
-                    <option th:each="s : ${sucursales}" th:value="${s.id}"
-                            th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
-                </select>
+                    <!-- Botones -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn text-white fw-600 flex-grow-1"
+                                style="background:var(--teal-600);border-radius:10px;padding:.8rem 1.5rem;font-size:1rem;">
+                            <i class="bi bi-check-circle me-2"></i>Confirmar y Reservar
+                        </button>
+                        <a th:href="@{/reservas}" class="btn btn-outline-secondary"
+                           style="border-radius:10px;padding:.8rem 1.25rem;">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
             </div>
-
-            <!-- Observaciones -->
-            <div class="col-md-12">
-                <label for="observaciones" class="form-label">Observaciones</label>
-                <textarea class="form-control" id="observaciones" th:field="*{observaciones}" rows="3"></textarea>
-            </div>
-
-            <!-- Botones -->
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar</button>
-                <a th:href="@{/reservas}" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-    </section>
+        </div>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+
+<script>
+    function calcularPrecio() {
+        const vehiculoSelect = document.getElementById('vehiculo');
+        const fechaInicio = document.getElementById('fechaInicio').value;
+        const fechaFin = document.getElementById('fechaFin').value;
+        const precioInput = document.getElementById('precioTotal');
+        const resumen = document.getElementById('resumenPrecio');
+
+        if (!vehiculoSelect.value || !fechaInicio || !fechaFin) {
+            resumen.style.display = 'none';
+            precioInput.value = '';
+            return;
+        }
+
+        const precioDia = parseFloat(vehiculoSelect.options[vehiculoSelect.selectedIndex].getAttribute('data-precio'));
+        const dias = Math.round((new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
+
+        if (dias > 0 && !isNaN(precioDia)) {
+            // Calcular extras seleccionados
+            let extrasPorDia = 0;
+            document.querySelectorAll('.extra-check:checked').forEach(cb => {
+                extrasPorDia += parseFloat(cb.getAttribute('data-precio') || 0);
+            });
+
+            const totalVehiculo = precioDia * dias;
+            const totalExtras = extrasPorDia * dias;
+            const total = (totalVehiculo + totalExtras).toFixed(2);
+
+            precioInput.value = total;
+            document.getElementById('rPrecioDia').textContent = precioDia.toFixed(2) + ' €';
+            document.getElementById('rDias').textContent = dias + ' día(s)';
+
+            const filaExtras = document.getElementById('filaExtras');
+            if (extrasPorDia > 0) {
+                filaExtras.style.display = 'flex';
+                document.getElementById('rExtras').textContent = extrasPorDia.toFixed(2) + ' €';
+            } else {
+                filaExtras.style.display = 'none';
+            }
+
+            document.getElementById('rTotal').textContent = total + ' €';
+            resumen.style.display = 'block';
+        } else {
+            resumen.style.display = 'none';
+            precioInput.value = '';
+        }
+    }
+
+    document.getElementById('vehiculo').addEventListener('change', calcularPrecio);
+    document.getElementById('fechaInicio').addEventListener('change', calcularPrecio);
+    document.getElementById('fechaFin').addEventListener('change', calcularPrecio);
+    document.querySelectorAll('.extra-check').forEach(cb => cb.addEventListener('change', calcularPrecio));
+    calcularPrecio();
+</script>
 </body>
 </html>
 

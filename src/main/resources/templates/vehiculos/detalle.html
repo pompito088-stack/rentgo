@@ -1,51 +1,147 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Detalle Vehiculo')}"></head>
-<body>
+<head th:replace="~{fragments/layout :: head('RentGo - Detalle Vehículo')}"></head>
+<body class="client-layout">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="container mt-4">
-    <section>
-        <h1 th:text="${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}">Vehiculo</h1>
-        <hr>
-        <div class="row">
-            <div class="col-md-5">
-                <img th:if="${vehiculo.rutaFoto != null}" th:src="@{${vehiculo.rutaFoto}}"
-                     class="img-fluid rounded" alt="Foto vehiculo">
-                <div th:if="${vehiculo.rutaFoto == null}"
-                     class="bg-secondary text-white d-flex align-items-center justify-content-center rounded"
-                     style="height:300px;">
-                    <i class="bi bi-car-front" style="font-size:5rem;"></i>
+<main>
+    <!-- Mini hero breadcrumb -->
+    <div style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
+                    <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/vehiculos}" style="color:rgba(255,255,255,.7);text-decoration:none;">Vehículos</a></li>
+                    <li class="breadcrumb-item active" style="color:#fff;" th:text="${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}"></li>
+                </ol>
+            </nav>
+            <h1 style="font-size:1.6rem;font-weight:800;margin:0;" th:text="${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}"></h1>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <div class="row g-4">
+
+            <!-- ── Columna Imagen ── -->
+            <div class="col-lg-5">
+                <div style="border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;background:#f9fafb;">
+                    <img th:if="${vehiculo.rutaFoto != null}" th:src="@{${vehiculo.rutaFoto}}"
+                         class="img-fluid w-100" th:alt="${'Foto de ' + vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}"
+                         style="height:320px;object-fit:cover;">
+                    <div th:if="${vehiculo.rutaFoto == null}"
+                         style="height:320px;display:flex;align-items:center;justify-content:center;">
+                        <i class="bi bi-car-front" style="font-size:7rem;color:var(--teal-300);"></i>
+                    </div>
+                </div>
+
+                <!-- Extras del vehículo -->
+                <div th:if="${!vehiculo.extras.isEmpty()}"
+                     style="margin-top:1rem;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:1.1rem;">
+                    <h3 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">
+                        <i class="bi bi-stars me-2" style="color:var(--teal-500);"></i>Extras incluidos
+                    </h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span th:each="extra : ${vehiculo.extras}"
+                              class="badge"
+                              style="background:var(--teal-50);color:var(--teal-700);border:1px solid var(--teal-100);font-size:.8rem;padding:.35rem .7rem;border-radius:999px;"
+                              th:text="${extra.nombre}"></span>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-7">
-                <table class="table">
-                    <tr><th>Matricula</th><td th:text="${vehiculo.matricula}"></td></tr>
-                    <tr><th>Marca</th><td th:text="${vehiculo.modelo.marca.nombre}"></td></tr>
-                    <tr><th>Modelo</th><td th:text="${vehiculo.modelo.nombre}"></td></tr>
-                    <tr><th>Categoria</th><td th:text="${vehiculo.categoriaVehiculo.nombre}"></td></tr>
-                    <tr><th>Anio</th><td th:text="${vehiculo.anio}"></td></tr>
-                    <tr><th>Color</th><td th:text="${vehiculo.color}"></td></tr>
-                    <tr><th>Plazas</th><td th:text="${vehiculo.plazas}"></td></tr>
-                    <tr><th>Puertas</th><td th:text="${vehiculo.puertas}"></td></tr>
-                    <tr><th>Etiqueta</th><td th:text="${vehiculo.etiqueta}"></td></tr>
-                    <tr><th>Transmision</th><td th:text="${vehiculo.transmision}"></td></tr>
-                    <tr><th>Combustion</th><td th:text="${vehiculo.combustion}"></td></tr>
-                    <tr><th>Kilometraje</th><td th:text="${vehiculo.kilometraje + ' km'}"></td></tr>
-                    <tr><th>Precio / dia</th><td th:text="${vehiculo.precioDia + ' €'}"></td></tr>
-                    <tr><th>Sucursal</th><td th:text="${vehiculo.sucursal.nombre + ' (' + vehiculo.sucursal.ciudad + ')'}"></td></tr>
-                </table>
-                <div th:if="${!vehiculo.extras.isEmpty()}">
-                    <h5>Extras incluidos</h5>
-                    <span th:each="extra : ${vehiculo.extras}" class="badge bg-success me-1" th:text="${extra.nombre}"></span>
+
+            <!-- ── Columna Info + Reserva ── -->
+            <div class="col-lg-7">
+                <!-- Badges estado -->
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-size:.82rem;padding:.35rem .8rem;" th:text="${vehiculo.categoriaVehiculo.nombre}"></span>
+                    <span class="badge bg-light text-dark border" style="font-size:.82rem;" th:text="${vehiculo.etiqueta}"></span>
+                    <span class="badge bg-dark" style="font-size:.82rem;" th:text="${vehiculo.transmision}"></span>
+                    <span th:if="${vehiculo.disponibilidad == 'disponible'}" class="badge bg-success" style="font-size:.82rem;"><i class="bi bi-check-circle me-1"></i>Disponible</span>
+                    <span th:if="${vehiculo.disponibilidad == 'alquilado'}" class="badge bg-warning text-dark" style="font-size:.82rem;"><i class="bi bi-clock me-1"></i>Alquilado</span>
+                    <span th:if="${vehiculo.disponibilidad == 'mantenimiento'}" class="badge bg-danger" style="font-size:.82rem;"><i class="bi bi-wrench me-1"></i>En mantenimiento</span>
                 </div>
-                <div class="mt-3">
-                    <a th:href="@{/vehiculos}" class="btn btn-secondary"><i class="bi bi-arrow-left me-1"></i>Volver</a>
-                    <a th:href="@{/reservas/nuevo}" class="btn btn-primary"><i class="bi bi-calendar-plus me-1"></i>Reservar</a>
+
+                <!-- Precio destacado -->
+                <div style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1px solid var(--teal-100);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
+                    <div style="font-size:.8rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Precio por día</div>
+                    <div style="font-size:2.2rem;font-weight:800;color:var(--teal-600);line-height:1.1;">
+                        <span th:text="${vehiculo.precioDia}"></span> <span style="font-size:1.1rem;font-weight:500;color:#9ca3af;">€/día</span>
+                    </div>
+                    <div style="font-size:.8rem;color:#6b7280;margin-top:.2rem;">IVA y seguro incluido</div>
+                </div>
+
+                <!-- Ficha técnica -->
+                <section aria-label="Ficha técnica">
+                    <h2 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.9rem;">
+                        <i class="bi bi-list-check me-2" style="color:var(--teal-500);"></i>Ficha técnica
+                    </h2>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
+                                <div class="profile-field-label">Matrícula</div>
+                                <div style="font-weight:600;color:#111827;" th:text="${vehiculo.matricula}"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
+                                <div class="profile-field-label">Año</div>
+                                <div style="font-weight:600;color:#111827;" th:text="${vehiculo.anio}"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
+                                <div class="profile-field-label">Color</div>
+                                <div style="font-weight:600;color:#111827;" th:text="${vehiculo.color}"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
+                                <div class="profile-field-label">Combustión</div>
+                                <div style="font-weight:600;color:#111827;" th:text="${vehiculo.combustion}"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
+                                <div class="profile-field-label">Plazas / Puertas</div>
+                                <div style="font-weight:600;color:#111827;" th:text="${vehiculo.plazas + ' plazas / ' + vehiculo.puertas + ' puertas'}"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
+                                <div class="profile-field-label">Kilometraje</div>
+                                <div style="font-weight:600;color:#111827;" th:text="${vehiculo.kilometraje + ' km'}"></div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
+                                <div class="profile-field-label"><i class="bi bi-geo-alt me-1"></i>Sucursal disponible</div>
+                                <div style="font-weight:600;color:#111827;" th:text="${vehiculo.sucursal.nombre + ' — ' + vehiculo.sucursal.ciudad}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Botones acción -->
+                <div class="d-flex flex-wrap gap-2">
+                    <a th:href="@{/reservas/nuevo}" class="btn text-white fw-600 flex-grow-1"
+                       style="background:var(--teal-600);border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
+                        <i class="bi bi-calendar-plus me-2"></i>Reservar este vehículo
+                    </a>
+                    <a th:href="@{/vehiculos}" class="btn btn-outline-secondary"
+                       style="border-radius:10px;padding:.75rem 1.25rem;">
+                        <i class="bi bi-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+
+                <!-- Garantías -->
+                <div class="d-flex flex-wrap gap-3 mt-3">
+                    <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-shield-check-fill me-1" style="color:#22c55e;"></i>Seguro incluido</span>
+                    <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-arrow-left-right me-1" style="color:var(--teal-500);"></i>Devolución flexible</span>
+                    <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-headset me-1" style="color:#3b82f6;"></i>Soporte 24/7</span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

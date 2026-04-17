@@ -26,8 +26,9 @@ public class MantenimientoService {
     public List<Mantenimiento> listarPorVehiculo(Integer vehiculoId) {
         return mantenimientoRepository.findByVehiculoId(vehiculoId);
     }
-    /** Guarda o actualiza un mantenimiento. */
+    /** Guarda o actualiza un mantenimiento. El estado se calcula automaticamente por fechas. */
     public Mantenimiento guardar(Mantenimiento mantenimiento) {
+        mantenimiento.setEstado(mantenimiento.calcularEstadoPorFecha());
         return mantenimientoRepository.save(mantenimiento);
     }
     /** Elimina un mantenimiento por su ID. */

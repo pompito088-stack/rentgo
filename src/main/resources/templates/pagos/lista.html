@@ -1,58 +1,55 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/layout :: head('RentGo - Pagos')}"></head>
-<body>
-<nav th:replace="~{fragments/layout :: navbar}"></nav>
-
-<main class="container mt-4">
-    <section>
-        <h1>Pagos</h1>
-        <a th:href="@{/pagos/nuevo}" class="btn btn-success mb-3"><i class="bi bi-plus-circle me-1"></i>Nuevo Pago</a>
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Reserva</th>
-                    <th>Fecha Pago</th>
-                    <th>Importe</th>
-                    <th>Metodo</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="pago : ${pagos}">
-                    <td th:text="${pago.id}"></td>
-                    <td th:text="'Reserva #' + ${pago.reserva.id}"></td>
-                    <td th:text="${pago.fechaPago}"></td>
-                    <td th:text="${pago.importe + ' €'}"></td>
-                    <td th:text="${pago.metodoPago}"></td>
-                    <td>
-                        <span class="badge"
-                              th:classappend="${pago.estadoPago == 'pagado'} ? 'bg-success' :
-                                              (${pago.estadoPago == 'pendiente'} ? 'bg-warning text-dark' : 'bg-danger')"
-                              th:text="${pago.estadoPago}"></span>
-                    </td>
-                    <td>
-                        <a th:href="@{/pagos/editar/{id}(id=${pago.id})}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a th:href="@{/pagos/eliminar/{id}(id=${pago.id})}" class="btn btn-danger btn-sm"
-                           onclick="return confirm('Estas seguro de eliminar este pago?')">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(pagos)}">
-                    <td colspan="7" class="text-center">No hay pagos registrados.</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-</main>
-
-<footer th:replace="~{fragments/layout :: footer}"></footer>
+<body class="admin-layout">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title"><i class="bi bi-credit-card me-2" style="color:var(--teal-600)"></i>Pagos</h1>
+        <div class="topbar-right">
+            <span class="topbar-badge" th:text="${#lists.size(pagos)} + ' pagos'"></span>
+        </div>
+    </header>
+    <main class="admin-page-content">
+        <section class="admin-table">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Reserva</th>
+                        <th>Cliente</th>
+                        <th>Fecha Pago</th>
+                        <th>Importe</th>
+                        <th>Metodo</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pago : ${pagos}">
+                        <td th:text="${pago.id}"></td>
+                        <td th:text="'#' + ${pago.reserva.id}"></td>
+                        <td th:text="${pago.reserva.usuario.nombre + ' ' + pago.reserva.usuario.apellidos}"></td>
+                        <td th:text="${pago.fechaPago}"></td>
+                        <td class="fw-500" th:text="${pago.importe + ' €'}"></td>
+                        <td>
+                            <span th:text="${pago.metodoPago == 'tarjeta_credito' ? 'Tarjeta credito' :
+                                           (pago.metodoPago == 'tarjeta_debito' ? 'Tarjeta debito' : 'PayPal')}"></span>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill bg-success">
+                                <i class="bi bi-check-circle me-1"></i>Realizado
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pagos)}">
+                        <td colspan="7" class="text-center text-muted py-4">No hay pagos registrados.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>
-

@@ -17,11 +17,9 @@ public class HomeController {
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuario == null) {
-            return "redirect:/login";
-        }
+        // Si no hay sesion se muestra la landing page (sin redirigir al login)
         model.addAttribute("usuario", usuario);
-        model.addAttribute("esAdmin", usuario.isAdmin());
+        model.addAttribute("esAdmin", usuario != null && usuario.isAdmin());
         return "index";
     }
 }

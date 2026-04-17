@@ -46,8 +46,7 @@ public class PagoController {
         if (noEsAdmin(session)) return "redirect:/login";
         model.addAttribute("pago", new Pago());
         model.addAttribute("reservas", reservaService.listarTodas());
-        model.addAttribute("metodosPago", new String[]{"tarjeta", "transferencia", "bizum", "efectivo"});
-        model.addAttribute("estadosPago", new String[]{"pendiente", "pagado", "rechazado"});
+        model.addAttribute("metodosPago", new String[]{"tarjeta_credito", "tarjeta_debito", "paypal"});
         return "pagos/formulario";
     }
 
@@ -58,8 +57,7 @@ public class PagoController {
         if (pago.isPresent()) {
             model.addAttribute("pago", pago.get());
             model.addAttribute("reservas", reservaService.listarTodas());
-            model.addAttribute("metodosPago", new String[]{"tarjeta", "transferencia", "bizum", "efectivo"});
-            model.addAttribute("estadosPago", new String[]{"pendiente", "pagado", "rechazado"});
+            model.addAttribute("metodosPago", new String[]{"tarjeta_credito", "tarjeta_debito", "paypal"});
             return "pagos/formulario";
         }
         return "redirect:/pagos";
@@ -71,10 +69,10 @@ public class PagoController {
                           Model model,
                           HttpSession session) {
         if (noEsAdmin(session)) return "redirect:/login";
+        pago.setEstadoPago("realizado");
         if (result.hasErrors()) {
             model.addAttribute("reservas", reservaService.listarTodas());
-            model.addAttribute("metodosPago", new String[]{"tarjeta", "transferencia", "bizum", "efectivo"});
-            model.addAttribute("estadosPago", new String[]{"pendiente", "pagado", "rechazado"});
+            model.addAttribute("metodosPago", new String[]{"tarjeta_credito", "tarjeta_debito", "paypal"});
             return "pagos/formulario";
         }
         pagoService.guardar(pago);

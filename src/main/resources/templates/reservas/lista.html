@@ -1,61 +1,103 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/layout :: head('RentGo - Reservas')}"></head>
-<body>
-<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
+<!-- ===== ADMIN VIEW ===== -->
+<body class="admin-layout" th:if="${esAdmin}">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title"><i class="bi bi-calendar-check me-2" style="color:var(--teal-600)"></i>Todas las Reservas</h1>
+        <div class="topbar-right">
+            <span class="topbar-badge" th:text="${#lists.size(reservas)} + ' reservas'"></span>
+        </div>
+    </header>
+    <main class="admin-page-content">
+        <section class="admin-table">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>ID</th><th>Usuario</th><th>Vehiculo</th><th>Recogida</th><th>Devolución</th><th>Precio Total</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${reservas}">
+                        <td th:text="${r.id}"></td>
+                        <td th:text="${r.usuario.nombre + ' ' + r.usuario.apellidos}"></td>
+                        <td th:text="${r.vehiculo.modelo.marca.nombre + ' ' + r.vehiculo.modelo.nombre}"></td>
+                        <td>
+                            <span th:text="${r.fechaInicio}"></span>
+                            <small class="text-muted d-block" th:text="${r.horaInicio}"></small>
+                        </td>
+                        <td>
+                            <span th:text="${r.fechaFin}"></span>
+                            <small class="text-muted d-block" th:text="${r.horaFin}"></small>
+                        </td>
+                        <td class="fw-500" th:text="${r.precioTotal + ' €'}"></td>
+                        <td>
+                            <span class="badge rounded-pill"
+                                  th:classappend="${r.estado == 'confirmada'} ? 'bg-success' :
+                                                  (${r.estado == 'pendiente'} ? 'bg-warning text-dark' :
+                                                  (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
+                                  th:text="${r.estado}"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(reservas)}">
+                        <td colspan="7" class="text-center text-muted py-4">No hay reservas registradas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+
+<!-- ===== CLIENTE VIEW ===== -->
+<body class="client-layout" th:unless="${esAdmin}">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 <main class="container mt-4">
     <section>
-        <h1 th:text="${esAdmin} ? 'Todas las Reservas' : 'Mis Reservas'">Reservas</h1>
-        <a th:href="@{/reservas/nuevo}" class="btn btn-success mb-3"><i class="bi bi-plus-circle me-1"></i>Nueva Reserva</a>
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th th:if="${esAdmin}">Usuario</th>
-                    <th>Vehiculo</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
-                    <th>Precio Total</th>
-                    <th>Estado</th>
-                    <th th:if="${esAdmin}">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="r : ${reservas}">
-                    <td th:text="${r.id}"></td>
-                    <td th:if="${esAdmin}" th:text="${r.usuario.nombre + ' ' + r.usuario.apellidos}"></td>
-                    <td th:text="${r.vehiculo.modelo.marca.nombre + ' ' + r.vehiculo.modelo.nombre}"></td>
-                    <td th:text="${r.fechaInicio}"></td>
-                    <td th:text="${r.fechaFin}"></td>
-                    <td th:text="${r.precioTotal + ' €'}"></td>
-                    <td>
-                        <span class="badge"
-                              th:classappend="${r.estado == 'confirmada'} ? 'bg-success' :
-                                              (${r.estado == 'pendiente'} ? 'bg-warning text-dark' :
-                                              (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
-                              th:text="${r.estado}"></span>
-                    </td>
-                    <td th:if="${esAdmin}">
-                        <a th:href="@{/reservas/editar/{id}(id=${r.id})}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a th:href="@{/reservas/eliminar/{id}(id=${r.id})}" class="btn btn-danger btn-sm"
-                           onclick="return confirm('Estas seguro de eliminar esta reserva?')">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(reservas)}">
-                    <td th:colspan="${esAdmin} ? 8 : 6" class="text-center">No hay reservas registradas.</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1>Mis Reservas</h1>
+            <a th:href="@{/reservas/nuevo}" class="btn text-white" style="background:var(--teal-600)">
+                <i class="bi bi-plus-circle me-1"></i>Nueva Reserva
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover border rounded">
+                <thead style="background:#f9fafb;">
+                    <tr><th>ID</th><th>Vehiculo</th><th>Recogida</th><th>Devolución</th><th>Precio Total</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${reservas}">
+                        <td th:text="${r.id}"></td>
+                        <td th:text="${r.vehiculo.modelo.marca.nombre + ' ' + r.vehiculo.modelo.nombre}"></td>
+                        <td>
+                            <span th:text="${r.fechaInicio}"></span>
+                            <small class="text-muted d-block" th:text="${r.horaInicio}"></small>
+                        </td>
+                        <td>
+                            <span th:text="${r.fechaFin}"></span>
+                            <small class="text-muted d-block" th:text="${r.horaFin}"></small>
+                        </td>
+                        <td th:text="${r.precioTotal + ' €'}"></td>
+                        <td>
+                            <span class="badge rounded-pill"
+                                  th:classappend="${r.estado == 'confirmada'} ? 'bg-success' :
+                                                  (${r.estado == 'pendiente'} ? 'bg-warning text-dark' :
+                                                  (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
+                                  th:text="${r.estado}"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(reservas)}">
+                        <td colspan="6" class="text-center text-muted py-4">No tienes reservas registradas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 </main>
-
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>
-

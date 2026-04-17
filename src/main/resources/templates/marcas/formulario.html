@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/layout :: head('RentGo - Formulario Marca')}"></head>
-<body>
-<nav th:replace="~{fragments/layout :: navbar}"></nav>
-
-<main class="container mt-4">
-    <section>
-        <h1 th:text="${marca.id != null ? 'Editar Marca' : 'Nueva Marca'}">Formulario</h1>
-        <hr>
-        <form th:action="@{/marcas/guardar}" th:object="${marca}" method="post" class="row g-3" novalidate>
-            <input type="hidden" th:field="*{id}">
-            <div class="col-md-6">
-                <label for="nombre" class="form-label">Nombre de la Marca</label>
-                <input type="text" class="form-control"
-                       th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
-                       id="nombre" th:field="*{nombre}">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}"
-                     th:errors="*{nombre}"></div>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar</button>
-                <a th:href="@{/marcas}" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-    </section>
-</main>
-
-<footer th:replace="~{fragments/layout :: footer}"></footer>
+<body class="admin-layout">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title">
+            <i class="bi bi-tag me-2" style="color:var(--teal-600)"></i>
+            <span th:text="${marca.id != null ? 'Editar Marca' : 'Nueva Marca'}">Formulario</span>
+        </h1>
+        <div class="topbar-right">
+            <a th:href="@{/marcas}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a>
+        </div>
+    </header>
+    <main class="admin-page-content">
+        <div class="admin-card">
+            <form th:action="@{/marcas/guardar}" th:object="${marca}" method="post" class="row g-3" novalidate>
+                <input type="hidden" th:field="*{id}">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label">Nombre de la Marca</label>
+                    <input type="text" class="form-control" th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                           id="nombre" th:field="*{nombre}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-teal"><i class="bi bi-save me-1"></i>Guardar</button>
+                    <a th:href="@{/marcas}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>
-

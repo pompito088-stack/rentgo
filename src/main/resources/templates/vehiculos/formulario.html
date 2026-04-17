@@ -1,178 +1,236 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/layout :: head('RentGo - Formulario Vehiculo')}"></head>
-<body>
-<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<body class="admin-layout">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 
-<main class="container mt-4">
-    <section>
-        <h1 th:text="${vehiculo.id != null ? 'Editar Vehiculo' : 'Nuevo Vehiculo'}">Formulario</h1>
-        <hr>
-        <form th:action="@{/vehiculos/guardar}" th:object="${vehiculo}" method="post"
-              enctype="multipart/form-data" class="row g-3" novalidate>
-            <input type="hidden" th:field="*{id}">
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title">
+            <i class="bi bi-car-front me-2" style="color:var(--teal-600)"></i>
+            <span th:text="${vehiculo.id != null ? 'Editar Vehiculo' : 'Nuevo Vehiculo'}">Formulario</span>
+        </h1>
+        <div class="topbar-right">
+            <a th:href="@{/vehiculos}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Volver
+            </a>
+        </div>
+    </header>
 
-            <!-- Modelo -->
-            <div class="col-md-6">
-                <label for="modelo" class="form-label">Modelo</label>
-                <select class="form-select" id="modelo" th:field="*{modelo.id}" required>
-                    <option value="">-- Seleccionar modelo --</option>
-                    <option th:each="m : ${modelos}" th:value="${m.id}"
-                            th:text="${m.marca.nombre + ' ' + m.nombre}"></option>
-                </select>
-            </div>
+    <main class="admin-page-content">
+        <div class="admin-card">
+            <form th:action="@{/vehiculos/guardar}" th:object="${vehiculo}" method="post"
+                  enctype="multipart/form-data" class="row g-3" novalidate>
+                <input type="hidden" th:field="*{id}">
 
-            <!-- Categoria -->
-            <div class="col-md-6">
-                <label for="categoriaVehiculo" class="form-label">Categoria</label>
-                <select class="form-select" id="categoriaVehiculo" th:field="*{categoriaVehiculo.id}" required>
-                    <option value="">-- Seleccionar categoria --</option>
-                    <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"></option>
-                </select>
-            </div>
-
-            <!-- Matricula -->
-            <div class="col-md-3">
-                <label for="matricula" class="form-label">Matricula</label>
-                <input type="text" class="form-control"
-                       th:classappend="${#fields.hasErrors('matricula')} ? 'is-invalid'"
-                       id="matricula" th:field="*{matricula}">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('matricula')}" th:errors="*{matricula}"></div>
-            </div>
-
-            <!-- Anio -->
-            <div class="col-md-3">
-                <label for="anio" class="form-label">Anio</label>
-                <input type="number" class="form-control"
-                       th:classappend="${#fields.hasErrors('anio')} ? 'is-invalid'"
-                       id="anio" th:field="*{anio}" min="1990" max="2030">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('anio')}" th:errors="*{anio}"></div>
-            </div>
-
-            <!-- Color -->
-            <div class="col-md-3">
-                <label for="color" class="form-label">Color</label>
-                <input type="text" class="form-control"
-                       th:classappend="${#fields.hasErrors('color')} ? 'is-invalid'"
-                       id="color" th:field="*{color}">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></div>
-            </div>
-
-            <!-- Plazas -->
-            <div class="col-md-3">
-                <label for="plazas" class="form-label">Plazas</label>
-                <input type="number" class="form-control"
-                       th:classappend="${#fields.hasErrors('plazas')} ? 'is-invalid'"
-                       id="plazas" th:field="*{plazas}" min="1" max="9">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('plazas')}" th:errors="*{plazas}"></div>
-            </div>
-
-            <!-- Puertas -->
-            <div class="col-md-3">
-                <label for="puertas" class="form-label">Puertas</label>
-                <input type="number" class="form-control"
-                       th:classappend="${#fields.hasErrors('puertas')} ? 'is-invalid'"
-                       id="puertas" th:field="*{puertas}" min="1" max="6">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('puertas')}" th:errors="*{puertas}"></div>
-            </div>
-
-            <!-- Etiqueta -->
-            <div class="col-md-3">
-                <label for="etiqueta" class="form-label">Etiqueta</label>
-                <select class="form-select"
-                        th:classappend="${#fields.hasErrors('etiqueta')} ? 'is-invalid'"
-                        id="etiqueta" th:field="*{etiqueta}">
-                    <option value="">-- Seleccionar etiqueta --</option>
-                    <option th:each="etiquetaItem : ${etiquetas}" th:value="${etiquetaItem}" th:text="${etiquetaItem}"></option>
-                </select>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('etiqueta')}" th:errors="*{etiqueta}"></div>
-            </div>
-
-            <!-- Transmision -->
-            <div class="col-md-3">
-                <label for="transmision" class="form-label">Transmision</label>
-                <select class="form-select"
-                        th:classappend="${#fields.hasErrors('transmision')} ? 'is-invalid'"
-                        id="transmision" th:field="*{transmision}">
-                    <option value="">-- Seleccionar transmision --</option>
-                    <option th:each="transmisionItem : ${transmisiones}" th:value="${transmisionItem}" th:text="${transmisionItem}"></option>
-                </select>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('transmision')}" th:errors="*{transmision}"></div>
-            </div>
-
-            <!-- Combustion -->
-            <div class="col-md-6">
-                <label for="combustion" class="form-label">Combustion</label>
-                <select class="form-select"
-                        th:classappend="${#fields.hasErrors('combustion')} ? 'is-invalid'"
-                        id="combustion" th:field="*{combustion}">
-                    <option value="">-- Seleccionar combustion --</option>
-                    <option th:each="combustionItem : ${combustiones}" th:value="${combustionItem}" th:text="${combustionItem}"></option>
-                </select>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('combustion')}" th:errors="*{combustion}"></div>
-            </div>
-
-            <!-- Kilometraje -->
-            <div class="col-md-3">
-                <label for="kilometraje" class="form-label">Kilometraje</label>
-                <input type="number" class="form-control"
-                       th:classappend="${#fields.hasErrors('kilometraje')} ? 'is-invalid'"
-                       id="kilometraje" th:field="*{kilometraje}" min="0">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('kilometraje')}" th:errors="*{kilometraje}"></div>
-            </div>
-
-            <!-- Precio dia -->
-            <div class="col-md-4">
-                <label for="precioDia" class="form-label">Precio / dia (€)</label>
-                <input type="number" step="0.01" class="form-control"
-                       th:classappend="${#fields.hasErrors('precioDia')} ? 'is-invalid'"
-                       id="precioDia" th:field="*{precioDia}" min="0.01">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('precioDia')}" th:errors="*{precioDia}"></div>
-            </div>
-
-            <!-- Sucursal -->
-            <div class="col-md-4">
-                <label for="sucursal" class="form-label">Sucursal</label>
-                <select class="form-select" id="sucursal" th:field="*{sucursal.id}" required>
-                    <option value="">-- Seleccionar sucursal --</option>
-                    <option th:each="s : ${sucursales}" th:value="${s.id}"
-                            th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
-                </select>
-            </div>
-
-            <!-- Foto -->
-            <div class="col-md-4">
-                <label for="foto" class="form-label">Foto</label>
-                <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
-                <small th:if="${vehiculo.rutaFoto != null}" class="form-text text-muted">Ya tiene foto asignada.</small>
-            </div>
-
-            <!-- Extras (checkboxes) -->
-            <div class="col-md-12" th:if="${!extras.isEmpty()}">
-                <label class="form-label">Extras</label>
-                <div class="row">
-                    <div th:each="extra : ${extras}" class="col-md-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   th:field="*{extras}" th:value="${extra.id}">
-                            <label class="form-check-label"
-                                   th:text="${extra.nombre + ' (' + extra.precioDia + ' €/dia)'}"></label>
-                        </div>
+                <!-- Modelo -->
+                <div class="col-md-6">
+                    <label for="modelo" class="form-label">Modelo</label>
+                    <div class="input-group">
+                        <select class="form-select" id="modelo" th:field="*{modelo.id}" required>
+                            <option value="">-- Seleccionar modelo --</option>
+                            <option th:each="m : ${modelos}" th:value="${m.id}"
+                                    th:text="${m.marca.nombre + ' ' + m.nombre}"></option>
+                        </select>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalNuevoModelo">
+                            <i class="bi bi-plus-lg"></i> Modelo
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalNuevaMarca">
+                            <i class="bi bi-plus-lg"></i> Marca
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Botones -->
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar</button>
-                <a th:href="@{/vehiculos}" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-    </section>
-</main>
+                <!-- Categoria -->
+                <div class="col-md-6">
+                    <label for="categoriaVehiculo" class="form-label">Categoria</label>
+                    <select class="form-select" id="categoriaVehiculo" th:field="*{categoriaVehiculo.id}" required>
+                        <option value="">-- Seleccionar categoria --</option>
+                        <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"></option>
+                    </select>
+                </div>
 
-<footer th:replace="~{fragments/layout :: footer}"></footer>
+                <!-- Matricula -->
+                <div class="col-md-3">
+                    <label for="matricula" class="form-label">Matricula</label>
+                    <input type="text" class="form-control" th:classappend="${#fields.hasErrors('matricula')} ? 'is-invalid'"
+                           id="matricula" th:field="*{matricula}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('matricula')}" th:errors="*{matricula}"></div>
+                </div>
+
+                <!-- Anio -->
+                <div class="col-md-3">
+                    <label for="anio" class="form-label">Año</label>
+                    <input type="number" class="form-control" th:classappend="${#fields.hasErrors('anio')} ? 'is-invalid'"
+                           id="anio" th:field="*{anio}" min="1990" max="2030">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('anio')}" th:errors="*{anio}"></div>
+                </div>
+
+                <!-- Color -->
+                <div class="col-md-3">
+                    <label for="color" class="form-label">Color</label>
+                    <input type="text" class="form-control" th:classappend="${#fields.hasErrors('color')} ? 'is-invalid'"
+                           id="color" th:field="*{color}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></div>
+                </div>
+
+                <!-- Plazas -->
+                <div class="col-md-3">
+                    <label for="plazas" class="form-label">Plazas</label>
+                    <input type="number" class="form-control" th:classappend="${#fields.hasErrors('plazas')} ? 'is-invalid'"
+                           id="plazas" th:field="*{plazas}" min="1" max="9">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('plazas')}" th:errors="*{plazas}"></div>
+                </div>
+
+                <!-- Puertas -->
+                <div class="col-md-3">
+                    <label for="puertas" class="form-label">Puertas</label>
+                    <input type="number" class="form-control" th:classappend="${#fields.hasErrors('puertas')} ? 'is-invalid'"
+                           id="puertas" th:field="*{puertas}" min="1" max="6">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('puertas')}" th:errors="*{puertas}"></div>
+                </div>
+
+                <!-- Etiqueta -->
+                <div class="col-md-3">
+                    <label for="etiqueta" class="form-label">Etiqueta</label>
+                    <select class="form-select" th:classappend="${#fields.hasErrors('etiqueta')} ? 'is-invalid'"
+                            id="etiqueta" th:field="*{etiqueta}">
+                        <option value="">-- Seleccionar --</option>
+                        <option th:each="e : ${etiquetas}" th:value="${e}" th:text="${e}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('etiqueta')}" th:errors="*{etiqueta}"></div>
+                </div>
+
+                <!-- Transmision -->
+                <div class="col-md-3">
+                    <label for="transmision" class="form-label">Transmision</label>
+                    <select class="form-select" th:classappend="${#fields.hasErrors('transmision')} ? 'is-invalid'"
+                            id="transmision" th:field="*{transmision}">
+                        <option value="">-- Seleccionar --</option>
+                        <option th:each="t : ${transmisiones}" th:value="${t}" th:text="${t}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('transmision')}" th:errors="*{transmision}"></div>
+                </div>
+
+                <!-- Combustion -->
+                <div class="col-md-3">
+                    <label for="combustion" class="form-label">Combustion</label>
+                    <select class="form-select" th:classappend="${#fields.hasErrors('combustion')} ? 'is-invalid'"
+                            id="combustion" th:field="*{combustion}">
+                        <option value="">-- Seleccionar --</option>
+                        <option th:each="c : ${combustiones}" th:value="${c}" th:text="${c}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('combustion')}" th:errors="*{combustion}"></div>
+                </div>
+
+                <!-- Kilometraje -->
+                <div class="col-md-3">
+                    <label for="kilometraje" class="form-label">Kilometraje</label>
+                    <input type="number" class="form-control" th:classappend="${#fields.hasErrors('kilometraje')} ? 'is-invalid'"
+                           id="kilometraje" th:field="*{kilometraje}" min="0">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('kilometraje')}" th:errors="*{kilometraje}"></div>
+                </div>
+
+                <!-- Precio dia -->
+                <div class="col-md-3">
+                    <label for="precioDia" class="form-label">Precio / dia (€)</label>
+                    <input type="number" step="0.01" class="form-control" th:classappend="${#fields.hasErrors('precioDia')} ? 'is-invalid'"
+                           id="precioDia" th:field="*{precioDia}" min="0.01">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('precioDia')}" th:errors="*{precioDia}"></div>
+                </div>
+
+                <!-- Sucursal -->
+                <div class="col-md-3">
+                    <label for="sucursal" class="form-label">Sucursal</label>
+                    <select class="form-select" id="sucursal" th:field="*{sucursal.id}" required>
+                        <option value="">-- Seleccionar sucursal --</option>
+                        <option th:each="s : ${sucursales}" th:value="${s.id}"
+                                th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
+                    </select>
+                </div>
+
+                <!-- Foto -->
+                <div class="col-md-3">
+                    <label for="foto" class="form-label">Foto</label>
+                    <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+                    <small th:if="${vehiculo.rutaFoto != null}" class="form-text text-muted">Ya tiene foto asignada.</small>
+                </div>
+
+                <!-- Disponibilidad -->
+                <div class="col-md-3">
+                    <label for="disponibilidad" class="form-label">Disponibilidad</label>
+                    <select class="form-select" id="disponibilidad" th:field="*{disponibilidad}">
+                        <option value="disponible">Disponible</option>
+                        <option value="alquilado">Alquilado</option>
+                        <option value="mantenimiento">En mantenimiento</option>
+                    </select>
+                </div>
+                <div class="col-12 d-flex gap-2 pt-2">
+                    <button type="submit" class="btn btn-teal">
+                        <i class="bi bi-save me-1"></i>Guardar
+                    </button>
+                    <a th:href="@{/vehiculos}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+
+<!-- Modal: Nueva Marca -->
+<div class="modal fade" id="modalNuevaMarca" tabindex="-1" aria-labelledby="labelNuevaMarca" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/marcas/guardar-rapido" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="labelNuevaMarca"><i class="bi bi-tag me-2"></i>Nueva Marca</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="nombreMarca" class="form-label">Nombre de la marca</label>
+                    <input type="text" class="form-control" id="nombreMarca" name="nombre" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-teal"><i class="bi bi-save me-1"></i>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Nuevo Modelo -->
+<div class="modal fade" id="modalNuevoModelo" tabindex="-1" aria-labelledby="labelNuevoModelo" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/modelos/guardar-rapido" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="labelNuevoModelo"><i class="bi bi-car-front me-2"></i>Nuevo Modelo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-3">
+                    <div class="col-12">
+                        <label for="nombreModelo" class="form-label">Nombre del modelo</label>
+                        <input type="text" class="form-control" id="nombreModelo" name="nombre" required>
+                    </div>
+                    <div class="col-12">
+                        <label for="marcaIdModal" class="form-label">Marca</label>
+                        <select class="form-select" id="marcaIdModal" name="marcaId" required>
+                            <option value="">-- Seleccionar marca --</option>
+                            <option th:each="m : ${marcas}" th:value="${m.id}" th:text="${m.nombre}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-teal"><i class="bi bi-save me-1"></i>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>
 

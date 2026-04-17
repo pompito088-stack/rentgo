@@ -77,6 +77,15 @@ public class Vehiculo {
     @Column(name = "ruta_foto", length = 255)
     private String rutaFoto;
 
+    /**
+     * Disponibilidad del vehiculo.
+     * disponible  → se puede reservar
+     * alquilado   → actualmente alquilado
+     * mantenimiento → en taller, no disponible
+     */
+    @Column(name = "disponibilidad", nullable = false, length = 20)
+    private String disponibilidad = "disponible";
+
     /** Relacion ManyToOne con CategoriaVehiculo. */
     @ManyToOne
     @JoinColumn(name = "id_categoria_vehiculo", nullable = false)
@@ -179,6 +188,12 @@ public class Vehiculo {
     }
     public void setRutaFoto(String rutaFoto) {
         this.rutaFoto = rutaFoto;
+    }
+    public String getDisponibilidad() {
+        return disponibilidad;
+    }
+    public void setDisponibilidad(String disponibilidad) {
+        this.disponibilidad = disponibilidad;
     }
     public CategoriaVehiculo getCategoriaVehiculo() {
         return categoriaVehiculo;
