@@ -97,31 +97,32 @@
         .admin-sidebar nav a.sidebar-link i { font-size: 1.1rem; width: 1.2rem; text-align: center; }
 
         .admin-sidebar .sidebar-footer {
-            padding: 1rem 1.25rem;
+            padding: 2rem 1.25rem;
             border-top: 1px solid rgba(255,255,255,.12);
             display: flex;
             align-items: center;
-            gap: .75rem;
+            gap: .85rem;
+            background: linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.18) 100%);
         }
         .admin-sidebar .sidebar-footer .avatar {
-            width: 36px; height: 36px;
+            width: 46px; height: 46px;
             border-radius: 50%;
             background: var(--teal-500);
             display: flex; align-items: center; justify-content: center;
-            color: #fff; font-weight: 700; font-size: .85rem;
+            color: #fff; font-weight: 700; font-size: 1.1rem;
             flex-shrink: 0;
         }
         .admin-sidebar .sidebar-footer .user-info { flex: 1; overflow: hidden; }
         .admin-sidebar .sidebar-footer .user-name {
-            color: #fff; font-size: .85rem; font-weight: 600;
+            color: #fff; font-size: .95rem; font-weight: 600;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .admin-sidebar .sidebar-footer .user-role {
-            color: var(--teal-400); font-size: .72rem;
+            color: var(--teal-400); font-size: .78rem; font-weight: 500;
         }
         .admin-sidebar .sidebar-footer a.logout-btn {
             color: rgba(255,255,255,.6);
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             text-decoration: none;
             transition: color .15s;
         }
@@ -238,23 +239,65 @@
             background: var(--teal-600);
             color: #fff;
             border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background .15s, box-shadow .15s;
         }
-        .btn-teal:hover { background: var(--teal-700); color: #fff; }
+        .btn-teal:hover { background: var(--teal-700); color: #fff; box-shadow: 0 4px 12px rgba(13,148,136,.3); }
         .btn-outline-teal {
             border: 1.5px solid var(--teal-600);
             color: var(--teal-600);
             background: transparent;
+            border-radius: 8px;
+            font-weight: 500;
         }
         .btn-outline-teal:hover { background: var(--teal-600); color: #fff; }
 
+        /* Botones de accion en tablas/cards admin */
+        .btn-action-edit {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: .3rem .65rem;
+            font-size: .82rem;
+            font-weight: 500;
+            transition: background .15s, box-shadow .15s;
+            display: inline-flex; align-items: center; gap: .3rem;
+        }
+        .btn-action-edit:hover { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 3px 8px rgba(37,99,235,.3); }
+        .btn-action-delete {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: .3rem .65rem;
+            font-size: .82rem;
+            font-weight: 500;
+            transition: background .15s, box-shadow .15s;
+            display: inline-flex; align-items: center; gap: .3rem;
+        }
+        .btn-action-delete:hover { background: #dc2626; color: #fff; border-color: #dc2626; box-shadow: 0 3px 8px rgba(220,38,38,.3); }
+        .btn-action-view {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: .3rem .65rem;
+            font-size: .82rem;
+            font-weight: 500;
+            transition: background .15s, box-shadow .15s;
+            display: inline-flex; align-items: center; gap: .3rem;
+        }
+        .btn-action-view:hover { background: #16a34a; color: #fff; border-color: #16a34a; box-shadow: 0 3px 8px rgba(22,163,74,.3); }
+
         /* Footer admin */
         .admin-footer {
-            background: #fff;
-            border-top: 1px solid #e5e7eb;
-            padding: .75rem 1.75rem;
+            background: var(--teal-800);
+            color: rgba(255,255,255,.45);
+            padding: .9rem 0;
+            font-size: .78rem;
             text-align: center;
-            font-size: .8rem;
-            color: #9ca3af;
         }
 
         /* ─── NAVBAR CLIENTE ─── */
@@ -469,12 +512,12 @@
         .client-footer {
             background: var(--teal-800);
             color: rgba(255,255,255,.8);
-            padding: 2.5rem 0 1.25rem;
+            padding: 2rem 0 1rem;
         }
-        .client-footer .footer-brand { font-size: 1.2rem; font-weight: 800; color: #fff; }
-        .client-footer .footer-links a { color: rgba(255,255,255,.65); text-decoration: none; font-size: .85rem; display: block; margin-bottom: .3rem; transition: color .15s; }
+        .client-footer .footer-brand { font-size: 1.1rem; font-weight: 800; color: #fff; }
+        .client-footer .footer-links a { color: rgba(255,255,255,.65); text-decoration: none; font-size: .82rem; display: block; margin-bottom: .25rem; transition: color .15s; }
         .client-footer .footer-links a:hover { color: #fff; }
-        .client-footer .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: 1.5rem; padding-top: 1rem; font-size: .78rem; color: rgba(255,255,255,.45); }
+        .client-footer .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: .75rem; padding-top: .6rem; font-size: .72rem; color: rgba(255,255,255,.4); }
 
         /* ─── PERFIL ─── */
         .profile-avatar {
@@ -493,6 +536,48 @@
         .form-control:focus, .form-select:focus {
             border-color: var(--teal-500);
             box-shadow: 0 0 0 .2rem rgba(13,148,136,.2);
+        }
+
+        /* ─── EXTRAS CARD (reserva) ─── */
+        .extra-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s, transform .15s;
+            height: 100%;
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+        }
+        .extra-card:hover {
+            border-color: var(--teal-400);
+            box-shadow: 0 4px 16px rgba(13,148,136,.1);
+            transform: translateY(-2px);
+        }
+        .extra-card.selected {
+            border-color: var(--teal-500);
+            background: var(--teal-50);
+            box-shadow: 0 4px 16px rgba(13,148,136,.15);
+        }
+        .extra-card .extra-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            background: var(--teal-50);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; color: var(--teal-600);
+            flex-shrink: 0;
+        }
+        .extra-card.selected .extra-icon {
+            background: var(--teal-100);
+        }
+        .extra-card .extra-info { flex: 1; min-width: 0; }
+        .extra-card .extra-name { font-size: .92rem; font-weight: 600; color: #111827; }
+        .extra-card .extra-desc { font-size: .78rem; color: #6b7280; margin-top: .15rem; }
+        .extra-card .extra-price {
+            font-size: .95rem; font-weight: 700; color: var(--teal-600);
+            white-space: nowrap; margin-top: .3rem;
         }
     </style>
 </head>
@@ -541,8 +626,8 @@
             <ul class="navbar-nav align-items-center gap-2">
                 <!-- Usuario logueado -->
                 <li class="nav-item dropdown" th:if="${session.usuarioLogueado != null}">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
-                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="javascript:void(0)"
+                       role="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                         <span style="width:30px;height:30px;border-radius:50%;background:var(--teal-400);display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;"
                               th:text="${session.usuarioLogueado.nombre.substring(0,1).toUpperCase()}"></span>
                         <span th:text="${session.usuarioLogueado.nombre}"></span>
@@ -643,7 +728,9 @@
 </aside>
 
 <!-- ============ FRAGMENT: FOOTER CLIENTE ============ -->
-<footer th:fragment="footer" class="client-footer mt-5">
+<footer th:fragment="footer"
+        th:if="${session.usuarioLogueado == null or !session.usuarioLogueado.admin}"
+        class="client-footer mt-5">
     <div class="container">
         <div class="row g-4">
             <div class="col-lg-4">
@@ -666,11 +753,15 @@
                 </nav>
             </div>
             <div class="col-6 col-lg-2">
-                <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.5);margin-bottom:.75rem;">Cuenta</p>
+                <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.5);margin-bottom:.75rem;">Perfil</p>
                 <nav class="footer-links" aria-label="Cuenta footer">
-                    <a th:href="@{/login}">Iniciar sesión</a>
-                    <a th:href="@{/registro}">Registrarse</a>
-                    <a th:href="@{/mi-perfil}">Mi perfil</a>
+                    <!-- Sin login -->
+                    <a th:if="${session.usuarioLogueado == null}" th:href="@{/login}">Iniciar sesión</a>
+                    <a th:if="${session.usuarioLogueado == null}" th:href="@{/registro}">Registrarse</a>
+                    <!-- Con login -->
+                    <a th:if="${session.usuarioLogueado != null}" th:href="@{/mi-perfil}">Mi perfil</a>
+                    <a th:if="${session.usuarioLogueado != null}" th:href="@{/reservas}">Mis reservas</a>
+                    <a th:if="${session.usuarioLogueado != null}" th:href="@{/logout}">Cerrar sesión</a>
                 </nav>
             </div>
             <div class="col-lg-4">
@@ -689,13 +780,23 @@
 </footer>
 
 <!-- ============ FRAGMENT: FOOTER ADMIN ============ -->
-<footer th:fragment="admin-footer" class="admin-footer">
-    &copy; 2026 RentGo &mdash; Panel de Administracion
+<footer th:fragment="admin-footer"
+        th:if="${session.usuarioLogueado != null and session.usuarioLogueado.admin}"
+        class="admin-footer">
+    &copy; 2026 RentGo — Sistema de Alquiler de Vehículos · Proyecto DAW/DAM
 </footer>
 
 <!-- ============ FRAGMENT: SCRIPTS ============ -->
 <div th:fragment="scripts">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Inicialización explícita de todos los dropdowns y tooltips de Bootstrap
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (el) {
+                new bootstrap.Dropdown(el);
+            });
+        });
+    </script>
 </div>
 
 </body>

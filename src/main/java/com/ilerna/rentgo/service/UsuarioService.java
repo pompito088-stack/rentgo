@@ -43,4 +43,8 @@ public class UsuarioService {
     public void eliminar(Integer id) {
         usuarioRepository.deleteById(id);
     }
+    /** Cuenta los usuarios con tipo 'cliente'. */
+    public long contarClientes() {
+        return usuarioRepository.countByTipoUsuarioNombre("cliente");
+    }
 }

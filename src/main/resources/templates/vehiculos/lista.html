@@ -16,8 +16,36 @@
     </header>
 
     <main class="admin-page-content">
-        <section class="row g-3" aria-label="Lista de vehículos">
-            <article th:each="v : ${vehiculos}" class="col-md-6 col-xl-4">
+        <!-- Barra de búsqueda admin -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
+                    <input type="text" id="adminSearchVeh" class="form-control form-control-sm" placeholder="Marca, modelo, matrícula, categoría..." oninput="filtrarAdminVehiculos()">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-circle-half me-1"></i>Disponibilidad</label>
+                    <select id="adminFiltroDisp" class="form-select form-select-sm" onchange="filtrarAdminVehiculos()">
+                        <option value="">Todas</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="alquilado">Alquilado</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="limpiarAdminVeh()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-3 text-end">
+                    <small class="text-muted"><span id="contadorAdminVeh">0</span> vehículo(s) encontrado(s)</small>
+                </div>
+            </div>
+        </div>
+
+        <section class="row g-3" aria-label="Lista de vehículos" id="gridAdminVehiculos">
+            <article th:each="v : ${vehiculos}" class="col-md-6 col-xl-4 admin-vehiculo-item"
+                     th:attr="data-texto=${v.modelo.marca.nombre + ' ' + v.modelo.nombre + ' ' + v.matricula + ' ' + v.categoriaVehiculo.nombre},data-disp=${v.disponibilidad}">
                 <div class="admin-card h-100 p-0" style="overflow:hidden;">
                     <img th:if="${v.rutaFoto != null}" th:src="@{${v.rutaFoto}}"
                          alt="Foto vehículo" style="width:100%;height:180px;object-fit:cover;">
@@ -47,19 +75,23 @@
                         </dl>
                     </div>
                     <div class="p-3 pt-0 d-flex gap-2">
-                        <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}" class="btn btn-outline-teal btn-sm">
-                            <i class="bi bi-eye"></i>
+                        <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}" class="btn-action-view">
+                            <i class="bi bi-eye"></i> Ver
                         </a>
-                        <a th:href="@{/vehiculos/editar/{id}(id=${v.id})}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i>
+                        <a th:href="@{/vehiculos/editar/{id}(id=${v.id})}" class="btn-action-edit">
+                            <i class="bi bi-pencil"></i> Editar
                         </a>
-                        <a th:href="@{/vehiculos/eliminar/{id}(id=${v.id})}" class="btn btn-danger btn-sm"
+                        <a th:href="@{/vehiculos/eliminar/{id}(id=${v.id})}" class="btn-action-delete"
                            onclick="return confirm('¿Eliminar este vehículo?')">
-                            <i class="bi bi-trash"></i>
+                            <i class="bi bi-trash"></i> Eliminar
                         </a>
                     </div>
                 </div>
             </article>
+            <div id="sinResultadosAdminVeh" class="col-12 text-center text-muted py-5 d-none">
+                <i class="bi bi-search" style="font-size:3rem;color:#d1d5db;"></i>
+                <p class="mt-2">No hay vehículos para ese filtro.</p>
+            </div>
             <div th:if="${#lists.isEmpty(vehiculos)}" class="col-12 text-center text-muted py-5">
                 <i class="bi bi-car-front" style="font-size:3rem;"></i>
                 <p class="mt-2">No hay vehículos registrados.</p>
@@ -69,6 +101,29 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarAdminVehiculos() {
+        var texto = (document.getElementById('adminSearchVeh').value || '').toLowerCase();
+        var disp = (document.getElementById('adminFiltroDisp').value || '').toLowerCase();
+        var items = document.querySelectorAll('.admin-vehiculo-item');
+        var visibles = 0;
+        items.forEach(function(item) {
+            var txt = (item.dataset.texto || '').toLowerCase();
+            var d = (item.dataset.disp || '').toLowerCase();
+            var cumple = (!texto || txt.includes(texto)) && (!disp || d === disp);
+            item.style.display = cumple ? '' : 'none';
+            if (cumple) visibles++;
+        });
+        document.getElementById('contadorAdminVeh').textContent = visibles;
+        document.getElementById('sinResultadosAdminVeh').classList.toggle('d-none', visibles > 0);
+    }
+    function limpiarAdminVeh() {
+        document.getElementById('adminSearchVeh').value = '';
+        document.getElementById('adminFiltroDisp').value = '';
+        filtrarAdminVehiculos();
+    }
+    document.addEventListener('DOMContentLoaded', filtrarAdminVehiculos);
+</script>
 </body>
 
 <!-- ===== CLIENTE VIEW ===== -->
@@ -93,33 +148,102 @@
     <div class="container py-4">
         <!-- Barra de filtros -->
         <div class="filter-bar">
-            <div class="d-flex align-items-center flex-wrap gap-2">
+            <!-- Fila 1: Categoría (multi-selección) -->
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
                 <span style="font-size:.82rem;font-weight:600;color:#6b7280;margin-right:.25rem;">
-                    <i class="bi bi-funnel me-1"></i>Filtrar:
+                    <i class="bi bi-grid-3x3-gap me-1"></i>Categoría:
                 </span>
-                <button class="filter-pill active" data-filter="todos" onclick="filtrarVehiculos('todos', this)">
+                <!-- Pills dinámicos desde BD -->
+                <button class="filter-pill active" data-cat="todos" id="pillTodos">
                     <i class="bi bi-grid-3x3-gap"></i> Todos
                 </button>
-                <button class="filter-pill" data-filter="Turismo" onclick="filtrarVehiculos('Turismo', this)">
-                    <i class="bi bi-car-front"></i> Turismo
+                <button th:each="cat : ${categorias}"
+                        class="filter-pill"
+                        th:attr="data-cat=${cat.nombre}"
+                        th:text="${cat.nombre}">
                 </button>
-                <button class="filter-pill" data-filter="SUV" onclick="filtrarVehiculos('SUV', this)">
-                    <i class="bi bi-truck-front"></i> SUV
-                </button>
-                <button class="filter-pill" data-filter="Furgoneta" onclick="filtrarVehiculos('Furgoneta', this)">
-                    <i class="bi bi-minecart-loaded"></i> Furgoneta
-                </button>
-                <button class="filter-pill" data-filter="Deportivo" onclick="filtrarVehiculos('Deportivo', this)">
-                    <i class="bi bi-lightning-charge"></i> Deportivo
-                </button>
-                <div class="ms-auto d-flex align-items-center gap-2">
-                    <label for="ordenPrecio" class="text-muted" style="font-size:.82rem;white-space:nowrap;">Ordenar por:</label>
-                    <select id="ordenPrecio" class="form-select form-select-sm" style="width:auto;" onchange="ordenarVehiculos(this.value)">
-                        <option value="">Defecto</option>
-                        <option value="asc">Precio ↑</option>
-                        <option value="desc">Precio ↓</option>
+            </div>
+
+            <!-- Fila 2: Más filtros -->
+            <div class="row g-2 align-items-end">
+                <div class="col-md-2">
+                    <label for="filtroSucursal" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-building me-1"></i>Sucursal
+                    </label>
+                    <select id="filtroSucursal" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        <option th:each="s : ${sucursales}" th:value="${s.nombre}" th:text="${s.nombre}"></option>
                     </select>
                 </div>
+                <div class="col-md-2">
+                    <label for="filtroTransmision" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-gear me-1"></i>Transmisión
+                    </label>
+                    <select id="filtroTransmision" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        <option value="manual">Manual</option>
+                        <option value="automatica">Automática</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="filtroCombustible" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-fuel-pump me-1"></i>Combustible
+                    </label>
+                    <select id="filtroCombustible" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        <option value="gasolina">Gasolina</option>
+                        <option value="diesel">Diésel</option>
+                        <option value="hibrido_gasolina">Híbrido</option>
+                        <option value="electrico">Eléctrico</option>
+                        <option value="gnc">GNC</option>
+                        <option value="glp">GLP</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label for="filtroPlazas" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-people me-1"></i>Plazas
+                    </label>
+                    <select id="filtroPlazas" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        <option value="2">2</option>
+                        <option value="4">4+</option>
+                        <option value="5">5+</option>
+                        <option value="7">7+</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-currency-euro me-1"></i>Precio máx./día
+                    </label>
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="number" id="filtroPrecioMax" class="form-control form-control-sm" placeholder="€ máx" min="0" step="10">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label for="filtroDisponibilidad" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-circle-half me-1"></i>Disponibilidad
+                    </label>
+                    <select id="filtroDisponibilidad" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="alquilado">Alquilado</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label for="ordenPrecio" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-sort-down me-1"></i>Orden
+                    </label>
+                    <select id="ordenPrecio" class="form-select form-select-sm">
+                        <option value="">Def.</option>
+                        <option value="asc">↑ €</option>
+                        <option value="desc">↓ €</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-2 d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm" onclick="limpiarTodosFiltros()">
+                    <i class="bi bi-x-circle me-1"></i>Limpiar filtros
+                </button>
             </div>
         </div>
 
@@ -132,7 +256,13 @@
         <section class="row g-4" id="vehiculosGrid" aria-label="Listado de vehículos disponibles">
             <article th:each="v : ${vehiculos}"
                      class="col-sm-6 col-xl-4 vehiculo-item"
-                     th:attr="data-categoria=${v.categoriaVehiculo.nombre}, data-precio=${v.precioDia}">
+                     th:attr="data-categoria=${v.categoriaVehiculo.nombre},
+                              data-precio=${v.precioDia},
+                              data-sucursal=${v.sucursal.nombre},
+                              data-transmision=${v.transmision},
+                              data-combustible=${v.combustion},
+                              data-plazas=${v.plazas},
+                              data-disponibilidad=${v.disponibilidad}">
                 <div class="vehicle-card">
                     <!-- Imagen -->
                     <img th:if="${v.rutaFoto != null}" th:src="@{${v.rutaFoto}}"
@@ -186,12 +316,23 @@
                     </div>
 
                     <!-- Footer card -->
-                    <div class="vc-footer">
+                    <div class="vc-footer d-flex gap-2">
                         <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}"
-                           class="btn btn-sm w-100 text-white fw-600"
-                           style="background:var(--teal-600);border-radius:8px;">
-                            <i class="bi bi-eye me-1"></i>Ver detalle y reservar
+                           class="btn btn-sm text-white fw-600"
+                           style="background:var(--teal-600);border-radius:8px;flex:1;">
+                            <i class="bi bi-eye me-1"></i>Ver detalle
                         </a>
+                        <a th:if="${v.disponibilidad == 'disponible'}"
+                           th:href="@{/reservas/nuevo(vehiculoId=${v.id})}"
+                           class="btn btn-sm fw-600"
+                           style="background:#22c55e;color:#fff;border-radius:8px;flex:1;">
+                            <i class="bi bi-calendar-plus me-1"></i>Reservar
+                        </a>
+                        <span th:unless="${v.disponibilidad == 'disponible'}"
+                              class="btn btn-sm disabled fw-500"
+                              style="background:#f3f4f6;color:#9ca3af;border-radius:8px;flex:1;cursor:not-allowed;">
+                            <i class="bi bi-slash-circle me-1"></i>No disponible
+                        </span>
                     </div>
                 </div>
             </article>
@@ -199,8 +340,8 @@
             <!-- Sin resultados -->
             <div id="sinResultados" class="col-12 text-center py-5 d-none">
                 <i class="bi bi-search" style="font-size:3rem;color:#d1d5db;"></i>
-                <p class="mt-3 text-muted">No hay vehículos para el filtro seleccionado.</p>
-                <button class="btn btn-outline-secondary btn-sm" onclick="filtrarVehiculos('todos', document.querySelector('[data-filter=todos]'))">
+                <p class="mt-3 text-muted">No hay vehículos para los filtros seleccionados.</p>
+                <button class="btn btn-outline-secondary btn-sm" onclick="limpiarTodosFiltros()">
                     Ver todos
                 </button>
             </div>
@@ -217,41 +358,119 @@
 <div th:replace="~{fragments/layout :: scripts}"></div>
 
 <script>
-    function filtrarVehiculos(categoria, btn) {
-        // Actualiza pills activas
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
+    // ── ESTADO DE CATEGORÍAS SELECCIONADAS (multi-select) ──────────────────────
+    var categoriasActivas = new Set(); // vacío = todos
 
-        const items = document.querySelectorAll('.vehiculo-item');
-        let visibles = 0;
-        items.forEach(item => {
-            const cat = item.dataset.categoria || '';
-            const mostrar = categoria === 'todos' || cat === categoria;
-            item.style.display = mostrar ? '' : 'none';
-            if (mostrar) visibles++;
+    // Inicializar pills: click -> toggle selección
+    document.querySelectorAll('.filter-pill').forEach(function(pill) {
+        pill.addEventListener('click', function() {
+            var cat = pill.dataset.cat;
+            if (cat === 'todos') {
+                // Limpiar selección de categorías
+                categoriasActivas.clear();
+                document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+                pill.classList.add('active');
+            } else {
+                // Toggle esta categoría
+                document.getElementById('pillTodos').classList.remove('active');
+                if (categoriasActivas.has(cat)) {
+                    categoriasActivas.delete(cat);
+                    pill.classList.remove('active');
+                    // Si no quedan seleccionadas, volver a "Todos"
+                    if (categoriasActivas.size === 0) {
+                        document.getElementById('pillTodos').classList.add('active');
+                    }
+                } else {
+                    categoriasActivas.add(cat);
+                    pill.classList.add('active');
+                }
+            }
+            filtrarVehiculos();
+        });
+    });
+
+    // Añadir listener a todos los selects y inputs para filtrar automáticamente
+    ['filtroSucursal','filtroTransmision','filtroCombustible','filtroPlazas',
+     'filtroPrecioMax','filtroDisponibilidad','ordenPrecio'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('change', function() {
+            if (id === 'ordenPrecio') {
+                ordenarVehiculos(el.value);
+            } else {
+                filtrarVehiculos();
+            }
+        });
+    });
+    var precioMaxEl = document.getElementById('filtroPrecioMax');
+    if (precioMaxEl) precioMaxEl.addEventListener('input', filtrarVehiculos);
+
+    function filtrarVehiculos() {
+        var sucursal        = document.getElementById('filtroSucursal').value;
+        var transmision     = document.getElementById('filtroTransmision').value;
+        var combustible     = document.getElementById('filtroCombustible').value;
+        var plazasMin       = parseInt(document.getElementById('filtroPlazas').value) || 0;
+        var precioMax       = parseFloat(document.getElementById('filtroPrecioMax').value) || Infinity;
+        var disponibilidad  = document.getElementById('filtroDisponibilidad').value;
+
+        var items = document.querySelectorAll('.vehiculo-item');
+        var visibles = 0;
+        items.forEach(function(item) {
+            var cat   = item.dataset.categoria || '';
+            var suc   = item.dataset.sucursal  || '';
+            var trans = item.dataset.transmision || '';
+            var comb  = item.dataset.combustible || '';
+            var plaz  = parseInt(item.dataset.plazas) || 0;
+            var prec  = parseFloat(item.dataset.precio) || 0;
+            var disp  = item.dataset.disponibilidad || '';
+
+            var cumple = true;
+            // Categorías: si hay seleccionadas, el coche debe estar en una de ellas
+            if (categoriasActivas.size > 0 && !categoriasActivas.has(cat)) cumple = false;
+            if (sucursal && suc !== sucursal)         cumple = false;
+            if (transmision && trans !== transmision) cumple = false;
+            if (combustible && comb !== combustible)  cumple = false;
+            if (plazasMin && plaz < plazasMin)        cumple = false;
+            if (prec > precioMax)                     cumple = false;
+            if (disponibilidad && disp !== disponibilidad) cumple = false;
+
+            item.style.display = cumple ? '' : 'none';
+            if (cumple) visibles++;
         });
         actualizarContador(visibles);
         document.getElementById('sinResultados').classList.toggle('d-none', visibles > 0);
     }
 
     function ordenarVehiculos(orden) {
-        const grid = document.getElementById('vehiculosGrid');
-        const items = [...grid.querySelectorAll('.vehiculo-item')];
-        items.sort((a, b) => {
-            const pa = parseFloat(a.dataset.precio) || 0;
-            const pb = parseFloat(b.dataset.precio) || 0;
+        if (!orden) return;
+        var grid = document.getElementById('vehiculosGrid');
+        var items = Array.from(grid.querySelectorAll('.vehiculo-item'));
+        items.sort(function(a, b) {
+            var pa = parseFloat(a.dataset.precio) || 0;
+            var pb = parseFloat(b.dataset.precio) || 0;
             return orden === 'asc' ? pa - pb : pb - pa;
         });
-        items.forEach(i => grid.appendChild(i));
+        items.forEach(function(i) { grid.appendChild(i); });
+    }
+
+    function limpiarTodosFiltros() {
+        categoriasActivas.clear();
+        document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('pillTodos').classList.add('active');
+        ['filtroSucursal','filtroTransmision','filtroCombustible','filtroPlazas',
+         'filtroPrecioMax','filtroDisponibilidad','ordenPrecio'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        filtrarVehiculos();
     }
 
     function actualizarContador(n) {
-        const c = document.getElementById('contador');
+        var c = document.getElementById('contador');
         if (c) c.textContent = n;
     }
 
     // Contador inicial
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', function() {
         actualizarContador(document.querySelectorAll('.vehiculo-item').length);
     });
 </script>

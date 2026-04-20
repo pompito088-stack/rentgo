@@ -18,18 +18,20 @@
     <main class="admin-page-content">
         <!-- Tarjetas de estadisticas -->
         <section aria-label="Resumen estadísticas" class="row g-3 mb-4">
-            <div class="col-sm-6 col-xl-3">
+            <!-- Clientes -->
+            <div class="col-6 col-xl">
                 <a th:href="@{/usuarios}" style="text-decoration:none;">
                     <div class="stat-card">
-                        <div class="stat-icon" style="background:#eff6ff;"><i class="bi bi-people-fill" style="color:#3b82f6;"></i></div>
+                        <div class="stat-icon" style="background:#eff6ff;"><i class="bi bi-person-fill" style="color:#3b82f6;"></i></div>
                         <div>
-                            <div class="stat-value" th:text="${totalUsuarios != null ? totalUsuarios : '-'}">-</div>
-                            <div class="stat-label">Usuarios</div>
+                            <div class="stat-value" th:text="${totalClientes != null ? totalClientes : '-'}">-</div>
+                            <div class="stat-label">Clientes</div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-sm-6 col-xl-3">
+            <!-- Vehiculos -->
+            <div class="col-6 col-xl">
                 <a th:href="@{/vehiculos}" style="text-decoration:none;">
                     <div class="stat-card">
                         <div class="stat-icon" style="background:#f0fdf4;"><i class="bi bi-car-front-fill" style="color:#22c55e;"></i></div>
@@ -40,7 +42,8 @@
                     </div>
                 </a>
             </div>
-            <div class="col-sm-6 col-xl-3">
+            <!-- Reservas -->
+            <div class="col-6 col-xl">
                 <a th:href="@{/reservas}" style="text-decoration:none;">
                     <div class="stat-card">
                         <div class="stat-icon" style="background:var(--teal-50);"><i class="bi bi-calendar-check-fill" style="color:var(--teal-600);"></i></div>
@@ -51,7 +54,8 @@
                     </div>
                 </a>
             </div>
-            <div class="col-sm-6 col-xl-3">
+            <!-- Sucursales -->
+            <div class="col-6 col-xl">
                 <a th:href="@{/sucursales}" style="text-decoration:none;">
                     <div class="stat-card">
                         <div class="stat-icon" style="background:#fef9c3;"><i class="bi bi-building-fill" style="color:#ca8a04;"></i></div>
@@ -124,6 +128,108 @@
                 </article>
             </div>
         </section>
+
+        <!-- Actividad Reciente -->
+        <section aria-label="Actividad reciente" class="mt-4">
+            <div class="row g-4">
+                <!-- Últimas reservas -->
+                <div class="col-lg-8">
+                    <article class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <h2><i class="bi bi-clock-history me-2" style="color:var(--teal-600)"></i>Actividad Reciente</h2>
+                            <a th:href="@{/reservas}" class="btn btn-outline-teal btn-sm">Ver todas</a>
+                        </div>
+                        <div th:if="${ultimasReservas != null and !#lists.isEmpty(ultimasReservas)}">
+                            <ul class="list-unstyled mb-0">
+                                <li th:each="r : ${ultimasReservas}"
+                                    style="display:flex;align-items:center;gap:.85rem;padding:.75rem 0;border-bottom:1px solid #f3f4f6;">
+                                    <!-- Icono de estado -->
+                                    <div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;"
+                                         th:style="${r.estado == 'confirmada'} ? 'background:#f0fdf4;' : (${r.estado == 'pendiente'} ? 'background:#fef9c3;' : (${r.estado == 'cancelada'} ? 'background:#fef2f2;' : 'background:#f1f5f9;'))">
+                                        <i class="bi"
+                                           th:classappend="${r.estado == 'confirmada'} ? 'bi-check-circle-fill' : (${r.estado == 'pendiente'} ? 'bi-hourglass-split' : (${r.estado == 'cancelada'} ? 'bi-x-circle-fill' : 'bi-flag-fill'))"
+                                           th:style="${r.estado == 'confirmada'} ? 'color:#22c55e;' : (${r.estado == 'pendiente'} ? 'color:#eab308;' : (${r.estado == 'cancelada'} ? 'color:#ef4444;' : 'color:#64748b;'))"></i>
+                                    </div>
+                                    <!-- Info -->
+                                    <div style="flex:1;min-width:0;">
+                                        <div style="font-size:.88rem;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                                             th:text="${r.usuario.nombre + ' ' + r.usuario.apellidos + ' — ' + r.vehiculo.modelo.marca.nombre + ' ' + r.vehiculo.modelo.nombre}"></div>
+                                        <div style="font-size:.76rem;color:#6b7280;margin-top:.1rem;">
+                                            <i class="bi bi-calendar3 me-1"></i>
+                                            <span th:text="${r.fechaInicio + ' → ' + r.fechaFin}"></span>
+                                            <span class="ms-2" th:text="${r.sucursalRecogida != null ? '· ' + r.sucursalRecogida.ciudad : ''}"></span>
+                                        </div>
+                                    </div>
+                                    <!-- Precio y estado -->
+                                    <div style="text-align:right;flex-shrink:0;">
+                                        <div style="font-size:.92rem;font-weight:700;color:var(--teal-600);" th:text="${r.precioTotal != null ? r.precioTotal + ' €' : '—'}"></div>
+                                        <span class="badge rounded-pill mt-1"
+                                              th:classappend="${r.estado == 'confirmada'} ? 'bg-success' : (${r.estado == 'pendiente'} ? 'bg-warning text-dark' : (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
+                                              style="font-size:.68rem;"
+                                              th:text="${r.estado}"></span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div th:if="${ultimasReservas == null or #lists.isEmpty(ultimasReservas)}"
+                             class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-x" style="font-size:2rem;"></i>
+                            <p class="mt-2 mb-0 small">No hay reservas recientes.</p>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Acciones rápidas del panel -->
+                <div class="col-lg-4">
+                    <article class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <h2><i class="bi bi-lightning-charge me-2" style="color:var(--teal-600)"></i>Acciones rápidas</h2>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/vehiculos/nuevo}" class="btn btn-teal btn-sm">
+                                <i class="bi bi-plus-circle me-2"></i>Añadir vehículo
+                            </a>
+                            <a th:href="@{/extras/nuevo}" class="btn btn-outline-teal btn-sm">
+                                <i class="bi bi-stars me-2"></i>Nuevo extra
+                            </a>
+                            <a th:href="@{/marcas/nuevo}" class="btn btn-outline-teal btn-sm">
+                                <i class="bi bi-tag me-2"></i>Nueva marca
+                            </a>
+                            <a th:href="@{/modelos/nuevo}" class="btn btn-outline-teal btn-sm">
+                                <i class="bi bi-diagram-3 me-2"></i>Nuevo modelo
+                            </a>
+                            <a th:href="@{/sucursales/nuevo}" class="btn btn-outline-teal btn-sm">
+                                <i class="bi bi-building-add me-2"></i>Nueva sucursal
+                            </a>
+                            <a th:href="@{/mantenimientos/nuevo}" class="btn btn-outline-teal btn-sm">
+                                <i class="bi bi-wrench-adjustable me-2"></i>Nuevo mantenimiento
+                            </a>
+                        </div>
+
+                        <!-- Mini métricas rápidas -->
+                        <hr style="border-color:#f3f4f6;margin:1rem 0;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+                            <div style="background:var(--teal-50);border-radius:10px;padding:.6rem .8rem;text-align:center;">
+                                <div style="font-size:1.1rem;font-weight:800;color:var(--teal-700);" th:text="${totalVehiculos != null ? totalVehiculos : '-'}"></div>
+                                <div style="font-size:.7rem;color:var(--teal-600);">Vehículos</div>
+                            </div>
+                            <div style="background:#f0fdf4;border-radius:10px;padding:.6rem .8rem;text-align:center;">
+                                <div style="font-size:1.1rem;font-weight:800;color:#16a34a;" th:text="${totalReservas != null ? totalReservas : '-'}"></div>
+                                <div style="font-size:.7rem;color:#16a34a;">Reservas</div>
+                            </div>
+                            <div style="background:#eff6ff;border-radius:10px;padding:.6rem .8rem;text-align:center;">
+                                <div style="font-size:1.1rem;font-weight:800;color:#2563eb;" th:text="${totalClientes != null ? totalClientes : '-'}"></div>
+                                <div style="font-size:.7rem;color:#2563eb;">Clientes</div>
+                            </div>
+                            <div style="background:#fef9c3;border-radius:10px;padding:.6rem .8rem;text-align:center;">
+                                <div style="font-size:1.1rem;font-weight:800;color:#ca8a04;" th:text="${totalSucursales != null ? totalSucursales : '-'}"></div>
+                                <div style="font-size:.7rem;color:#ca8a04;">Sucursales</div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
@@ -180,13 +286,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-5 text-center d-none d-lg-block">
-                        <div style="position:relative;">
-                            <div style="width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.08);margin:0 auto;display:flex;align-items:center;justify-content:center;">
-                                <i class="bi bi-car-front-fill" style="font-size:10rem;color:rgba(255,255,255,.85);"></i>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Columna imagen ELIMINADA -->
                 </div>
             </div>
         </div>

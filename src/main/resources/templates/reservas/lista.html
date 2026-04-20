@@ -13,13 +13,41 @@
         </div>
     </header>
     <main class="admin-page-content">
+        <!-- Barra de búsqueda y filtros -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
+                    <input type="text" id="adminSearch" class="form-control form-control-sm" placeholder="Usuario, vehículo, estado..." oninput="filtrarTablaAdmin()">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-flag me-1"></i>Estado</label>
+                    <select id="filtroEstado" class="form-select form-select-sm" onchange="filtrarTablaAdmin()">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="cancelada">Cancelada</option>
+                        <option value="finalizada">Finalizada</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="limpiarFiltrosAdmin()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-3 text-end">
+                    <small class="text-muted"><span id="contadorFilas">0</span> reserva(s) encontrada(s)</small>
+                </div>
+            </div>
+        </div>
+
         <section class="admin-table">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="tablaReservas">
                 <thead>
                     <tr><th>ID</th><th>Usuario</th><th>Vehiculo</th><th>Recogida</th><th>Devolución</th><th>Precio Total</th><th>Estado</th></tr>
                 </thead>
                 <tbody>
-                    <tr th:each="r : ${reservas}">
+                    <tr th:each="r : ${reservas}" th:attr="data-estado=${r.estaFinalizada ? 'finalizada' : r.estado}">
                         <td th:text="${r.id}"></td>
                         <td th:text="${r.usuario.nombre + ' ' + r.usuario.apellidos}"></td>
                         <td th:text="${r.vehiculo.modelo.marca.nombre + ' ' + r.vehiculo.modelo.nombre}"></td>
@@ -34,11 +62,15 @@
                         <td class="fw-500" th:text="${r.precioTotal + ' €'}"></td>
                         <td>
                             <span class="badge rounded-pill"
-                                  th:classappend="${r.estado == 'confirmada'} ? 'bg-success' :
+                                  th:classappend="${r.estaFinalizada} ? 'bg-secondary' :
+                                                  (${r.estado == 'confirmada'} ? 'bg-success' :
                                                   (${r.estado == 'pendiente'} ? 'bg-warning text-dark' :
-                                                  (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
-                                  th:text="${r.estado}"></span>
+                                                  (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary')))"
+                                  th:text="${r.estaFinalizada} ? 'finalizada' : ${r.estado}"></span>
                         </td>
+                    </tr>
+                    <tr id="sinResultadosAdmin" class="d-none">
+                        <td colspan="7" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados para ese filtro.</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(reservas)}">
                         <td colspan="7" class="text-center text-muted py-4">No hay reservas registradas.</td>
@@ -50,6 +82,34 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarTablaAdmin() {
+        var texto = (document.getElementById('adminSearch').value || '').toLowerCase();
+        var estado = (document.getElementById('filtroEstado').value || '').toLowerCase();
+        var filas = document.querySelectorAll('#tablaReservas tbody tr[data-estado]');
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var contenido = fila.textContent.toLowerCase();
+            var estadoFila = (fila.dataset.estado || '').toLowerCase();
+            var cumpleTexto = !texto || contenido.includes(texto);
+            var cumpleEstado = !estado || estadoFila === estado;
+            var mostrar = cumpleTexto && cumpleEstado;
+            fila.classList.toggle('d-none', !mostrar);
+            if (mostrar) visibles++;
+        });
+        document.getElementById('contadorFilas').textContent = visibles;
+        var sinRes = document.getElementById('sinResultadosAdmin');
+        if (sinRes) sinRes.classList.toggle('d-none', visibles > 0);
+    }
+    function limpiarFiltrosAdmin() {
+        document.getElementById('adminSearch').value = '';
+        document.getElementById('filtroEstado').value = '';
+        filtrarTablaAdmin();
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        filtrarTablaAdmin();
+    });
+</script>
 </body>
 
 <!-- ===== CLIENTE VIEW ===== -->
@@ -83,10 +143,11 @@
                         <td th:text="${r.precioTotal + ' €'}"></td>
                         <td>
                             <span class="badge rounded-pill"
-                                  th:classappend="${r.estado == 'confirmada'} ? 'bg-success' :
+                                  th:classappend="${r.estaFinalizada} ? 'bg-secondary' :
+                                                  (${r.estado == 'confirmada'} ? 'bg-success' :
                                                   (${r.estado == 'pendiente'} ? 'bg-warning text-dark' :
-                                                  (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
-                                  th:text="${r.estado}"></span>
+                                                  (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary')))"
+                                  th:text="${r.estaFinalizada} ? 'finalizada' : ${r.estado}"></span>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(reservas)}">

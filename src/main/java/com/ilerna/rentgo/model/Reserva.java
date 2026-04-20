@@ -168,6 +168,16 @@ public class Reserva {
     public void setExtras(Set<Extra> extras) {
         this.extras = extras;
     }
+    /**
+     * Retorna true si la reserva confirmada ya ha pasado su fecha de fin.
+     * Usado en la vista para mostrar el estado "finalizada".
+     */
+    public boolean isEstaFinalizada() {
+        return "confirmada".equals(estado)
+                && fechaFin != null
+                && fechaFin.isBefore(LocalDate.now());
+    }
+
     @Override
     public String toString() {
         return "Reserva #" + id + " (" + estado + ")";

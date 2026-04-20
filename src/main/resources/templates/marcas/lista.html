@@ -11,8 +11,26 @@
         </div>
     </header>
     <main class="admin-page-content">
+        <!-- Barra de búsqueda -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar marca</label>
+                    <input type="text" id="buscarMarca" class="form-control form-control-sm" placeholder="Nombre de marca..." oninput="filtrarMarcas()">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarMarca').value='';filtrarMarcas()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-4 text-end">
+                    <small class="text-muted"><span id="contMarcas">0</span> marca(s)</small>
+                </div>
+            </div>
+        </div>
+
         <section class="admin-table">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="tablaMarcas">
                 <thead>
                     <tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr>
                 </thead>
@@ -21,10 +39,13 @@
                         <td th:text="${marca.id}"></td>
                         <td class="fw-500" th:text="${marca.nombre}"></td>
                         <td>
-                            <a th:href="@{/marcas/editar/{id}(id=${marca.id})}" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i></a>
-                            <a th:href="@{/marcas/eliminar/{id}(id=${marca.id})}" class="btn btn-danger btn-sm"
+                            <a th:href="@{/marcas/editar/{id}(id=${marca.id})}" class="btn-action-edit"><i class="bi bi-pencil"></i></a>
+                            <a th:href="@{/marcas/eliminar/{id}(id=${marca.id})}" class="btn-action-delete"
                                onclick="return confirm('¿Eliminar esta marca?')"><i class="bi bi-trash"></i></a>
                         </td>
+                    </tr>
+                    <tr id="sinResultadosMarcas" class="d-none">
+                        <td colspan="3" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(marcas)}">
                         <td colspan="3" class="text-center text-muted py-4">No hay marcas registradas.</td>
@@ -36,5 +57,20 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarMarcas() {
+        var texto = (document.getElementById('buscarMarca').value || '').toLowerCase();
+        var filas = Array.from(document.querySelectorAll('#tablaMarcas tbody tr')).filter(function(r){ return !r.id; });
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var cumple = !texto || fila.textContent.toLowerCase().includes(texto);
+            fila.classList.toggle('d-none', !cumple);
+            if (cumple) visibles++;
+        });
+        document.getElementById('contMarcas').textContent = visibles;
+        document.getElementById('sinResultadosMarcas').classList.toggle('d-none', visibles > 0);
+    }
+    document.addEventListener('DOMContentLoaded', filtrarMarcas);
+</script>
 </body>
 </html>

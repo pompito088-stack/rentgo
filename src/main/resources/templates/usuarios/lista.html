@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/layout :: head('RentGo - Usuarios')}"></head>
 <body class="admin-layout">
@@ -13,8 +13,34 @@
     </header>
 
     <main class="admin-page-content">
+        <!-- Barra de búsqueda -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
+                    <input type="text" id="buscarUsuario" class="form-control form-control-sm" placeholder="Nombre, email, DNI..." oninput="filtrarUsuarios()">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-shield me-1"></i>Rol</label>
+                    <select id="filtroRol" class="form-select form-select-sm" onchange="filtrarUsuarios()">
+                        <option value="">Todos</option>
+                        <option value="admin">Admin</option>
+                        <option value="cliente">Cliente</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarUsuario').value='';document.getElementById('filtroRol').value='';filtrarUsuarios()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-2 text-end">
+                    <small class="text-muted"><span id="contUsuarios">0</span> usuario(s)</small>
+                </div>
+            </div>
+        </div>
+
         <section class="admin-table">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="tablaUsuarios">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -27,7 +53,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="usuario : ${usuarios}">
+                    <tr th:each="usuario : ${usuarios}" th:attr="data-rol=${usuario.tipoUsuario.nombre}">
                         <td th:text="${usuario.id}"></td>
                         <td class="fw-500" th:text="${usuario.nombre}"></td>
                         <td th:text="${usuario.apellidos}"></td>
@@ -40,6 +66,9 @@
                                   th:text="${usuario.tipoUsuario.nombre}"></span>
                         </td>
                     </tr>
+                    <tr id="sinResultadosUsuarios" class="d-none">
+                        <td colspan="7" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
+                    </tr>
                     <tr th:if="${#lists.isEmpty(usuarios)}">
                         <td colspan="7" class="text-center text-muted py-4">No hay usuarios registrados.</td>
                     </tr>
@@ -47,9 +76,25 @@
             </table>
         </section>
     </main>
-
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarUsuarios() {
+        var texto = (document.getElementById('buscarUsuario').value || '').toLowerCase();
+        var rol = (document.getElementById('filtroRol').value || '').toLowerCase();
+        var filas = document.querySelectorAll('#tablaUsuarios tbody tr[data-rol]');
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var cumple = (!texto || fila.textContent.toLowerCase().includes(texto))
+                      && (!rol || (fila.dataset.rol || '').toLowerCase() === rol);
+            fila.classList.toggle('d-none', !cumple);
+            if (cumple) visibles++;
+        });
+        document.getElementById('contUsuarios').textContent = visibles;
+        document.getElementById('sinResultadosUsuarios').classList.toggle('d-none', visibles > 0);
+    }
+    document.addEventListener('DOMContentLoaded', filtrarUsuarios);
+</script>
 </body>
 </html>

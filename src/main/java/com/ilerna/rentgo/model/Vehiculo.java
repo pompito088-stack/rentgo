@@ -74,6 +74,11 @@ public class Vehiculo {
     @Column(name = "precio_dia", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioDia;
 
+    @NotNull(message = "La fianza es obligatoria")
+    @DecimalMin(value = "0.00", message = "La fianza no puede ser negativa")
+    @Column(name = "fianza", nullable = false, precision = 10, scale = 2)
+    private BigDecimal fianza = BigDecimal.ZERO;
+
     @Column(name = "ruta_foto", length = 255)
     private String rutaFoto;
 
@@ -182,6 +187,12 @@ public class Vehiculo {
     }
     public void setPrecioDia(BigDecimal precioDia) {
         this.precioDia = precioDia;
+    }
+    public BigDecimal getFianza() {
+        return fianza;
+    }
+    public void setFianza(BigDecimal fianza) {
+        this.fianza = fianza;
     }
     public String getRutaFoto() {
         return rutaFoto;

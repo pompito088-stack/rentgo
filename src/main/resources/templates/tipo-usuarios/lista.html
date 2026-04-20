@@ -21,10 +21,10 @@
                     <td th:text="${tipo.id}"></td>
                     <td th:text="${tipo.nombre}"></td>
                     <td>
-                        <a th:href="@{/tipo-usuarios/editar/{id}(id=${tipo.id})}" class="btn btn-warning btn-sm">
+                        <a th:href="@{/tipo-usuarios/editar/{id}(id=${tipo.id})}" class="btn-action-edit">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
-                        <a th:href="@{/tipo-usuarios/eliminar/{id}(id=${tipo.id})}" class="btn btn-danger btn-sm"
+                        <a th:href="@{/tipo-usuarios/eliminar/{id}(id=${tipo.id})}" class="btn-action-delete"
                            onclick="return confirm('Estas seguro de eliminar este tipo?')">
                             <i class="bi bi-trash"></i> Eliminar
                         </a>
@@ -38,7 +38,6 @@
     </section>
 </main>
 
-<footer th:replace="~{fragments/layout :: footer}"></footer>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

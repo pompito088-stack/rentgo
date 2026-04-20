@@ -21,8 +21,10 @@
         .btn-teal { background:var(--teal-600);color:#fff;border:none; }
         .btn-teal:hover { background:var(--teal-700);color:#fff; }
         .form-control:focus { border-color:var(--teal-600); box-shadow:0 0 0 .2rem rgba(13,148,136,.2); }
-        .input-group-text { background:#f8fafc; border-right:none; }
+        .input-group-text { background:#f8fafc; border-right:none; cursor:pointer; }
         .input-group .form-control { border-left:none; }
+        .input-group .toggle-pw { background:#f8fafc; border-left:none; border-color:#dee2e6; cursor:pointer; }
+        .input-group .toggle-pw:hover { background:#e9ecef; }
     </style>
 </head>
 <body>
@@ -60,11 +62,15 @@
                             </div>
                         </div>
                         <div class="mb-4">
-                            <label for="password" class="form-label fw-500" style="font-size:.88rem;">Contrasena</label>
+                            <label for="password" class="form-label fw-500" style="font-size:.88rem;">Contraseña</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
+                                <span class="input-group-text"><i class="bi bi-lock-fill text-muted"></i></span>
                                 <input type="password" class="form-control" id="password" name="password"
-                                       placeholder="Tu contrasena" required>
+                                       placeholder="Tu contraseña" required>
+                                <button class="btn toggle-pw border" type="button" id="togglePw" tabindex="-1"
+                                        title="Mostrar / ocultar contraseña">
+                                    <i class="bi bi-eye" id="togglePwIcon"></i>
+                                </button>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-teal w-100 py-2 fw-500">
@@ -84,6 +90,19 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('togglePw').addEventListener('click', function () {
+        const pw = document.getElementById('password');
+        const icon = document.getElementById('togglePwIcon');
+        if (pw.type === 'password') {
+            pw.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            pw.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    });
+</script>
 </body>
 </html>
 

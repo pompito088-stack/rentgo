@@ -63,11 +63,21 @@
 
                 <!-- Precio destacado -->
                 <div style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1px solid var(--teal-100);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
-                    <div style="font-size:.8rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Precio por día</div>
-                    <div style="font-size:2.2rem;font-weight:800;color:var(--teal-600);line-height:1.1;">
-                        <span th:text="${vehiculo.precioDia}"></span> <span style="font-size:1.1rem;font-weight:500;color:#9ca3af;">€/día</span>
+                    <div class="row g-0">
+                        <div class="col-6 border-end pe-3">
+                            <div style="font-size:.8rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Precio por día</div>
+                            <div style="font-size:2rem;font-weight:800;color:var(--teal-600);line-height:1.1;">
+                                <span th:text="${vehiculo.precioDia}"></span> <span style="font-size:1rem;font-weight:500;color:#9ca3af;">€/día</span>
+                            </div>
+                        </div>
+                        <div class="col-6 ps-3">
+                            <div style="font-size:.8rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Fianza reembolsable</div>
+                            <div style="font-size:2rem;font-weight:800;color:#374151;line-height:1.1;">
+                                <span th:text="${vehiculo.fianza}"></span> <span style="font-size:1rem;font-weight:500;color:#9ca3af;">€</span>
+                            </div>
+                        </div>
                     </div>
-                    <div style="font-size:.8rem;color:#6b7280;margin-top:.2rem;">IVA y seguro incluido</div>
+                    <div style="font-size:.8rem;color:#6b7280;margin-top:.5rem;">IVA y seguro básico incluido · Fianza devuelta al entregar el vehículo</div>
                 </div>
 
                 <!-- Ficha técnica -->
@@ -123,7 +133,7 @@
 
                 <!-- Botones acción -->
                 <div class="d-flex flex-wrap gap-2">
-                    <a th:href="@{/reservas/nuevo}" class="btn text-white fw-600 flex-grow-1"
+                    <a th:href="@{/reservas/nuevo(vehiculoId=${vehiculo.id})}" class="btn text-white fw-600 flex-grow-1"
                        style="background:var(--teal-600);border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
                         <i class="bi bi-calendar-plus me-2"></i>Reservar este vehículo
                     </a>

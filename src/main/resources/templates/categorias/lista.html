@@ -11,8 +11,25 @@
         </div>
     </header>
     <main class="admin-page-content">
+        <!-- Barra de búsqueda -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar categoría</label>
+                    <input type="text" id="buscarCat" class="form-control form-control-sm" placeholder="Nombre o descripción..." oninput="filtrarCats()">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarCat').value='';filtrarCats()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-4 text-end">
+                    <small class="text-muted"><span id="contCats">0</span> categoría(s)</small>
+                </div>
+            </div>
+        </div>
         <section class="admin-table">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="tablaCats">
                 <thead>
                     <tr><th>ID</th><th>Nombre</th><th>Descripcion</th><th>Acciones</th></tr>
                 </thead>
@@ -22,10 +39,13 @@
                         <td class="fw-500" th:text="${cat.nombre}"></td>
                         <td th:text="${cat.descripcion}"></td>
                         <td>
-                            <a th:href="@{/categorias/editar/{id}(id=${cat.id})}" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i></a>
-                            <a th:href="@{/categorias/eliminar/{id}(id=${cat.id})}" class="btn btn-danger btn-sm"
+                            <a th:href="@{/categorias/editar/{id}(id=${cat.id})}" class="btn-action-edit"><i class="bi bi-pencil"></i></a>
+                            <a th:href="@{/categorias/eliminar/{id}(id=${cat.id})}" class="btn-action-delete"
                                onclick="return confirm('¿Eliminar esta categoria?')"><i class="bi bi-trash"></i></a>
                         </td>
+                    </tr>
+                    <tr id="sinResultadosCats" class="d-none">
+                        <td colspan="4" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(categorias)}">
                         <td colspan="4" class="text-center text-muted py-4">No hay categorias registradas.</td>
@@ -37,5 +57,20 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarCats() {
+        var texto = (document.getElementById('buscarCat').value || '').toLowerCase();
+        var filas = Array.from(document.querySelectorAll('#tablaCats tbody tr')).filter(function(r){ return !r.id; });
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var cumple = !texto || fila.textContent.toLowerCase().includes(texto);
+            fila.classList.toggle('d-none', !cumple);
+            if (cumple) visibles++;
+        });
+        document.getElementById('contCats').textContent = visibles;
+        document.getElementById('sinResultadosCats').classList.toggle('d-none', visibles > 0);
+    }
+    document.addEventListener('DOMContentLoaded', filtrarCats);
+</script>
 </body>
 </html>

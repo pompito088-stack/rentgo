@@ -12,4 +12,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByEmail(String email);
     Optional<Usuario> findByTelefono(String telefono);
     Optional<Usuario> findByDni(String dni);
+    /** Cuenta usuarios por nombre del tipo (cliente / admin). */
+    long countByTipoUsuarioNombre(String nombreTipo);
 }

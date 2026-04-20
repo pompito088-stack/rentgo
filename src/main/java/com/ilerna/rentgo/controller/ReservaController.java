@@ -69,16 +69,27 @@ public class ReservaController {
 
     /** GET /reservas/nuevo */
     @GetMapping("/nuevo")
-    public String mostrarFormularioCrear(Model model, HttpSession session) {
+    public String mostrarFormularioCrear(@RequestParam(value = "vehiculoId", required = false) Integer vehiculoId,
+                                         Model model, HttpSession session) {
         if (noEstaLogueado(session)) return "redirect:/login";
-        // El admin no puede crear reservas
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (logueado.isAdmin()) return "redirect:/reservas";
 
         Reserva reserva = new Reserva();
         reserva.setFechaReserva(LocalDate.now());
         reserva.setEstado("pendiente");
+
+        // Preseleccionar vehiculo si viene del detalle
+        if (vehiculoId != null) {
+            vehiculoService.buscarPorId(vehiculoId).ifPresent(v -> {
+                com.ilerna.rentgo.model.Vehiculo vRef = new com.ilerna.rentgo.model.Vehiculo();
+                vRef.setId(v.getId());
+                reserva.setVehiculo(vRef);
+            });
+        }
+
         model.addAttribute("reserva", reserva);
+        model.addAttribute("vehiculoPreseleccionado", vehiculoId);
         cargarDatosFormulario(model, session);
         return "reservas/formulario";
     }
@@ -190,13 +201,20 @@ public class ReservaController {
             reserva.setFechaReserva(LocalDate.now());
         }
 
+        // Capturar ANTES de guardar para evitar que JPA asigne el id
+        boolean esNueva = reserva.getId() == null;
         Reserva reservaGuardada = reservaService.guardar(reserva);
 
         // Crear pago automatico si es cliente y es una reserva nueva
-        if (!logueado.isAdmin() && reserva.getId() == null && reservaGuardada != null) {
+        if (!logueado.isAdmin() && esNueva && reservaGuardada != null) {
             Pago pago = new Pago();
             pago.setFechaPago(LocalDate.now());
             pago.setImporte(reservaGuardada.getPrecioTotal());
+            // Fianza del vehiculo
+            if (reservaGuardada.getVehiculo() != null) {
+                vehiculoService.buscarPorId(reservaGuardada.getVehiculo().getId())
+                    .ifPresent(v -> pago.setFianza(v.getFianza() != null ? v.getFianza() : java.math.BigDecimal.ZERO));
+            }
             pago.setMetodoPago(metodoPago != null && !metodoPago.isBlank() ? metodoPago : "tarjeta_credito");
             pago.setEstadoPago("realizado");
             pago.setReserva(reservaGuardada);

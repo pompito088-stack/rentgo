@@ -11,8 +11,34 @@
         </div>
     </header>
     <main class="admin-page-content">
+        <!-- Barra de búsqueda -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
+                    <input type="text" id="buscarPago" class="form-control form-control-sm" placeholder="Cliente, reserva, método..." oninput="filtrarPagos()">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-wallet2 me-1"></i>Método de pago</label>
+                    <select id="filtroMetodo" class="form-select form-select-sm" onchange="filtrarPagos()">
+                        <option value="">Todos</option>
+                        <option value="tarjeta">Tarjeta crédito/débito</option>
+                        <option value="paypal">PayPal</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarPago').value='';document.getElementById('filtroMetodo').value='';filtrarPagos()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-3 text-end">
+                    <small class="text-muted"><span id="contPagos">0</span> pago(s)</small>
+                </div>
+            </div>
+        </div>
+
         <section class="admin-table">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="tablaPagos">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -20,20 +46,27 @@
                         <th>Cliente</th>
                         <th>Fecha Pago</th>
                         <th>Importe</th>
+                        <th>Fianza</th>
                         <th>Metodo</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="pago : ${pagos}">
+                    <tr th:each="pago : ${pagos}" th:attr="data-metodo=${pago.metodoPago}">
                         <td th:text="${pago.id}"></td>
                         <td th:text="'#' + ${pago.reserva.id}"></td>
                         <td th:text="${pago.reserva.usuario.nombre + ' ' + pago.reserva.usuario.apellidos}"></td>
                         <td th:text="${pago.fechaPago}"></td>
                         <td class="fw-500" th:text="${pago.importe + ' €'}"></td>
                         <td>
-                            <span th:text="${pago.metodoPago == 'tarjeta_credito' ? 'Tarjeta credito' :
-                                           (pago.metodoPago == 'tarjeta_debito' ? 'Tarjeta debito' : 'PayPal')}"></span>
+                            <span th:if="${pago.fianza != null and pago.fianza > 0}"
+                                  class="badge" style="background:#fef9c3;color:#92400e;border:1px solid #fde68a;"
+                                  th:text="${pago.fianza + ' €'}"></span>
+                            <span th:if="${pago.fianza == null or pago.fianza <= 0}" class="text-muted">—</span>
+                        </td>
+                        <td>
+                            <span th:text="${pago.metodoPago == 'tarjeta_credito' ? 'Tarjeta crédito' :
+                                           (pago.metodoPago == 'tarjeta_debito' ? 'Tarjeta débito' : 'PayPal')}"></span>
                         </td>
                         <td>
                             <span class="badge rounded-pill bg-success">
@@ -41,8 +74,11 @@
                             </span>
                         </td>
                     </tr>
+                    <tr id="sinResultadosPagos" class="d-none">
+                        <td colspan="8" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
+                    </tr>
                     <tr th:if="${#lists.isEmpty(pagos)}">
-                        <td colspan="7" class="text-center text-muted py-4">No hay pagos registrados.</td>
+                        <td colspan="8" class="text-center text-muted py-4">No hay pagos registrados.</td>
                     </tr>
                 </tbody>
             </table>
@@ -51,5 +87,24 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarPagos() {
+        var texto = (document.getElementById('buscarPago').value || '').toLowerCase();
+        var metodo = (document.getElementById('filtroMetodo').value || '').toLowerCase();
+        var filas = document.querySelectorAll('#tablaPagos tbody tr[data-metodo]');
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var met = (fila.dataset.metodo || '').toLowerCase();
+            var cumpleTexto = !texto || fila.textContent.toLowerCase().includes(texto);
+            var cumpleMetodo = !metodo || met.includes(metodo);
+            var cumple = cumpleTexto && cumpleMetodo;
+            fila.classList.toggle('d-none', !cumple);
+            if (cumple) visibles++;
+        });
+        document.getElementById('contPagos').textContent = visibles;
+        document.getElementById('sinResultadosPagos').classList.toggle('d-none', visibles > 0);
+    }
+    document.addEventListener('DOMContentLoaded', filtrarPagos);
+</script>
 </body>
 </html>

@@ -13,15 +13,41 @@
         </div>
     </header>
     <main class="admin-page-content">
+        <!-- Barra de búsqueda -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
+                    <input type="text" id="buscarMant" class="form-control form-control-sm" placeholder="Vehículo, motivo..." oninput="filtrarMant()">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-flag me-1"></i>Estado</label>
+                    <select id="filtroEstadoMant" class="form-select form-select-sm" onchange="filtrarMant()">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_curso">En curso</option>
+                        <option value="finalizado">Finalizado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarMant').value='';document.getElementById('filtroEstadoMant').value='';filtrarMant()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-3 text-end">
+                    <small class="text-muted"><span id="contMant">0</span> mantenimiento(s)</small>
+                </div>
+            </div>
+        </div>
         <section class="admin-table">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="tablaMant">
                 <thead>
                     <tr>
                         <th>ID</th><th>Vehiculo</th><th>Motivo</th><th>Fecha Inicio</th><th>Fecha Fin</th><th>Coste</th><th>Estado</th><th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="m : ${mantenimientos}">
+                    <tr th:each="m : ${mantenimientos}" th:attr="data-estado=${m.estado}">
                         <td th:text="${m.id}"></td>
                         <td th:text="${m.vehiculo.modelo.marca.nombre + ' ' + m.vehiculo.modelo.nombre + ' (' + m.vehiculo.matricula + ')'}"></td>
                         <td th:text="${m.motivo}"></td>
@@ -35,14 +61,17 @@
                                   th:text="${m.estado}"></span>
                         </td>
                         <td>
-                            <a th:href="@{/mantenimientos/editar/{id}(id=${m.id})}" class="btn btn-warning btn-sm me-1">
+                            <a th:href="@{/mantenimientos/editar/{id}(id=${m.id})}" class="btn-action-edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a th:href="@{/mantenimientos/eliminar/{id}(id=${m.id})}" class="btn btn-danger btn-sm"
+                            <a th:href="@{/mantenimientos/eliminar/{id}(id=${m.id})}" class="btn-action-delete"
                                onclick="return confirm('¿Eliminar este mantenimiento?')">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
+                    </tr>
+                    <tr id="sinResultadosMant" class="d-none">
+                        <td colspan="8" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(mantenimientos)}">
                         <td colspan="8" class="text-center text-muted py-4">No hay mantenimientos registrados.</td>
@@ -54,5 +83,22 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarMant() {
+        var texto = (document.getElementById('buscarMant').value || '').toLowerCase();
+        var estado = (document.getElementById('filtroEstadoMant').value || '').toLowerCase();
+        var filas = document.querySelectorAll('#tablaMant tbody tr[data-estado]');
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var cumple = (!texto || fila.textContent.toLowerCase().includes(texto))
+                      && (!estado || (fila.dataset.estado || '').toLowerCase() === estado);
+            fila.classList.toggle('d-none', !cumple);
+            if (cumple) visibles++;
+        });
+        document.getElementById('contMant').textContent = visibles;
+        document.getElementById('sinResultadosMant').classList.toggle('d-none', visibles > 0);
+    }
+    document.addEventListener('DOMContentLoaded', filtrarMant);
+</script>
 </body>
 </html>

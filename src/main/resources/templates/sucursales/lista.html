@@ -13,8 +13,26 @@
         </div>
     </header>
     <main class="admin-page-content">
+        <!-- Barra de búsqueda -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
+                    <input type="text" id="buscarSucursal" class="form-control form-control-sm" placeholder="Nombre, ciudad, dirección..." oninput="filtrarSucursales()">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarSucursal').value='';filtrarSucursales()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-5 text-end">
+                    <small class="text-muted"><span id="contSucursales">0</span> sucursal(es)</small>
+                </div>
+            </div>
+        </div>
+
         <section class="admin-table">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="tablaSucursales">
                 <thead>
                     <tr>
                         <th>ID</th><th>Nombre</th><th>Ciudad</th><th>Direccion</th><th>Email</th><th>Telefono</th><th>Acciones</th>
@@ -29,14 +47,17 @@
                         <td th:text="${suc.email}"></td>
                         <td th:text="${suc.telefono}"></td>
                         <td>
-                            <a th:href="@{/sucursales/editar/{id}(id=${suc.id})}" class="btn btn-warning btn-sm me-1">
+                            <a th:href="@{/sucursales/editar/{id}(id=${suc.id})}" class="btn-action-edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a th:href="@{/sucursales/eliminar/{id}(id=${suc.id})}" class="btn btn-danger btn-sm"
+                            <a th:href="@{/sucursales/eliminar/{id}(id=${suc.id})}" class="btn-action-delete"
                                onclick="return confirm('¿Eliminar esta sucursal?')">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
+                    </tr>
+                    <tr id="sinResultadosSuc" class="d-none">
+                        <td colspan="7" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(sucursales)}">
                         <td colspan="7" class="text-center text-muted py-4">No hay sucursales registradas.</td>
@@ -48,5 +69,20 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarSucursales() {
+        var texto = (document.getElementById('buscarSucursal').value || '').toLowerCase();
+        var filas = Array.from(document.querySelectorAll('#tablaSucursales tbody tr')).filter(function(r){ return !r.id; });
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var cumple = !texto || fila.textContent.toLowerCase().includes(texto);
+            fila.classList.toggle('d-none', !cumple);
+            if (cumple) visibles++;
+        });
+        document.getElementById('contSucursales').textContent = visibles;
+        document.getElementById('sinResultadosSuc').classList.toggle('d-none', visibles > 0);
+    }
+    document.addEventListener('DOMContentLoaded', filtrarSucursales);
+</script>
 </body>
 </html>

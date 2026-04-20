@@ -1,6 +1,7 @@
 package com.ilerna.rentgo.service;
 import com.ilerna.rentgo.model.Reserva;
 import com.ilerna.rentgo.repository.ReservaRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
@@ -40,6 +41,10 @@ public class ReservaService {
     /** Guarda o actualiza una reserva. */
     public Reserva guardar(Reserva reserva) {
         return reservaRepository.save(reserva);
+    }
+    /** Obtiene las N reservas más recientes. */
+    public List<Reserva> listarUltimas(int n) {
+        return reservaRepository.findAllByOrderByFechaReservaDesc(PageRequest.of(0, n));
     }
     /** Elimina una reserva por su ID. */
     public void eliminar(Integer id) {

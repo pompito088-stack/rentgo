@@ -68,6 +68,8 @@ public class VehiculoController {
         if (noEstaLogueado(session)) return "redirect:/login";
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         model.addAttribute("vehiculos", vehiculoService.listarTodos());
+        model.addAttribute("sucursales", sucursalService.listarTodas());
+        model.addAttribute("categorias", categoriaService.listarTodas());
         model.addAttribute("esAdmin", logueado.isAdmin());
         return "vehiculos/lista";
     }
@@ -79,6 +81,8 @@ public class VehiculoController {
         Optional<Vehiculo> vehiculo = vehiculoService.buscarPorId(id);
         if (vehiculo.isPresent()) {
             model.addAttribute("vehiculo", vehiculo.get());
+            // Pasamos el id para que el boton "Reservar" lleve el vehiculo preseleccionado
+            model.addAttribute("vehiculoId", id);
             return "vehiculos/detalle";
         }
         return "redirect:/vehiculos";

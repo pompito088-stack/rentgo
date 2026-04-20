@@ -6,7 +6,7 @@
 
 <main>
     <!-- Mini hero -->
-    <div style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
+    <section style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
         <div class="container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
@@ -20,7 +20,7 @@
                 <span th:text="${reserva.id != null ? 'Editar Reserva' : 'Nueva Reserva'}"></span>
             </h1>
         </div>
-    </div>
+    </section>
 
     <div class="container py-4">
         <div class="row g-4 justify-content-center">
@@ -42,7 +42,7 @@
                                 <select class="form-select" id="vehiculo" th:field="*{vehiculo.id}" required>
                                     <option value="">— Seleccionar vehículo —</option>
                                     <option th:each="v : ${vehiculos}" th:value="${v.id}"
-                                            th:attr="data-precio=${v.precioDia}"
+                                            th:attr="data-precio=${v.precioDia},data-fianza=${v.fianza},data-sucursal=${v.sucursal.id}"
                                             th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre + ' (' + v.matricula + ') · ' + v.precioDia + '€/día'}"></option>
                                 </select>
                             </div>
@@ -88,11 +88,13 @@
                                 <label for="sucursalRecogida" class="form-label">
                                     <i class="bi bi-geo-alt-fill me-1" style="color:var(--teal-500);"></i>Sucursal de recogida
                                 </label>
-                                <select class="form-select" id="sucursalRecogida" th:field="*{sucursalRecogida.id}" required>
-                                    <option value="">— Seleccionar sucursal —</option>
+                                <select class="form-select" id="sucursalRecogida" disabled>
+                                    <option value="">— Se asigna con el vehículo —</option>
                                     <option th:each="s : ${sucursales}" th:value="${s.id}"
                                             th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
                                 </select>
+                                <input type="hidden" id="sucursalRecogidaHidden" name="sucursalRecogida.id" th:value="${reserva.sucursalRecogida?.id}">
+                                <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Se asigna automáticamente según el vehículo.</small>
                             </div>
                             <div class="col-md-6">
                                 <label for="sucursalDevolucion" class="form-label">
@@ -114,26 +116,37 @@
 
                     <!-- BLOQUE 3: Extras -->
                     <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
-                        <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
+                        <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;">
                             <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">3</span>
                             Extras opcionales
                         </h2>
-                        <div class="row g-2">
+                        <p style="font-size:.82rem;color:#6b7280;margin-bottom:1.25rem;">Selecciona los extras que desees. El precio se añade por cada día de alquiler.</p>
+
+                        <div class="row g-3" th:if="${extras != null and !extras.isEmpty()}">
                             <div class="col-md-6" th:each="extra : ${extras}">
-                                <div class="form-check border rounded p-2" style="cursor:pointer;">
-                                    <input class="form-check-input extra-check" type="checkbox"
+                                <label th:for="${'extra-' + extra.id}" class="extra-card" th:classappend="${reserva.extras != null and reserva.extras.contains(extra)} ? ' selected'">
+                                    <input class="form-check-input extra-check d-none" type="checkbox"
                                            name="extrasIds" th:value="${extra.id}"
                                            th:id="${'extra-' + extra.id}"
                                            th:attr="data-precio=${extra.precioDia}"
                                            th:checked="${reserva.extras != null and reserva.extras.contains(extra)}">
-                                    <label class="form-check-label w-100" th:for="${'extra-' + extra.id}">
-                                        <span class="fw-600" th:text="${extra.nombre}"></span>
-                                        <span class="text-muted ms-1" style="font-size:.82rem;" th:text="${extra.precioDia + '€/día'}"></span>
-                                        <br>
-                                        <small class="text-muted" th:text="${extra.descripcion}"></small>
-                                    </label>
-                                </div>
+                                    <div class="extra-icon">
+                                        <i class="bi bi-stars"></i>
+                                    </div>
+                                    <div class="extra-info">
+                                        <div class="extra-name" th:text="${extra.nombre}"></div>
+                                        <div class="extra-desc" th:text="${extra.descripcion}"></div>
+                                        <div class="extra-price">
+                                            <span th:text="${extra.precioDia + ' €'}"></span>
+                                            <span style="font-size:.75rem;font-weight:400;color:#9ca3af;"> / día</span>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
+                        </div>
+                        <div th:if="${extras == null or extras.isEmpty()}" class="text-center py-3 text-muted">
+                            <i class="bi bi-stars" style="font-size:2rem;"></i>
+                            <p class="mt-2 mb-0">No hay extras disponibles en este momento.</p>
                         </div>
                     </section>
 
@@ -158,7 +171,7 @@
                     </section>
 
                     <!-- RESUMEN PRECIO -->
-                    <div id="resumenPrecio" style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1.5px solid var(--teal-100);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;display:none;">
+                    <aside id="resumenPrecio" style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1.5px solid var(--teal-100);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;display:none;">
                         <h3 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;">
                             <i class="bi bi-receipt me-1" style="color:var(--teal-600);"></i>Resumen del presupuesto
                         </h3>
@@ -170,20 +183,27 @@
                             <span class="text-muted">Número de días</span>
                             <span id="rDias" class="fw-500">—</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;" id="filaExtras" style="display:none;">
+                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;" id="filaExtras">
                             <span class="text-muted">Extras/día</span>
                             <span id="rExtras" class="fw-500">—</span>
                         </div>
                         <hr style="border-color:var(--teal-100);margin:.75rem 0;">
-                        <div class="d-flex justify-content-between">
-                            <span style="font-weight:700;color:#111827;">Total estimado</span>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="font-weight:700;color:#111827;">Total alquiler</span>
                             <span id="rTotal" style="font-size:1.3rem;font-weight:800;color:var(--teal-600);">—</span>
                         </div>
+                        <div class="d-flex justify-content-between" id="filaFianza" style="background:#fef9c3;border-radius:8px;padding:.5rem .75rem;">
+                            <span style="font-size:.85rem;color:#92400e;">
+                                <i class="bi bi-shield-check me-1"></i>Fianza reembolsable
+                            </span>
+                            <span id="rFianza" style="font-size:.95rem;font-weight:700;color:#92400e;">—</span>
+                        </div>
+                        <p style="font-size:.75rem;color:#9ca3af;margin-top:.4rem;margin-bottom:0;">La fianza se devuelve al entregar el vehículo en perfectas condiciones.</p>
                         <input type="number" step="0.01" id="precioTotal" th:field="*{precioTotal}" class="d-none" min="0">
-                    </div>
+                    </aside>
 
                     <!-- Aviso legal -->
-                    <div class="alert alert-info d-flex align-items-start gap-2 mb-3" style="border-radius:12px;font-size:.85rem;">
+                    <div class="alert alert-info d-flex align-items-start gap-2 mb-3" role="alert" style="border-radius:12px;font-size:.85rem;">
                         <i class="bi bi-info-circle-fill mt-1" style="color:#3b82f6;flex-shrink:0;"></i>
                         <span>Al pulsar <strong>Confirmar y Reservar</strong> aceptas las condiciones de alquiler y se procesará el pago del importe total indicado.</span>
                     </div>
@@ -191,11 +211,13 @@
                     <!-- Botones -->
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn text-white fw-600 flex-grow-1"
-                                style="background:var(--teal-600);border-radius:10px;padding:.8rem 1.5rem;font-size:1rem;">
-                            <i class="bi bi-check-circle me-2"></i>Confirmar y Reservar
+                                style="background:linear-gradient(135deg,var(--teal-600),var(--teal-700));border-radius:10px;padding:.9rem 1.75rem;font-size:1.05rem;box-shadow:0 4px 14px rgba(13,148,136,.3);transition:transform .2s,box-shadow .2s;"
+                                onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(13,148,136,.4)'"
+                                onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(13,148,136,.3)'">
+                            <i class="bi bi-check-circle-fill me-2"></i>Confirmar y Reservar
                         </button>
                         <a th:href="@{/reservas}" class="btn btn-outline-secondary"
-                           style="border-radius:10px;padding:.8rem 1.25rem;">
+                           style="border-radius:10px;padding:.9rem 1.25rem;">
                             Cancelar
                         </a>
                     </div>
@@ -209,12 +231,41 @@
 <div th:replace="~{fragments/layout :: scripts}"></div>
 
 <script>
+    // Toggle extra cards
+    document.querySelectorAll('.extra-card').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+            if (e.target.classList.contains('extra-check')) return;
+            var cb = card.querySelector('.extra-check');
+            cb.checked = !cb.checked;
+            card.classList.toggle('selected', cb.checked);
+            calcularPrecio();
+        });
+        var cb = card.querySelector('.extra-check');
+        if (cb && cb.checked) card.classList.add('selected');
+    });
+
+    // Auto-asignar sucursal de recogida al seleccionar vehículo
+    document.getElementById('vehiculo').addEventListener('change', function() {
+        var sel = this.options[this.selectedIndex];
+        var sucursalId = sel.getAttribute('data-sucursal');
+        var recogidaSelect = document.getElementById('sucursalRecogida');
+        var recogidaHidden = document.getElementById('sucursalRecogidaHidden');
+        if (sucursalId) {
+            recogidaSelect.value = sucursalId;
+            recogidaHidden.value = sucursalId;
+        } else {
+            recogidaSelect.value = '';
+            recogidaHidden.value = '';
+        }
+        calcularPrecio();
+    });
+
     function calcularPrecio() {
-        const vehiculoSelect = document.getElementById('vehiculo');
-        const fechaInicio = document.getElementById('fechaInicio').value;
-        const fechaFin = document.getElementById('fechaFin').value;
-        const precioInput = document.getElementById('precioTotal');
-        const resumen = document.getElementById('resumenPrecio');
+        var vehiculoSelect = document.getElementById('vehiculo');
+        var fechaInicio = document.getElementById('fechaInicio').value;
+        var fechaFin = document.getElementById('fechaFin').value;
+        var precioInput = document.getElementById('precioTotal');
+        var resumen = document.getElementById('resumenPrecio');
 
         if (!vehiculoSelect.value || !fechaInicio || !fechaFin) {
             resumen.style.display = 'none';
@@ -222,25 +273,26 @@
             return;
         }
 
-        const precioDia = parseFloat(vehiculoSelect.options[vehiculoSelect.selectedIndex].getAttribute('data-precio'));
-        const dias = Math.round((new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
+        var selectedOption = vehiculoSelect.options[vehiculoSelect.selectedIndex];
+        var precioDia = parseFloat(selectedOption.getAttribute('data-precio'));
+        var fianza = parseFloat(selectedOption.getAttribute('data-fianza') || 0);
+        var dias = Math.round((new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
 
         if (dias > 0 && !isNaN(precioDia)) {
-            // Calcular extras seleccionados
-            let extrasPorDia = 0;
-            document.querySelectorAll('.extra-check:checked').forEach(cb => {
+            var extrasPorDia = 0;
+            document.querySelectorAll('.extra-check:checked').forEach(function(cb) {
                 extrasPorDia += parseFloat(cb.getAttribute('data-precio') || 0);
             });
 
-            const totalVehiculo = precioDia * dias;
-            const totalExtras = extrasPorDia * dias;
-            const total = (totalVehiculo + totalExtras).toFixed(2);
+            var totalVehiculo = precioDia * dias;
+            var totalExtras = extrasPorDia * dias;
+            var total = (totalVehiculo + totalExtras).toFixed(2);
 
             precioInput.value = total;
             document.getElementById('rPrecioDia').textContent = precioDia.toFixed(2) + ' €';
             document.getElementById('rDias').textContent = dias + ' día(s)';
 
-            const filaExtras = document.getElementById('filaExtras');
+            var filaExtras = document.getElementById('filaExtras');
             if (extrasPorDia > 0) {
                 filaExtras.style.display = 'flex';
                 document.getElementById('rExtras').textContent = extrasPorDia.toFixed(2) + ' €';
@@ -249,6 +301,14 @@
             }
 
             document.getElementById('rTotal').textContent = total + ' €';
+
+            if (!isNaN(fianza) && fianza > 0) {
+                document.getElementById('rFianza').textContent = fianza.toFixed(2) + ' €';
+                document.getElementById('filaFianza').style.display = 'flex';
+            } else {
+                document.getElementById('filaFianza').style.display = 'none';
+            }
+
             resumen.style.display = 'block';
         } else {
             resumen.style.display = 'none';
@@ -256,10 +316,16 @@
         }
     }
 
-    document.getElementById('vehiculo').addEventListener('change', calcularPrecio);
     document.getElementById('fechaInicio').addEventListener('change', calcularPrecio);
     document.getElementById('fechaFin').addEventListener('change', calcularPrecio);
-    document.querySelectorAll('.extra-check').forEach(cb => cb.addEventListener('change', calcularPrecio));
+
+    // Preseleccionar vehiculo si viene del detalle
+    var vehiculoPreseleccionado = /*[[${vehiculoPreseleccionado}]]*/ null;
+    if (vehiculoPreseleccionado) {
+        var sel = document.getElementById('vehiculo');
+        sel.value = vehiculoPreseleccionado;
+        sel.dispatchEvent(new Event('change'));
+    }
     calcularPrecio();
 </script>
 </body>

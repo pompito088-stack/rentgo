@@ -26,6 +26,11 @@ public class Pago {
     @Column(name = "importe", nullable = false, precision = 10, scale = 2)
     private BigDecimal importe;
 
+    @NotNull(message = "La fianza es obligatoria")
+    @DecimalMin(value = "0.00", message = "La fianza no puede ser negativa")
+    @Column(name = "fianza", nullable = false, precision = 10, scale = 2)
+    private BigDecimal fianza = BigDecimal.ZERO;
+
     @NotBlank(message = "El metodo de pago es obligatorio")
     @Column(name = "metodo_pago", nullable = false)
     private String metodoPago;
@@ -60,6 +65,12 @@ public class Pago {
     }
     public void setImporte(BigDecimal importe) {
         this.importe = importe;
+    }
+    public BigDecimal getFianza() {
+        return fianza;
+    }
+    public void setFianza(BigDecimal fianza) {
+        this.fianza = fianza;
     }
     public String getMetodoPago() {
         return metodoPago;
