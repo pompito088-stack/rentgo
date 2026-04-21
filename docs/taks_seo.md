@@ -13,7 +13,7 @@ Las tareas marcadas ✅ ya están implementadas en el proyecto. Las ⏳ están p
 | 1.2 | `<meta name="description">` (130–160 caracteres) | ✅ | `layout.html` (fragment `head`) |
 | 1.3 | `<meta name="keywords">` (uso secundario) | ✅ | `layout.html` |
 | 1.4 | `<meta name="robots" content="index, follow">` | ✅ | `layout.html` |
-| 1.5 | `<link rel="canonical">` por URL | ✅ | `layout.html` |
+| 1.5 | `<link rel="canonical">` por URL | ⏳ | comentado en `layout.html`; usar `th:href="${'/' + #request.requestURI}"` cuando se valide en entorno real |
 | 1.6 | Open Graph (`og:title`, `og:description`, `og:type`, `og:locale`, `og:site_name`, `og:image`) | ⏳ parcial | añadir `og:image` cuando exista logo definitivo |
 | 1.7 | Twitter Card (`summary_large_image`) | ✅ | `layout.html` |
 | 1.8 | `<meta name="theme-color">` (color barra navegador móvil) | ✅ | `layout.html` |

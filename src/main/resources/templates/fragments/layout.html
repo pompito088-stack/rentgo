@@ -10,7 +10,8 @@
     <meta name="author" content="RentGo">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#0f766e">
-    <link rel="canonical" th:href="@{|${#httpServletRequest.requestURI}|}">
+    <!-- SEO: canonical, ver taks_seo.md tarea 1.5 para implementación dinámica -->
+    <!-- <link rel="canonical" th:href="@{${#request.requestURI}}"> -->
 
     <!-- Open Graph -->
     <meta property="og:title" th:content="${titulo}">
