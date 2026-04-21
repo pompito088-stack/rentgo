@@ -62,27 +62,27 @@ public class VehiculoController {
         return logueado == null || !logueado.isAdmin();
     }
 
-    /** GET /vehiculos - Lista vehiculos (accesible por admin y cliente). */
+    /** GET /vehiculos - Lista vehiculos (accesible por todos, incluidos visitantes). */
     @GetMapping
     public String listar(Model model, HttpSession session) {
-        if (noEstaLogueado(session)) return "redirect:/login";
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         model.addAttribute("vehiculos", vehiculoService.listarTodos());
         model.addAttribute("sucursales", sucursalService.listarTodas());
         model.addAttribute("categorias", categoriaService.listarTodas());
-        model.addAttribute("esAdmin", logueado.isAdmin());
+        model.addAttribute("esAdmin", logueado != null && logueado.isAdmin());
         return "vehiculos/lista";
     }
 
-    /** GET /vehiculos/detalle/{id} - Detalle de un vehiculo. */
+    /** GET /vehiculos/detalle/{id} - Detalle de un vehiculo (accesible por todos). */
     @GetMapping("/detalle/{id}")
     public String detalle(@PathVariable Integer id, Model model, HttpSession session) {
-        if (noEstaLogueado(session)) return "redirect:/login";
+        Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         Optional<Vehiculo> vehiculo = vehiculoService.buscarPorId(id);
         if (vehiculo.isPresent()) {
             model.addAttribute("vehiculo", vehiculo.get());
-            // Pasamos el id para que el boton "Reservar" lleve el vehiculo preseleccionado
             model.addAttribute("vehiculoId", id);
+            model.addAttribute("estaLogueado", logueado != null);
+            model.addAttribute("esAdmin", logueado != null && logueado.isAdmin());
             return "vehiculos/detalle";
         }
         return "redirect:/vehiculos";

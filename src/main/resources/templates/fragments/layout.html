@@ -5,11 +5,42 @@
 <head th:fragment="head(titulo)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="RentGo - Sistema de alquiler de vehiculos.">
+    <meta name="description" content="RentGo — Alquiler de coches online en España: SUV, eléctricos, familiares y deportivos. Reserva fácil, sin sorpresas, en más de 15 sucursales.">
+    <meta name="keywords" content="alquiler de coches, rent a car España, alquilar coche barato, alquiler vehículos Madrid Barcelona, coches eléctricos alquiler">
+    <meta name="author" content="RentGo">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f766e">
+    <link rel="canonical" th:href="@{|${#httpServletRequest.requestURI}|}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" th:content="${titulo}">
+    <meta property="og:description" content="Alquiler de vehículos online: tu coche en 3 clics. Coches eléctricos, SUV, familiares y deportivos al mejor precio.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="RentGo">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" th:content="${titulo}">
+    <meta name="twitter:description" content="Alquiler de coches online en España. Reserva fácil, sin sorpresas.">
+
     <title th:text="${titulo}">RentGo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- JSON-LD structured data: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AutoRental",
+      "name": "RentGo",
+      "url": "https://rentgo.es",
+      "logo": "https://rentgo.es/img/logo.png",
+      "description": "Alquiler de coches online en España con más de 15 sucursales y flota actualizada.",
+      "areaServed": "ES",
+      "contactPoint": { "@type": "ContactPoint", "telephone": "+34-900-123-456", "contactType": "customer service" }
+    }
+    </script>
     <style>
         /* ── Variables de color ── */
         :root {
@@ -35,6 +66,32 @@
             display: flex;
             background: var(--teal-50);
         }
+
+        /* Botón hamburger admin (oculto en escritorio) */
+        .admin-burger {
+            display: none;
+            position: fixed;
+            top: .65rem; left: .65rem;
+            z-index: 1060;
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            background: var(--teal-700);
+            border: none;
+            color: #fff;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,.18);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+        .admin-burger:hover { background: var(--teal-800); }
+        .admin-backdrop {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 1035;
+        }
+        .admin-backdrop.show { display: block; }
 
         /* Sidebar */
         .admin-sidebar {
@@ -197,30 +254,35 @@
         .stat-card .stat-label { font-size: .82rem; color: #6b7280; margin-top: .15rem; }
 
         /* Tabla admin */
-        .admin-table { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+        .admin-table { background: #fff; border-radius: 14px; border: 1px solid #e5e7eb; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
         .admin-table table { margin: 0; }
         .admin-table thead th {
-            background: #f9fafb;
+            background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
             color: #374151;
             font-size: .78rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .05em;
-            border-bottom: 1px solid #e5e7eb;
-            padding: .85rem 1rem;
+            border-bottom: 1.5px solid #e5e7eb;
+            padding: .9rem 1rem;
+            white-space: nowrap;
         }
         .admin-table tbody td { padding: .85rem 1rem; vertical-align: middle; font-size: .88rem; color: #374151; }
-        .admin-table tbody tr { border-bottom: 1px solid #f3f4f6; }
+        .admin-table tbody tr { border-bottom: 1px solid #f3f4f6; transition: background .15s; }
         .admin-table tbody tr:last-child { border-bottom: none; }
-        .admin-table tbody tr:hover { background: #fafafa; }
+        .admin-table tbody tr:nth-child(even) { background: #fafbfc; }
+        .admin-table tbody tr:hover { background: var(--teal-50); }
 
         /* Card de contenido general admin */
         .admin-card {
             background: #fff;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid #e5e7eb;
             padding: 1.5rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,.04);
+            transition: box-shadow .2s;
         }
+        .admin-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
         .admin-card .admin-card-header {
             display: flex;
             align-items: center;
@@ -236,22 +298,40 @@
 
         /* Botones teal */
         .btn-teal {
-            background: var(--teal-600);
+            background: linear-gradient(135deg, var(--teal-600), var(--teal-700));
             color: #fff;
             border: none;
             border-radius: 8px;
-            font-weight: 500;
-            transition: background .15s, box-shadow .15s;
+            font-weight: 600;
+            transition: background .15s, box-shadow .2s, transform .15s;
         }
-        .btn-teal:hover { background: var(--teal-700); color: #fff; box-shadow: 0 4px 12px rgba(13,148,136,.3); }
+        .btn-teal:hover { background: linear-gradient(135deg, var(--teal-700), var(--teal-800)); color: #fff; box-shadow: 0 4px 14px rgba(13,148,136,.35); transform: translateY(-1px); }
+        .btn-teal:active { transform: translateY(0); }
         .btn-outline-teal {
             border: 1.5px solid var(--teal-600);
             color: var(--teal-600);
             background: transparent;
             border-radius: 8px;
-            font-weight: 500;
+            font-weight: 600;
+            transition: background .15s, color .15s, box-shadow .2s, transform .15s;
         }
-        .btn-outline-teal:hover { background: var(--teal-600); color: #fff; }
+        .btn-outline-teal:hover { background: var(--teal-600); color: #fff; box-shadow: 0 4px 12px rgba(13,148,136,.25); transform: translateY(-1px); }
+        .btn-outline-teal:active { transform: translateY(0); }
+
+        /* Botón teal grande para formularios */
+        .btn-teal-lg {
+            background: linear-gradient(135deg, var(--teal-600), var(--teal-700));
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: .65rem 1.5rem;
+            font-size: .95rem;
+            box-shadow: 0 3px 10px rgba(13,148,136,.25);
+            transition: background .15s, box-shadow .2s, transform .15s;
+        }
+        .btn-teal-lg:hover { background: linear-gradient(135deg, var(--teal-700), var(--teal-800)); color: #fff; box-shadow: 0 6px 18px rgba(13,148,136,.35); transform: translateY(-2px); }
+        .btn-teal-lg:active { transform: translateY(0); }
 
         /* Botones de accion en tablas/cards admin */
         .btn-action-edit {
@@ -259,37 +339,40 @@
             color: #2563eb;
             border: 1px solid #bfdbfe;
             border-radius: 8px;
-            padding: .3rem .65rem;
+            padding: .35rem .7rem;
             font-size: .82rem;
-            font-weight: 500;
-            transition: background .15s, box-shadow .15s;
+            font-weight: 600;
+            transition: background .15s, box-shadow .2s, transform .15s, color .15s;
             display: inline-flex; align-items: center; gap: .3rem;
+            text-decoration: none;
         }
-        .btn-action-edit:hover { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 3px 8px rgba(37,99,235,.3); }
+        .btn-action-edit:hover { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 3px 10px rgba(37,99,235,.3); transform: translateY(-1px); }
         .btn-action-delete {
             background: #fef2f2;
             color: #dc2626;
             border: 1px solid #fecaca;
             border-radius: 8px;
-            padding: .3rem .65rem;
+            padding: .35rem .7rem;
             font-size: .82rem;
-            font-weight: 500;
-            transition: background .15s, box-shadow .15s;
+            font-weight: 600;
+            transition: background .15s, box-shadow .2s, transform .15s, color .15s;
             display: inline-flex; align-items: center; gap: .3rem;
+            text-decoration: none;
         }
-        .btn-action-delete:hover { background: #dc2626; color: #fff; border-color: #dc2626; box-shadow: 0 3px 8px rgba(220,38,38,.3); }
+        .btn-action-delete:hover { background: #dc2626; color: #fff; border-color: #dc2626; box-shadow: 0 3px 10px rgba(220,38,38,.3); transform: translateY(-1px); }
         .btn-action-view {
             background: #f0fdf4;
             color: #16a34a;
             border: 1px solid #bbf7d0;
             border-radius: 8px;
-            padding: .3rem .65rem;
+            padding: .35rem .7rem;
             font-size: .82rem;
-            font-weight: 500;
-            transition: background .15s, box-shadow .15s;
+            font-weight: 600;
+            transition: background .15s, box-shadow .2s, transform .15s, color .15s;
             display: inline-flex; align-items: center; gap: .3rem;
+            text-decoration: none;
         }
-        .btn-action-view:hover { background: #16a34a; color: #fff; border-color: #16a34a; box-shadow: 0 3px 8px rgba(22,163,74,.3); }
+        .btn-action-view:hover { background: #16a34a; color: #fff; border-color: #16a34a; box-shadow: 0 3px 10px rgba(22,163,74,.3); transform: translateY(-1px); }
 
         /* Footer admin */
         .admin-footer {
@@ -531,11 +614,26 @@
         .profile-field-label { font-size: .75rem; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .2rem; }
         .profile-field-value { font-size: .95rem; font-weight: 500; color: #111827; padding: .55rem .85rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }
 
-        /* ─── Formularios admin ─── */
+        /* Formularios admin */
         .form-label { font-weight: 500; font-size: .88rem; color: #374151; }
         .form-control:focus, .form-select:focus {
             border-color: var(--teal-500);
             box-shadow: 0 0 0 .2rem rgba(13,148,136,.2);
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        /* Btn outline-secondary mejorado */
+        .btn-outline-secondary {
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background .15s, color .15s, border-color .15s, box-shadow .2s;
+        }
+        .btn-outline-secondary:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,.1);
         }
 
         /* ─── EXTRAS CARD (reserva) ─── */
@@ -579,6 +677,38 @@
             font-size: .95rem; font-weight: 700; color: var(--teal-600);
             white-space: nowrap; margin-top: .3rem;
         }
+
+        /* ─── RESPONSIVE ─── */
+        /* Móvil y tablet pequeño: sidebar admin fuera de pantalla con hamburger */
+        @media (max-width: 991.98px) {
+            .admin-burger { display: inline-flex; }
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform .25s ease;
+                box-shadow: 4px 0 24px rgba(0,0,0,.2);
+            }
+            .admin-sidebar.open { transform: translateX(0); }
+            .admin-wrapper { margin-left: 0; }
+            .admin-topbar { padding-left: 4rem; }   /* deja hueco para el hamburger */
+            .admin-page-content { padding: 1rem; }
+            .admin-topbar .page-title { font-size: 1rem; }
+        }
+        /* Móvil pequeño: ajustes finos */
+        @media (max-width: 575.98px) {
+            .stat-card { padding: 1rem; }
+            .stat-card .stat-value { font-size: 1.3rem; }
+            .stat-card .stat-icon { width: 42px; height: 42px; font-size: 1.2rem; }
+            .admin-card { padding: 1rem; }
+            .admin-table tbody td, .admin-table thead th { padding: .55rem .6rem; font-size: .78rem; }
+            .hero-section { padding: 3rem 0 2.5rem; }
+            .vehicle-card .vc-img, .vehicle-card .vc-img-placeholder { height: 170px; }
+            .extra-card { padding: .75rem; }
+        }
+        /* Sidebar siempre visible en escritorio (override por seguridad) */
+        @media (min-width: 992px) {
+            .admin-sidebar { transform: none !important; }
+            .admin-backdrop { display: none !important; }
+        }
     </style>
 </head>
 
@@ -614,12 +744,17 @@
                     <a class="nav-link" th:href="@{/reservas}"><i class="bi bi-calendar-check me-1"></i>Mis Reservas</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pagos/mis-pagos}"><i class="bi bi-credit-card me-1"></i>Mis Pagos</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{/extras}"><i class="bi bi-stars me-1"></i>Extras</a>
                 </li>
             </ul>
             <!-- Visitante (sin login) -->
-            <ul class="navbar-nav mx-auto" th:if="${session.usuarioLogueado == null}">
+            <ul class="navbar-nav mx-auto gap-1" th:if="${session.usuarioLogueado == null}">
                 <li class="nav-item"><a class="nav-link" th:href="@{/vehiculos}"><i class="bi bi-car-front me-1"></i>Vehículos</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/sucursales}"><i class="bi bi-building me-1"></i>Sucursales</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/extras}"><i class="bi bi-stars me-1"></i>Extras</a></li>
             </ul>
 
             <!-- Derecha -->
@@ -635,6 +770,7 @@
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;min-width:180px;">
                         <li><a class="dropdown-item" th:href="@{/mi-perfil}"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" th:href="@{/reservas}"><i class="bi bi-calendar-check me-2"></i>Mis Reservas</a></li>
+                        <li><a class="dropdown-item" th:href="@{/pagos/mis-pagos}"><i class="bi bi-credit-card me-2"></i>Mis Pagos</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" th:href="@{/logout}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
                     </ul>
@@ -656,7 +792,13 @@
 </nav>
 
 <!-- ============ FRAGMENT: SIDEBAR ADMIN ============ -->
-<aside th:fragment="admin-sidebar" class="admin-sidebar" aria-label="Menu de administracion">
+<div th:fragment="admin-sidebar">
+<!-- Botón hamburger (sólo móvil, fuera del aside para no moverse con el translate) -->
+<button type="button" class="admin-burger" id="adminBurger" aria-label="Abrir menú lateral" aria-controls="adminSidebar" aria-expanded="false">
+    <i class="bi bi-list"></i>
+</button>
+<div class="admin-backdrop" id="adminBackdrop" aria-hidden="true"></div>
+<aside class="admin-sidebar" id="adminSidebar" aria-label="Menu de administracion">
     <!-- Logo / marca -->
     <a class="sidebar-brand" th:href="@{/}">
         <i class="bi bi-car-front-fill"></i>
@@ -706,6 +848,10 @@
            th:classappend="${activePage == 'pagos'} ? ' active'">
             <i class="bi bi-credit-card"></i> Pagos
         </a>
+        <a th:href="@{/devoluciones}" class="sidebar-link"
+           th:classappend="${activePage == 'devoluciones'} ? ' active'">
+            <i class="bi bi-arrow-return-left"></i> Devoluciones
+        </a>
         <a th:href="@{/usuarios}" class="sidebar-link"
            th:classappend="${activePage == 'usuarios'} ? ' active'">
             <i class="bi bi-people"></i> Usuarios
@@ -726,6 +872,7 @@
         <a th:href="@{/logout}" class="logout-btn" title="Cerrar sesion"><i class="bi bi-box-arrow-right"></i></a>
     </div>
 </aside>
+</div>
 
 <!-- ============ FRAGMENT: FOOTER CLIENTE ============ -->
 <footer th:fragment="footer"
@@ -795,6 +942,41 @@
             document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (el) {
                 new bootstrap.Dropdown(el);
             });
+
+            // ── TOGGLE SIDEBAR ADMIN (responsive) ──
+            var burger   = document.getElementById('adminBurger');
+            var sidebar  = document.getElementById('adminSidebar');
+            var backdrop = document.getElementById('adminBackdrop');
+            if (burger && sidebar && backdrop) {
+                function openSidebar() {
+                    sidebar.classList.add('open');
+                    backdrop.classList.add('show');
+                    burger.setAttribute('aria-expanded', 'true');
+                    document.body.style.overflow = 'hidden';
+                }
+                function closeSidebar() {
+                    sidebar.classList.remove('open');
+                    backdrop.classList.remove('show');
+                    burger.setAttribute('aria-expanded', 'false');
+                    document.body.style.overflow = '';
+                }
+                burger.addEventListener('click', function () {
+                    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+                });
+                backdrop.addEventListener('click', closeSidebar);
+                // Cerrar al pulsar un link (mejor UX en móvil)
+                sidebar.querySelectorAll('a.sidebar-link').forEach(function (a) {
+                    a.addEventListener('click', closeSidebar);
+                });
+                // Cerrar al pasar a escritorio
+                window.addEventListener('resize', function () {
+                    if (window.innerWidth >= 992) closeSidebar();
+                });
+                // ESC cierra
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') closeSidebar();
+                });
+            }
         });
     </script>
 </div>

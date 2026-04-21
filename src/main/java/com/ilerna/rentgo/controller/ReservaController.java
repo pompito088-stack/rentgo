@@ -57,6 +57,8 @@ public class ReservaController {
     @GetMapping
     public String listar(Model model, HttpSession session) {
         if (noEstaLogueado(session)) return "redirect:/login";
+        // Auto-finalizar reservas expiradas en tiempo real
+        reservaService.autoFinalizarExpiradas();
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (logueado.isAdmin()) {
             model.addAttribute("reservas", reservaService.listarTodas());
@@ -150,6 +152,20 @@ public class ReservaController {
             reserva.setHoraFin(LocalTime.parse(horaFinStr));
         }
 
+        // Resolver entidades transitorias desde la BD
+        if (reserva.getVehiculo() != null && reserva.getVehiculo().getId() != null) {
+            var vehiculoOpt = vehiculoService.buscarPorId(reserva.getVehiculo().getId());
+            if (vehiculoOpt.isPresent()) {
+                var vehiculoBD = vehiculoOpt.get();
+                reserva.setVehiculo(vehiculoBD);
+                // Sucursal de recogida = la sucursal actual del vehículo
+                reserva.setSucursalRecogida(vehiculoBD.getSucursal());
+            }
+        }
+        if (reserva.getSucursalDevolucion() != null && reserva.getSucursalDevolucion().getId() != null) {
+            sucursalService.buscarPorId(reserva.getSucursalDevolucion().getId()).ifPresent(reserva::setSucursalDevolucion);
+        }
+
         // Asignar usuario y estado si es cliente
         if (!logueado.isAdmin()) {
             reserva.setUsuario(logueado);
@@ -157,33 +173,21 @@ public class ReservaController {
         }
 
         // Calcular precio total: dias * precio_dia + extras * dias
-        if (reserva.getVehiculo() != null && reserva.getFechaInicio() != null && reserva.getFechaFin() != null) {
+        if (reserva.getVehiculo() != null && reserva.getVehiculo().getPrecioDia() != null
+                && reserva.getFechaInicio() != null && reserva.getFechaFin() != null) {
             long dias = java.time.temporal.ChronoUnit.DAYS.between(reserva.getFechaInicio(), reserva.getFechaFin());
             if (dias > 0) {
-                // Precio vehiculo
-                final long[] diasFinal = {dias};
-                vehiculoService.buscarPorId(reserva.getVehiculo().getId()).ifPresent(v -> {
-                    BigDecimal total = v.getPrecioDia().multiply(BigDecimal.valueOf(diasFinal[0]));
-                    // Sumar extras si se han seleccionado
-                    if (extrasIds != null && !extrasIds.isEmpty()) {
-                        for (Integer extraId : extrasIds) {
-                            extraService.buscarPorId(extraId).ifPresent(e ->
-                                total.add(e.getPrecioDia().multiply(BigDecimal.valueOf(diasFinal[0])))
-                            );
+                BigDecimal totalVehiculo = reserva.getVehiculo().getPrecioDia().multiply(BigDecimal.valueOf(dias));
+                BigDecimal totalExtras = BigDecimal.ZERO;
+                if (extrasIds != null && !extrasIds.isEmpty()) {
+                    for (Integer extraId : extrasIds) {
+                        var extraOpt = extraService.buscarPorId(extraId);
+                        if (extraOpt.isPresent()) {
+                            totalExtras = totalExtras.add(extraOpt.get().getPrecioDia().multiply(BigDecimal.valueOf(dias)));
                         }
-                        // Recalcular correctamente (lambda no puede modificar variable)
-                        BigDecimal totalExtras = BigDecimal.ZERO;
-                        for (Integer extraId : extrasIds) {
-                            var extraOpt = extraService.buscarPorId(extraId);
-                            if (extraOpt.isPresent()) {
-                                totalExtras = totalExtras.add(extraOpt.get().getPrecioDia().multiply(BigDecimal.valueOf(diasFinal[0])));
-                            }
-                        }
-                        reserva.setPrecioTotal(v.getPrecioDia().multiply(BigDecimal.valueOf(diasFinal[0])).add(totalExtras));
-                    } else {
-                        reserva.setPrecioTotal(total);
                     }
-                });
+                }
+                reserva.setPrecioTotal(totalVehiculo.add(totalExtras));
             }
         }
 
@@ -204,6 +208,16 @@ public class ReservaController {
         // Capturar ANTES de guardar para evitar que JPA asigne el id
         boolean esNueva = reserva.getId() == null;
         Reserva reservaGuardada = reservaService.guardar(reserva);
+
+        // Actualizar la sucursal del vehiculo a la de devolucion
+        // (la nueva ubicacion real del coche tras la devolucion)
+        if (reservaGuardada != null && reservaGuardada.getSucursalDevolucion() != null
+                && reservaGuardada.getVehiculo() != null) {
+            vehiculoService.buscarPorId(reservaGuardada.getVehiculo().getId()).ifPresent(v -> {
+                v.setSucursal(reservaGuardada.getSucursalDevolucion());
+                vehiculoService.guardar(v);
+            });
+        }
 
         // Crear pago automatico si es cliente y es una reserva nueva
         if (!logueado.isAdmin() && esNueva && reservaGuardada != null) {
@@ -230,6 +244,84 @@ public class ReservaController {
         return "redirect:/reservas";
     }
 
+    /**
+     * GET /reservas/cancelar/{id}
+     * Muestra la pagina de confirmacion de cancelacion con el resumen de la reserva
+     * y el importe a devolver.
+     */
+    @GetMapping("/cancelar/{id}")
+    public String mostrarCancelacion(@PathVariable Integer id, Model model, HttpSession session) {
+        if (noEstaLogueado(session)) return "redirect:/login";
+        Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
+
+        var reservaOpt = reservaService.buscarPorId(id);
+        if (reservaOpt.isEmpty()) return "redirect:/reservas";
+
+        Reserva reserva = reservaOpt.get();
+        // Solo el propietario puede cancelar, y solo si esta confirmada o en_proceso
+        if (!reserva.getUsuario().getId().equals(logueado.getId())) return "redirect:/reservas";
+        if (!"confirmada".equals(reserva.getEstado()) && !"en_proceso".equals(reserva.getEstado())) {
+            return "redirect:/reservas";
+        }
+
+        // Calcular devolucion: si faltan mas de 24h → 100%, sino 50%
+        BigDecimal devolucion = reserva.getPrecioTotal();
+        String politica = "Cancelación con más de 24 horas de antelación: devolución del 100%.";
+        if (reserva.getFechaInicio() != null) {
+            long diasHastaInicio = java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), reserva.getFechaInicio());
+            if (diasHastaInicio < 1) {
+                devolucion = reserva.getPrecioTotal().divide(BigDecimal.valueOf(2), 2, java.math.RoundingMode.HALF_UP);
+                politica = "Cancelación con menos de 24 horas de antelación: devolución del 50%.";
+            }
+        }
+
+        // Fianza siempre se devuelve
+        BigDecimal fianzaDevolucion = BigDecimal.ZERO;
+        var pagoOpt = pagoService.buscarPorReserva(reserva.getId());
+        if (pagoOpt.isPresent()) {
+            fianzaDevolucion = pagoOpt.get().getFianza();
+        }
+
+        model.addAttribute("reserva", reserva);
+        model.addAttribute("devolucion", devolucion);
+        model.addAttribute("fianzaDevolucion", fianzaDevolucion);
+        model.addAttribute("totalDevolucion", devolucion.add(fianzaDevolucion));
+        model.addAttribute("politica", politica);
+        return "reservas/cancelar";
+    }
+
+    /**
+     * POST /reservas/cancelar/{id}
+     * Confirma la cancelacion de la reserva: cambia estado a "cancelada"
+     * y actualiza el pago a estado "reembolsado".
+     */
+    @PostMapping("/cancelar/{id}")
+    public String confirmarCancelacion(@PathVariable Integer id, HttpSession session) {
+        if (noEstaLogueado(session)) return "redirect:/login";
+        Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
+
+        var reservaOpt = reservaService.buscarPorId(id);
+        if (reservaOpt.isEmpty()) return "redirect:/reservas";
+
+        Reserva reserva = reservaOpt.get();
+        if (!reserva.getUsuario().getId().equals(logueado.getId())) return "redirect:/reservas";
+        if (!"confirmada".equals(reserva.getEstado()) && !"en_proceso".equals(reserva.getEstado())) {
+            return "redirect:/reservas";
+        }
+
+        // Cancelar la reserva
+        reserva.setEstado("cancelada");
+        reservaService.guardar(reserva);
+
+        // Actualizar pago a reembolsado
+        pagoService.buscarPorReserva(id).ifPresent(pago -> {
+            pago.setEstadoPago("reembolsado");
+            pagoService.guardar(pago);
+        });
+
+        return "redirect:/reservas";
+    }
+
     private void cargarDatosFormulario(Model model, HttpSession session) {
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         model.addAttribute("vehiculos", vehiculoService.listarTodos());
@@ -240,7 +332,7 @@ public class ReservaController {
         if (logueado != null && logueado.isAdmin()) {
             model.addAttribute("usuarios", usuarioService.listarTodos());
         }
-        model.addAttribute("estados", new String[]{"pendiente", "confirmada", "cancelada", "finalizada"});
+        model.addAttribute("estados", new String[]{"pendiente", "confirmada", "en_proceso", "cancelada", "finalizada"});
     }
 }
 

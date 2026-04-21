@@ -6,8 +6,8 @@ import java.time.LocalDate;
 /**
  * Entidad que representa la tabla pagos en la base de datos.
  * Cada pago esta asociado a una unica reserva (relacion 1:1).
- * El estado_pago siempre es "realizado" porque el pago se genera
- * automaticamente al confirmar la reserva.
+ * El estado_pago puede ser 'realizado' o 'reembolsado'.
+ * Cuando se aprueba un reembolso se crea una Devolucion asociada.
  */
 @Entity
 @Table(name = "pagos")
@@ -35,7 +35,7 @@ public class Pago {
     @Column(name = "metodo_pago", nullable = false)
     private String metodoPago;
 
-    /** Estado fijo: siempre "realizado" al crear el pago automaticamente. */
+    /** Estado fijo: 'realizado' al crear el pago; cambia a 'reembolsado' si hay devolucion. */
     @Column(name = "estado_pago", nullable = false)
     private String estadoPago = "realizado";
 
@@ -43,6 +43,13 @@ public class Pago {
     @OneToOne
     @JoinColumn(name = "id_reserva", nullable = false, unique = true)
     private Reserva reserva;
+
+    /**
+     * Relacion inversa con Devolucion (puede ser null si no existe reembolso).
+     * mappedBy indica que Devolucion es el lado propietario de la FK.
+     */
+    @OneToOne(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Devolucion devolucion;
 
     // Constructor vacio (obligatorio para JPA)
     public Pago() {
@@ -89,6 +96,12 @@ public class Pago {
     }
     public void setReserva(Reserva reserva) {
         this.reserva = reserva;
+    }
+    public Devolucion getDevolucion() {
+        return devolucion;
+    }
+    public void setDevolucion(Devolucion devolucion) {
+        this.devolucion = devolucion;
     }
     @Override
     public String toString() {

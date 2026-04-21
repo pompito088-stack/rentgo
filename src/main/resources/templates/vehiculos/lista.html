@@ -322,8 +322,14 @@
                            style="background:var(--teal-600);border-radius:8px;flex:1;">
                             <i class="bi bi-eye me-1"></i>Ver detalle
                         </a>
-                        <a th:if="${v.disponibilidad == 'disponible'}"
+                        <a th:if="${v.disponibilidad == 'disponible' and session.usuarioLogueado != null}"
                            th:href="@{/reservas/nuevo(vehiculoId=${v.id})}"
+                           class="btn btn-sm fw-600"
+                           style="background:#22c55e;color:#fff;border-radius:8px;flex:1;">
+                            <i class="bi bi-calendar-plus me-1"></i>Reservar
+                        </a>
+                        <a th:if="${v.disponibilidad == 'disponible' and session.usuarioLogueado == null}"
+                           th:href="@{/login}"
                            class="btn btn-sm fw-600"
                            style="background:#22c55e;color:#fff;border-radius:8px;flex:1;">
                             <i class="bi bi-calendar-plus me-1"></i>Reservar

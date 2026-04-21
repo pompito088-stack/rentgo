@@ -52,6 +52,11 @@ public class Usuario {
     @Column(name = "password", nullable = false)
     private String password;
 
+    /** Ruta a la foto del carnet de conducir (opcional). */
+    @Size(max = 255, message = "La ruta no puede superar 255 caracteres")
+    @Column(name = "ruta_foto_carnet", length = 255)
+    private String rutaFotoCarnet;
+
     /**
      * Relacion ManyToOne con TipoUsuario.
      * Muchos usuarios pueden tener el mismo tipo (ej: muchos "cliente").
@@ -125,6 +130,12 @@ public class Usuario {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+    public String getRutaFotoCarnet() {
+        return rutaFotoCarnet;
+    }
+    public void setRutaFotoCarnet(String rutaFotoCarnet) {
+        this.rutaFotoCarnet = rutaFotoCarnet;
     }
     public TipoUsuario getTipoUsuario() {
         return tipoUsuario;

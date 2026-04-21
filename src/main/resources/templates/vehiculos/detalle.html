@@ -133,7 +133,19 @@
 
                 <!-- Botones acción -->
                 <div class="d-flex flex-wrap gap-2">
-                    <a th:href="@{/reservas/nuevo(vehiculoId=${vehiculo.id})}" class="btn text-white fw-600 flex-grow-1"
+                    <!-- ADMIN: Editar este vehículo -->
+                    <a th:if="${esAdmin}" th:href="@{/vehiculos/editar/{id}(id=${vehiculo.id})}"
+                       class="btn text-white fw-600 flex-grow-1"
+                       style="background:#2563eb;border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
+                        <i class="bi bi-pencil-square me-2"></i>Editar este vehículo
+                    </a>
+                    <!-- CLIENTE logueado: Reservar -->
+                    <a th:if="${!esAdmin and estaLogueado}" th:href="@{/reservas/nuevo(vehiculoId=${vehiculo.id})}" class="btn text-white fw-600 flex-grow-1"
+                       style="background:var(--teal-600);border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
+                        <i class="bi bi-calendar-plus me-2"></i>Reservar este vehículo
+                    </a>
+                    <!-- VISITANTE: ir a login -->
+                    <a th:if="${!esAdmin and !estaLogueado}" th:href="@{/login}" class="btn text-white fw-600 flex-grow-1"
                        style="background:var(--teal-600);border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
                         <i class="bi bi-calendar-plus me-2"></i>Reservar este vehículo
                     </a>

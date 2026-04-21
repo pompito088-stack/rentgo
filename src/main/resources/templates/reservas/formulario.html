@@ -25,9 +25,11 @@
     <div class="container py-4">
         <div class="row g-4 justify-content-center">
             <div class="col-lg-8">
-                <form th:action="@{/reservas/guardar}" th:object="${reserva}" method="post" novalidate>
+                <form th:action="@{/reservas/guardar}" th:object="${reserva}" method="post" novalidate id="formReserva">
                     <input type="hidden" th:field="*{id}">
                     <input type="hidden" th:field="*{fechaReserva}">
+                    <!-- precioTotal SIEMPRE presente y fuera del aside (bug-fix: no se enviaba si el aside estaba oculto) -->
+                    <input type="hidden" id="precioTotal" th:field="*{precioTotal}">
 
                     <!-- BLOQUE 1: Vehículo, fechas y horas -->
                     <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
@@ -42,9 +44,15 @@
                                 <select class="form-select" id="vehiculo" th:field="*{vehiculo.id}" required>
                                     <option value="">— Seleccionar vehículo —</option>
                                     <option th:each="v : ${vehiculos}" th:value="${v.id}"
-                                            th:attr="data-precio=${v.precioDia},data-fianza=${v.fianza},data-sucursal=${v.sucursal.id}"
+                                            th:attr="data-precio=${v.precioDia},data-fianza=${v.fianza},data-sucursal=${v.sucursal.id},data-sucursal-nombre=${v.sucursal.nombre + ' (' + v.sucursal.ciudad + ')'}"
                                             th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre + ' (' + v.matricula + ') · ' + v.precioDia + '€/día'}"></option>
                                 </select>
+                                <!-- Sucursal de recogida inline -->
+                                <div id="sucursalRecogidaInline" class="mt-2 d-none"
+                                     style="background:#f0fdfa;border:1px solid var(--teal-100);border-radius:10px;padding:.5rem .85rem;font-size:.85rem;color:var(--teal-700);display:flex;align-items:center;gap:.5rem;">
+                                    <i class="bi bi-geo-alt-fill" style="color:var(--teal-500);flex-shrink:0;"></i>
+                                    <span><strong>Sucursal de recogida:</strong> <span id="sucursalRecogidaNombreInline"></span></span>
+                                </div>
                             </div>
                             <!-- Fecha y hora inicio -->
                             <div class="col-md-6">
@@ -85,14 +93,12 @@
                         </h2>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="sucursalRecogida" class="form-label">
+                                <label for="sucursalRecogidaTexto" class="form-label">
                                     <i class="bi bi-geo-alt-fill me-1" style="color:var(--teal-500);"></i>Sucursal de recogida
                                 </label>
-                                <select class="form-select" id="sucursalRecogida" disabled>
-                                    <option value="">— Se asigna con el vehículo —</option>
-                                    <option th:each="s : ${sucursales}" th:value="${s.id}"
-                                            th:text="${s.nombre + ' (' + s.ciudad + ')'}"></option>
-                                </select>
+                                <input type="text" class="form-control" id="sucursalRecogidaTexto"
+                                       readonly placeholder="— Se asigna con el vehículo —"
+                                       style="background:#f3f4f6;cursor:not-allowed;font-weight:600;color:var(--teal-700);">
                                 <input type="hidden" id="sucursalRecogidaHidden" name="sucursalRecogida.id" th:value="${reserva.sucursalRecogida?.id}">
                                 <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Se asigna automáticamente según el vehículo.</small>
                             </div>
@@ -170,36 +176,60 @@
                         </div>
                     </section>
 
-                    <!-- RESUMEN PRECIO -->
-                    <aside id="resumenPrecio" style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1.5px solid var(--teal-100);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;display:none;">
+                    <!-- Aviso política de cancelación -->
+                    <div class="alert d-flex align-items-start gap-2 mb-3" role="alert"
+                         style="background:#fef9c3;border:1px solid #fde68a;border-radius:12px;font-size:.85rem;color:#92400e;">
+                        <i class="bi bi-clock-fill mt-1" style="color:#d97706;flex-shrink:0;"></i>
+                        <span>
+                            <strong>Política de cancelación:</strong> si cancelas con más de <strong>24 horas</strong> de antelación recibirás el <strong>100% del importe</strong>. Si cancelas con menos de 24 horas, se retendrá el <strong>50%</strong> del importe del alquiler. La fianza siempre se devuelve íntegramente.
+                        </span>
+                    </div>
+
+                    <!-- RESUMEN PRECIO (siempre visible, se actualiza dinámicamente) -->
+                    <aside id="resumenPrecio" style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1.5px solid var(--teal-100);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;">
                         <h3 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;">
                             <i class="bi bi-receipt me-1" style="color:var(--teal-600);"></i>Resumen del presupuesto
                         </h3>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
-                            <span class="text-muted">Precio por día (vehículo)</span>
-                            <span id="rPrecioDia" class="fw-500">—</span>
+                        <p id="resumenAviso" style="font-size:.82rem;color:#6b7280;margin:0 0 .75rem;">
+                            <i class="bi bi-info-circle me-1"></i>Selecciona vehículo y fechas para ver el cálculo.
+                        </p>
+                        <div id="resumenDetalle" style="display:none;">
+                            <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
+                                <span class="text-muted">Precio por día (vehículo)</span>
+                                <span id="rPrecioDia" class="fw-500">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
+                                <span class="text-muted">Número de días</span>
+                                <span id="rDias" class="fw-500">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
+                                <span class="text-muted">Subtotal vehículo</span>
+                                <span id="rSubtotalVeh" class="fw-500">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;" id="filaExtras">
+                                <span class="text-muted">Extras (<span id="rNumExtras">0</span>) × días</span>
+                                <span id="rExtras" class="fw-500">—</span>
+                            </div>
+                            <ul id="rListaExtras" class="list-unstyled mb-1" style="font-size:.78rem;color:#6b7280;padding-left:.5rem;"></ul>
+                            <hr style="border-color:var(--teal-100);margin:.75rem 0;">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="font-weight:700;color:#111827;">Total alquiler</span>
+                                <span id="rTotal" style="font-size:1.3rem;font-weight:800;color:var(--teal-600);">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between" id="filaFianza" style="background:#fef9c3;border-radius:8px;padding:.5rem .75rem;">
+                                <span style="font-size:.85rem;color:#92400e;">
+                                    <i class="bi bi-shield-check me-1"></i>Fianza reembolsable
+                                </span>
+                                <span id="rFianza" style="font-size:.95rem;font-weight:700;color:#92400e;">—</span>
+                            </div>
+                            <p style="font-size:.75rem;color:#9ca3af;margin-top:.4rem;margin-bottom:.75rem;">La fianza se devuelve al entregar el vehículo en perfectas condiciones.</p>
+                            <div class="d-flex justify-content-between" id="filaTotalPagar" style="background:linear-gradient(135deg,var(--teal-600),var(--teal-700));border-radius:10px;padding:.75rem 1rem;">
+                                <span style="font-size:.95rem;font-weight:700;color:#fff;">
+                                    <i class="bi bi-credit-card me-1"></i>Total a pagar (alquiler + fianza)
+                                </span>
+                                <span id="rTotalPagar" style="font-size:1.15rem;font-weight:800;color:#fff;">—</span>
+                            </div>
                         </div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
-                            <span class="text-muted">Número de días</span>
-                            <span id="rDias" class="fw-500">—</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;" id="filaExtras">
-                            <span class="text-muted">Extras/día</span>
-                            <span id="rExtras" class="fw-500">—</span>
-                        </div>
-                        <hr style="border-color:var(--teal-100);margin:.75rem 0;">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span style="font-weight:700;color:#111827;">Total alquiler</span>
-                            <span id="rTotal" style="font-size:1.3rem;font-weight:800;color:var(--teal-600);">—</span>
-                        </div>
-                        <div class="d-flex justify-content-between" id="filaFianza" style="background:#fef9c3;border-radius:8px;padding:.5rem .75rem;">
-                            <span style="font-size:.85rem;color:#92400e;">
-                                <i class="bi bi-shield-check me-1"></i>Fianza reembolsable
-                            </span>
-                            <span id="rFianza" style="font-size:.95rem;font-weight:700;color:#92400e;">—</span>
-                        </div>
-                        <p style="font-size:.75rem;color:#9ca3af;margin-top:.4rem;margin-bottom:0;">La fianza se devuelve al entregar el vehículo en perfectas condiciones.</p>
-                        <input type="number" step="0.01" id="precioTotal" th:field="*{precioTotal}" class="d-none" min="0">
                     </aside>
 
                     <!-- Aviso legal -->
@@ -231,10 +261,10 @@
 <div th:replace="~{fragments/layout :: scripts}"></div>
 
 <script>
-    // Toggle extra cards
+    // Toggle extra cards — usar preventDefault evita el doble-toggle del label+checkbox
     document.querySelectorAll('.extra-card').forEach(function(card) {
         card.addEventListener('click', function(e) {
-            if (e.target.classList.contains('extra-check')) return;
+            e.preventDefault();
             var cb = card.querySelector('.extra-check');
             cb.checked = !cb.checked;
             card.classList.toggle('selected', cb.checked);
@@ -248,14 +278,22 @@
     document.getElementById('vehiculo').addEventListener('change', function() {
         var sel = this.options[this.selectedIndex];
         var sucursalId = sel.getAttribute('data-sucursal');
-        var recogidaSelect = document.getElementById('sucursalRecogida');
+        var sucursalNombre = sel.getAttribute('data-sucursal-nombre');
+        var recogidaTexto = document.getElementById('sucursalRecogidaTexto');
         var recogidaHidden = document.getElementById('sucursalRecogidaHidden');
+        var inlineDiv = document.getElementById('sucursalRecogidaInline');
+        var inlineNombre = document.getElementById('sucursalRecogidaNombreInline');
         if (sucursalId) {
-            recogidaSelect.value = sucursalId;
+            recogidaTexto.value = sucursalNombre;
             recogidaHidden.value = sucursalId;
+            inlineNombre.textContent = sucursalNombre;
+            inlineDiv.classList.remove('d-none');
+            inlineDiv.style.display = 'flex';
         } else {
-            recogidaSelect.value = '';
+            recogidaTexto.value = '';
             recogidaHidden.value = '';
+            inlineNombre.textContent = '';
+            inlineDiv.classList.add('d-none');
         }
         calcularPrecio();
     });
@@ -265,10 +303,12 @@
         var fechaInicio = document.getElementById('fechaInicio').value;
         var fechaFin = document.getElementById('fechaFin').value;
         var precioInput = document.getElementById('precioTotal');
-        var resumen = document.getElementById('resumenPrecio');
+        var detalle = document.getElementById('resumenDetalle');
+        var aviso = document.getElementById('resumenAviso');
 
         if (!vehiculoSelect.value || !fechaInicio || !fechaFin) {
-            resumen.style.display = 'none';
+            detalle.style.display = 'none';
+            aviso.style.display = 'block';
             precioInput.value = '';
             return;
         }
@@ -278,55 +318,101 @@
         var fianza = parseFloat(selectedOption.getAttribute('data-fianza') || 0);
         var dias = Math.round((new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
 
-        if (dias > 0 && !isNaN(precioDia)) {
-            var extrasPorDia = 0;
-            document.querySelectorAll('.extra-check:checked').forEach(function(cb) {
-                extrasPorDia += parseFloat(cb.getAttribute('data-precio') || 0);
-            });
-
-            var totalVehiculo = precioDia * dias;
-            var totalExtras = extrasPorDia * dias;
-            var total = (totalVehiculo + totalExtras).toFixed(2);
-
-            precioInput.value = total;
-            document.getElementById('rPrecioDia').textContent = precioDia.toFixed(2) + ' €';
-            document.getElementById('rDias').textContent = dias + ' día(s)';
-
-            var filaExtras = document.getElementById('filaExtras');
-            if (extrasPorDia > 0) {
-                filaExtras.style.display = 'flex';
-                document.getElementById('rExtras').textContent = extrasPorDia.toFixed(2) + ' €';
-            } else {
-                filaExtras.style.display = 'none';
-            }
-
-            document.getElementById('rTotal').textContent = total + ' €';
-
-            if (!isNaN(fianza) && fianza > 0) {
-                document.getElementById('rFianza').textContent = fianza.toFixed(2) + ' €';
-                document.getElementById('filaFianza').style.display = 'flex';
-            } else {
-                document.getElementById('filaFianza').style.display = 'none';
-            }
-
-            resumen.style.display = 'block';
-        } else {
-            resumen.style.display = 'none';
+        if (dias <= 0 || isNaN(precioDia)) {
+            detalle.style.display = 'none';
+            aviso.style.display = 'block';
+            aviso.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>La fecha de devolución debe ser posterior a la de recogida.';
             precioInput.value = '';
+            return;
         }
+
+        // Sumar extras y construir lista
+        var extrasPorDia = 0;
+        var numExtras = 0;
+        var listaHtml = '';
+        document.querySelectorAll('.extra-check:checked').forEach(function(cb) {
+            var precio = parseFloat(cb.getAttribute('data-precio') || 0);
+            extrasPorDia += precio;
+            numExtras++;
+            var nombre = cb.closest('.extra-card').querySelector('.extra-name').textContent.trim();
+            listaHtml += '<li>· ' + nombre + ' (' + precio.toFixed(2) + ' €/día)</li>';
+        });
+
+        var subtotalVeh = precioDia * dias;
+        var totalExtras = extrasPorDia * dias;
+        var totalAlquiler = subtotalVeh + totalExtras;
+        var totalPagar = totalAlquiler + (isNaN(fianza) ? 0 : fianza);
+
+        // Volcar al hidden input antes de cualquier render para que SIEMPRE haya valor
+        precioInput.value = totalAlquiler.toFixed(2);
+
+        // Render
+        document.getElementById('rPrecioDia').textContent = precioDia.toFixed(2) + ' €';
+        document.getElementById('rDias').textContent = dias + ' día(s)';
+        document.getElementById('rSubtotalVeh').textContent = subtotalVeh.toFixed(2) + ' €';
+        document.getElementById('rNumExtras').textContent = numExtras;
+        document.getElementById('rExtras').textContent = totalExtras.toFixed(2) + ' €';
+        document.getElementById('rListaExtras').innerHTML = listaHtml;
+        document.getElementById('filaExtras').style.display = numExtras > 0 ? 'flex' : 'none';
+        document.getElementById('rTotal').textContent = totalAlquiler.toFixed(2) + ' €';
+        document.getElementById('rFianza').textContent = (isNaN(fianza) ? 0 : fianza).toFixed(2) + ' €';
+        document.getElementById('rTotalPagar').textContent = totalPagar.toFixed(2) + ' €';
+
+        aviso.style.display = 'none';
+        detalle.style.display = 'block';
     }
 
     document.getElementById('fechaInicio').addEventListener('change', calcularPrecio);
     document.getElementById('fechaFin').addEventListener('change', calcularPrecio);
+
+    // Garantía final: al enviar el formulario, recalcular para asegurar precioTotal
+    document.getElementById('formReserva').addEventListener('submit', function(e) {
+        calcularPrecio();
+        var precio = document.getElementById('precioTotal').value;
+        if (!precio || parseFloat(precio) <= 0) {
+            e.preventDefault();
+            alert('Por favor selecciona un vehículo y fechas válidas para calcular el precio.');
+            document.getElementById('resumenPrecio').scrollIntoView({behavior:'smooth', block:'center'});
+        }
+    });
 
     // Preseleccionar vehiculo si viene del detalle
     var vehiculoPreseleccionado = /*[[${vehiculoPreseleccionado}]]*/ null;
     if (vehiculoPreseleccionado) {
         var sel = document.getElementById('vehiculo');
         sel.value = vehiculoPreseleccionado;
+        // Disparar change para rellenar sucursal y precio
         sel.dispatchEvent(new Event('change'));
+    } else {
+        // Si hay un vehículo ya seleccionado (ej: recarga por errores de validación), rellenar sucursal
+        var selVehiculo = document.getElementById('vehiculo');
+        if (selVehiculo.value) {
+            selVehiculo.dispatchEvent(new Event('change'));
+        }
     }
     calcularPrecio();
+
+    // ── Establecer fecha mínima = hoy (tiempo real) ──
+    (function() {
+        var hoy = new Date();
+        var yyyy = hoy.getFullYear();
+        var mm = String(hoy.getMonth() + 1).padStart(2, '0');
+        var dd = String(hoy.getDate()).padStart(2, '0');
+        var fechaHoy = yyyy + '-' + mm + '-' + dd;
+        document.getElementById('fechaInicio').setAttribute('min', fechaHoy);
+        document.getElementById('fechaFin').setAttribute('min', fechaHoy);
+    })();
+
+    // Asegurar que fecha fin >= fecha inicio
+    document.getElementById('fechaInicio').addEventListener('change', function() {
+        var fi = this.value;
+        if (fi) {
+            document.getElementById('fechaFin').setAttribute('min', fi);
+            if (document.getElementById('fechaFin').value && document.getElementById('fechaFin').value < fi) {
+                document.getElementById('fechaFin').value = '';
+            }
+        }
+    });
 </script>
 </body>
 </html>

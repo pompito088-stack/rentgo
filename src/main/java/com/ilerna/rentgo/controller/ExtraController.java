@@ -26,10 +26,6 @@ public class ExtraController {
         this.extraService = extraService;
     }
 
-    private boolean noEstaLogueado(HttpSession session) {
-        return session.getAttribute("usuarioLogueado") == null;
-    }
-
     private boolean noEsAdmin(HttpSession session) {
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         return logueado == null || !logueado.isAdmin();
@@ -37,7 +33,6 @@ public class ExtraController {
 
     @GetMapping
     public String listar(Model model, HttpSession session) {
-        if (noEstaLogueado(session)) return "redirect:/login";
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         model.addAttribute("extras", extraService.listarTodos());
         model.addAttribute("esAdmin", logueado != null && logueado.isAdmin());

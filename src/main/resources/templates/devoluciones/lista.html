@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Devoluciones')}"></head>
+<body class="admin-layout">
+<aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
+<div class="admin-wrapper">
+    <header class="admin-topbar">
+        <h1 class="page-title"><i class="bi bi-arrow-return-left me-2" style="color:var(--teal-600)"></i>Devoluciones</h1>
+        <div class="topbar-right">
+            <span class="topbar-badge" th:text="${#lists.size(devoluciones)} + ' devolución/es'"></span>
+            <a th:href="@{/devoluciones/nueva}" class="btn btn-teal btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>Nueva devolución
+            </a>
+        </div>
+    </header>
+    <main class="admin-page-content">
+
+        <!-- Barra de búsqueda -->
+        <div class="admin-card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label for="buscarDev" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                        <i class="bi bi-search me-1"></i>Buscar
+                    </label>
+                    <input type="text" id="buscarDev" class="form-control form-control-sm"
+                           placeholder="Cliente, nº pago, motivo..." oninput="filtrarDevoluciones()">
+                </div>
+                <div class="col-md-2 text-end">
+                    <button class="btn btn-outline-secondary btn-sm w-100" type="button"
+                            onclick="document.getElementById('buscarDev').value='';filtrarDevoluciones()">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+                <div class="col-md-5 text-end">
+                    <small class="text-muted"><span id="contDev">0</span> devolución/es</small>
+                </div>
+            </div>
+        </div>
+
+        <section class="admin-table" aria-label="Tabla de devoluciones">
+            <table class="table table-hover mb-0" id="tablaDev">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pago</th>
+                        <th>Reserva</th>
+                        <th>Cliente</th>
+                        <th>Fecha Devolución</th>
+                        <th><i class="bi bi-currency-euro me-1"></i>Reembolsado</th>
+                        <th>Motivo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="dev : ${devoluciones}">
+                        <td>
+                            <span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;"
+                                  th:text="${dev.id}"></span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:600;border:1px solid #fde68a;"
+                                  th:text="'Pago #' + ${dev.pago.id}"></span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background:#eff6ff;color:#2563eb;font-weight:600;border:1px solid #bfdbfe;"
+                                  th:text="'Reserva #' + ${dev.pago.reserva.id}"></span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--teal-500),var(--teal-700));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;"
+                                      th:text="${dev.pago.reserva.usuario.nombre.substring(0,1).toUpperCase() + dev.pago.reserva.usuario.apellidos.substring(0,1).toUpperCase()}"></span>
+                                <span style="font-weight:500;"
+                                      th:text="${dev.pago.reserva.usuario.nombre + ' ' + dev.pago.reserva.usuario.apellidos}"></span>
+                            </div>
+                        </td>
+                        <td th:text="${dev.fechaDevolucion}"></td>
+                        <td style="font-weight:700;color:#dc2626;"
+                            th:text="${#numbers.formatDecimal(dev.importeReembolsado, 1, 2)} + ' €'"></td>
+                        <td>
+                            <span th:if="${dev.motivo != null and !dev.motivo.isBlank()}"
+                                  class="text-muted"
+                                  style="font-size:.82rem;max-width:220px;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                                  th:text="${dev.motivo}"></span>
+                            <span th:if="${dev.motivo == null or dev.motivo.isBlank()}" class="text-muted">—</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a th:href="@{/devoluciones/editar/{id}(id=${dev.id})}"
+                                   class="btn-action-edit" title="Editar">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                                <a th:href="@{/devoluciones/eliminar/{id}(id=${dev.id})}"
+                                   class="btn-action-delete" title="Eliminar"
+                                   onclick="return confirm('¿Eliminar esta devolución? El pago volverá a estado Realizado.')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="sinResultadosDev" class="d-none">
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-search me-2"></i>Sin resultados.
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(devoluciones)}">
+                        <td colspan="8" class="text-center text-muted py-4">No hay devoluciones registradas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function filtrarDevoluciones() {
+        var texto = (document.getElementById('buscarDev').value || '').toLowerCase();
+        var filas = document.querySelectorAll('#tablaDev tbody tr:not(#sinResultadosDev)');
+        var visibles = 0;
+        filas.forEach(function(fila) {
+            var cumple = !texto || fila.textContent.toLowerCase().includes(texto);
+            fila.classList.toggle('d-none', !cumple);
+            if (cumple) visibles++;
+        });
+        document.getElementById('contDev').textContent = visibles;
+        document.getElementById('sinResultadosDev').classList.toggle('d-none', visibles > 0);
+    }
+    document.addEventListener('DOMContentLoaded', filtrarDevoluciones);
+</script>
+</body>
+</html>
+

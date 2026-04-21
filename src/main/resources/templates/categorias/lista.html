@@ -31,17 +31,19 @@
         <section class="admin-table">
             <table class="table table-hover mb-0" id="tablaCats">
                 <thead>
-                    <tr><th>ID</th><th>Nombre</th><th>Descripcion</th><th>Acciones</th></tr>
+                    <tr><th>#</th><th>Nombre</th><th>Descripción</th><th class="text-end">Acciones</th></tr>
                 </thead>
                 <tbody>
                     <tr th:each="cat : ${categorias}">
-                        <td th:text="${cat.id}"></td>
+                        <td><span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;" th:text="${cat.id}"></span></td>
                         <td class="fw-500" th:text="${cat.nombre}"></td>
-                        <td th:text="${cat.descripcion}"></td>
-                        <td>
-                            <a th:href="@{/categorias/editar/{id}(id=${cat.id})}" class="btn-action-edit"><i class="bi bi-pencil"></i></a>
-                            <a th:href="@{/categorias/eliminar/{id}(id=${cat.id})}" class="btn-action-delete"
-                               onclick="return confirm('¿Eliminar esta categoria?')"><i class="bi bi-trash"></i></a>
+                        <td style="color:#6b7280;font-size:.88rem;" th:text="${cat.descripcion}"></td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a th:href="@{/categorias/editar/{id}(id=${cat.id})}" class="btn-action-edit"><i class="bi bi-pencil me-1"></i>Editar</a>
+                                <a th:href="@{/categorias/eliminar/{id}(id=${cat.id})}" class="btn-action-delete"
+                                   onclick="return confirm('¿Eliminar esta categoría?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
+                            </div>
                         </td>
                     </tr>
                     <tr id="sinResultadosCats" class="d-none">

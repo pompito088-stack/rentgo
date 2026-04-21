@@ -43,34 +43,42 @@
             <table class="table table-hover mb-0" id="tablaUsuarios">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Apellidos</th>
+                        <th>#</th>
+                        <th>Usuario</th>
                         <th>Email</th>
-                        <th>Telefono</th>
+                        <th>Teléfono</th>
                         <th>DNI</th>
-                        <th>Tipo</th>
+                        <th>Rol</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="usuario : ${usuarios}" th:attr="data-rol=${usuario.tipoUsuario.nombre}">
-                        <td th:text="${usuario.id}"></td>
-                        <td class="fw-500" th:text="${usuario.nombre}"></td>
-                        <td th:text="${usuario.apellidos}"></td>
-                        <td th:text="${usuario.email}"></td>
-                        <td th:text="${usuario.telefono}"></td>
-                        <td th:text="${usuario.dni}"></td>
+                        <td><span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;" th:text="${usuario.id}"></span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal-500),var(--teal-700));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;"
+                                      th:text="${usuario.nombre.substring(0,1).toUpperCase() + usuario.apellidos.substring(0,1).toUpperCase()}"></span>
+                                <div>
+                                    <div style="font-weight:600;font-size:.9rem;color:#111827;" th:text="${usuario.nombre + ' ' + usuario.apellidos}"></div>
+                                    <div style="font-size:.75rem;color:#9ca3af;" th:text="${usuario.direccion}"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:.88rem;" th:text="${usuario.email}"></td>
+                        <td style="font-size:.88rem;" th:text="${usuario.telefono}"></td>
+                        <td style="font-size:.88rem;" th:text="${usuario.dni}"></td>
                         <td>
                             <span class="badge rounded-pill"
+                                  style="font-size:.78rem;padding:.35em .75em;"
                                   th:classappend="${usuario.tipoUsuario.nombre == 'admin'} ? 'bg-danger' : 'bg-primary'"
-                                  th:text="${usuario.tipoUsuario.nombre}"></span>
+                                  th:text="${usuario.tipoUsuario.nombre == 'admin'} ? 'Admin' : 'Cliente'"></span>
                         </td>
                     </tr>
                     <tr id="sinResultadosUsuarios" class="d-none">
-                        <td colspan="7" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
+                        <td colspan="6" class="text-center text-muted py-4"><i class="bi bi-search me-2"></i>Sin resultados.</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(usuarios)}">
-                        <td colspan="7" class="text-center text-muted py-4">No hay usuarios registrados.</td>
+                        <td colspan="6" class="text-center text-muted py-4">No hay usuarios registrados.</td>
                     </tr>
                 </tbody>
             </table>

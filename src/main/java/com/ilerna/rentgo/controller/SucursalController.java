@@ -33,8 +33,9 @@ public class SucursalController {
 
     @GetMapping
     public String listar(Model model, HttpSession session) {
-        if (noEsAdmin(session)) return "redirect:/login";
+        Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         model.addAttribute("sucursales", sucursalService.listarTodas());
+        model.addAttribute("esAdmin", logueado != null && logueado.isAdmin());
         return "sucursales/lista";
     }
 

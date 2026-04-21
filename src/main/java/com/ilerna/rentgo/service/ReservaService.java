@@ -50,5 +50,23 @@ public class ReservaService {
     public void eliminar(Integer id) {
         reservaRepository.deleteById(id);
     }
+
+    /**
+     * Auto-finaliza reservas cuya fecha_fin ya ha pasado y siguen en estado
+     * "confirmada" o "pendiente". Se ejecuta al listar reservas para mantener
+     * estados coherentes en tiempo real.
+     */
+    public void autoFinalizarExpiradas() {
+        LocalDate hoy = LocalDate.now();
+        List<Reserva> todas = reservaRepository.findAll();
+        for (Reserva r : todas) {
+            if (r.getFechaFin() != null && r.getFechaFin().isBefore(hoy)
+                    && ("confirmada".equals(r.getEstado()) || "pendiente".equals(r.getEstado())
+                        || "en_proceso".equals(r.getEstado()))) {
+                r.setEstado("finalizada");
+                reservaRepository.save(r);
+            }
+        }
+    }
 }
 

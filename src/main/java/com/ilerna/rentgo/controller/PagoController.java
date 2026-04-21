@@ -34,6 +34,16 @@ public class PagoController {
         return logueado == null || !logueado.isAdmin();
     }
 
+    /** GET /pagos/mis-pagos — Vista cliente con sus propios pagos */
+    @GetMapping("/mis-pagos")
+    public String misPagos(Model model, HttpSession session) {
+        Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (logueado == null) return "redirect:/login";
+        if (logueado.isAdmin()) return "redirect:/pagos";
+        model.addAttribute("pagos", pagoService.listarPorUsuario(logueado.getId()));
+        return "pagos/mis-pagos";
+    }
+
     @GetMapping
     public String listar(Model model, HttpSession session) {
         if (noEsAdmin(session)) return "redirect:/login";
@@ -69,7 +79,11 @@ public class PagoController {
                           Model model,
                           HttpSession session) {
         if (noEsAdmin(session)) return "redirect:/login";
-        pago.setEstadoPago("realizado");
+        // Solo forzar "realizado" en pagos NUEVOS; en edición se respeta el estado seleccionado
+        // (solo 'realizado' o 'reembolsado' — gestionado desde el formulario o desde Devoluciones)
+        if (pago.getId() == null) {
+            pago.setEstadoPago("realizado");
+        }
         if (result.hasErrors()) {
             model.addAttribute("reservas", reservaService.listarTodas());
             model.addAttribute("metodosPago", new String[]{"tarjeta_credito", "tarjeta_debito", "paypal"});

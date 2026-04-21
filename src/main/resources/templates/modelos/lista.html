@@ -32,17 +32,21 @@
         <section class="admin-table">
             <table class="table table-hover mb-0" id="tablaModelos">
                 <thead>
-                    <tr><th>ID</th><th>Marca</th><th>Modelo</th><th>Acciones</th></tr>
+                    <tr><th>#</th><th>Marca</th><th>Modelo</th><th class="text-end">Acciones</th></tr>
                 </thead>
                 <tbody>
                     <tr th:each="modelo : ${modelos}">
-                        <td th:text="${modelo.id}"></td>
-                        <td th:text="${modelo.marca.nombre}"></td>
-                        <td class="fw-500" th:text="${modelo.nombre}"></td>
+                        <td><span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;" th:text="${modelo.id}"></span></td>
                         <td>
-                            <a th:href="@{/modelos/editar/{id}(id=${modelo.id})}" class="btn-action-edit"><i class="bi bi-pencil"></i></a>
-                            <a th:href="@{/modelos/eliminar/{id}(id=${modelo.id})}" class="btn-action-delete"
-                               onclick="return confirm('¿Eliminar este modelo?')"><i class="bi bi-trash"></i></a>
+                            <span class="badge" style="background:#eff6ff;color:#2563eb;font-weight:600;border:1px solid #bfdbfe;" th:text="${modelo.marca.nombre}"></span>
+                        </td>
+                        <td class="fw-500" th:text="${modelo.nombre}"></td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a th:href="@{/modelos/editar/{id}(id=${modelo.id})}" class="btn-action-edit"><i class="bi bi-pencil me-1"></i>Editar</a>
+                                <a th:href="@{/modelos/eliminar/{id}(id=${modelo.id})}" class="btn-action-delete"
+                                   onclick="return confirm('¿Eliminar este modelo?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
+                            </div>
                         </td>
                     </tr>
                     <tr id="sinResultadosModelos" class="d-none">
@@ -74,5 +78,4 @@
     document.addEventListener('DOMContentLoaded', filtrarModelos);
 </script>
 </body>
-</html>
 </html>

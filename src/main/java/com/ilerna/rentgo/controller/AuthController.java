@@ -5,12 +5,19 @@ import com.ilerna.rentgo.service.TipoUsuarioService;
 import com.ilerna.rentgo.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
 /**
@@ -19,6 +26,9 @@ import java.util.Optional;
  */
 @Controller
 public class AuthController {
+
+    @Value("${app.upload.carnet.path}")
+    private String carnetUploadPath;
 
     private final UsuarioService usuarioService;
     private final TipoUsuarioService tipoUsuarioService;
@@ -67,6 +77,7 @@ public class AuthController {
     @PostMapping("/registro")
     public String registrar(@Valid @ModelAttribute Usuario usuario,
                             BindingResult result,
+                            @RequestParam(value = "carnetFoto", required = false) MultipartFile carnetFoto,
                             Model model,
                             RedirectAttributes redirectAttributes) {
 
@@ -105,6 +116,22 @@ public class AuthController {
 
         // Asignar tipo "cliente" automaticamente
         usuario.setTipoUsuario(tipoUsuarioService.buscarPorNombre("cliente").orElse(null));
+
+        // Subir foto del carnet si se proporciona
+        if (carnetFoto != null && !carnetFoto.isEmpty()) {
+            try {
+                String nombreOriginal = carnetFoto.getOriginalFilename() != null
+                        ? carnetFoto.getOriginalFilename() : "carnet.jpg";
+                String nombreArchivo = nombreOriginal.toLowerCase().replaceAll("[^a-z0-9._-]", "_");
+                Path rutaDir = Paths.get(carnetUploadPath).toAbsolutePath();
+                Files.createDirectories(rutaDir);
+                Files.copy(carnetFoto.getInputStream(), rutaDir.resolve(nombreArchivo),
+                        StandardCopyOption.REPLACE_EXISTING);
+                usuario.setRutaFotoCarnet("/img/carnets/" + nombreArchivo);
+            } catch (IOException e) {
+                // Si falla la subida, continua sin foto
+            }
+        }
 
         usuarioService.guardar(usuario);
 

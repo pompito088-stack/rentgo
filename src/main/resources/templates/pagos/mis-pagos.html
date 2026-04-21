@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Mis Pagos')}"></head>
+<body class="client-layout">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <!-- Mini hero -->
+    <section style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
+                    <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
+                    <li class="breadcrumb-item active" style="color:#fff;">Mis Pagos</li>
+                </ol>
+            </nav>
+            <h1 style="font-size:1.6rem;font-weight:800;margin:0;">
+                <i class="bi bi-credit-card me-2"></i>Mis Pagos
+            </h1>
+        </div>
+    </section>
+
+    <div class="container py-4">
+
+        <!-- Sin pagos -->
+        <div th:if="${#lists.isEmpty(pagos)}" class="text-center py-5">
+            <i class="bi bi-receipt" style="font-size:3.5rem;color:#d1d5db;"></i>
+            <p class="mt-3 text-muted" style="font-size:1.05rem;">Aún no tienes pagos registrados.</p>
+            <a th:href="@{/vehiculos}" class="btn btn-teal mt-2"><i class="bi bi-car-front me-1"></i>Ver vehículos</a>
+        </div>
+
+        <!-- Lista de pagos -->
+        <div class="row g-3" th:unless="${#lists.isEmpty(pagos)}">
+            <article th:each="pago : ${pagos}" class="col-md-6 col-xl-4">
+                <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;transition:box-shadow .25s,transform .25s;height:100%;"
+                     onmouseover="this.style.boxShadow='0 8px 32px rgba(0,0,0,.1)';this.style.transform='translateY(-3px)'"
+                     onmouseout="this.style.boxShadow='';this.style.transform=''">
+
+                    <!-- Header -->
+                    <div style="padding:.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between;"
+                         th:styleappend="${pago.estadoPago == 'reembolsado'} ? 'background:#fef2f2;' : 'background:#f0fdf4;'">
+                        <span style="font-size:.78rem;font-weight:600;color:#6b7280;">
+                            Pago #<span th:text="${pago.id}"></span>
+                            · Reserva #<span th:text="${pago.reserva.id}"></span>
+                        </span>
+                        <span class="badge rounded-pill"
+                              style="font-size:.75rem;padding:.3em .7em;"
+                              th:classappend="${pago.estadoPago == 'reembolsado'} ? 'bg-danger' : 'bg-success'"
+                              th:text="${pago.estadoPago == 'reembolsado' ? 'Reembolsado' : 'Realizado'}"></span>
+                    </div>
+
+                    <!-- Body -->
+                    <div style="padding:1.1rem;">
+                        <!-- Vehículo -->
+                        <h3 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:.6rem;"
+                            th:text="${pago.reserva.vehiculo.modelo.marca.nombre + ' ' + pago.reserva.vehiculo.modelo.nombre}"></h3>
+
+                        <!-- Fechas reserva -->
+                        <div class="d-flex gap-3 mb-2" style="font-size:.83rem;color:#6b7280;">
+                            <div>
+                                <i class="bi bi-calendar-event me-1"></i>
+                                <span th:text="${pago.reserva.fechaInicio}"></span>
+                            </div>
+                            <span>→</span>
+                            <div>
+                                <span th:text="${pago.reserva.fechaFin}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Fecha pago -->
+                        <div style="font-size:.82rem;color:#9ca3af;margin-bottom:.75rem;">
+                            <i class="bi bi-clock me-1"></i>Pagado el <span th:text="${pago.fechaPago}"></span>
+                        </div>
+
+                        <!-- Método de pago -->
+                        <div class="d-flex align-items-center gap-1 mb-2" style="font-size:.85rem;color:#374151;">
+                            <i th:if="${pago.metodoPago == 'tarjeta_credito' or pago.metodoPago == 'tarjeta_debito'}"
+                               class="bi bi-credit-card-fill" style="color:#6366f1;"></i>
+                            <i th:if="${pago.metodoPago == 'paypal'}"
+                               class="bi bi-paypal" style="color:#003087;"></i>
+                            <span th:text="${pago.metodoPago == 'tarjeta_credito' ? 'Tarjeta de crédito' :
+                                           (pago.metodoPago == 'tarjeta_debito' ? 'Tarjeta de débito' : 'PayPal')}"></span>
+                        </div>
+
+                        <!-- Importe y fianza -->
+                        <div style="background:var(--teal-50);border-radius:10px;padding:.6rem .85rem;">
+                            <div class="d-flex justify-content-between" style="font-size:.85rem;margin-bottom:.25rem;">
+                                <span style="color:#6b7280;">Alquiler</span>
+                                <span style="font-weight:700;color:var(--teal-700);"
+                                      th:text="${#numbers.formatDecimal(pago.importe, 1, 2)} + ' €'"></span>
+                            </div>
+                            <div class="d-flex justify-content-between" style="font-size:.82rem;"
+                                 th:if="${pago.fianza != null and pago.fianza > 0}">
+                                <span style="color:#92400e;"><i class="bi bi-shield-check me-1"></i>Fianza</span>
+                                <span style="font-weight:600;color:#92400e;"
+                                      th:text="${#numbers.formatDecimal(pago.fianza, 1, 2)} + ' €'"></span>
+                            </div>
+                            <hr style="border-color:var(--teal-100);margin:.4rem 0;" th:if="${pago.fianza != null and pago.fianza > 0}">
+                            <div class="d-flex justify-content-between" th:if="${pago.fianza != null and pago.fianza > 0}">
+                                <span style="font-size:.88rem;font-weight:700;color:#111827;">Total cobrado</span>
+                                <span style="font-size:1.05rem;font-weight:800;color:var(--teal-600);"
+                                      th:text="${#numbers.formatDecimal(pago.importe.add(pago.fianza), 1, 2)} + ' €'"></span>
+                            </div>
+                        </div>
+
+                        <!-- Devolución (si existe) -->
+                        <div th:if="${pago.devolucion != null}"
+                             style="margin-top:.75rem;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:.65rem .85rem;">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-arrow-return-left" style="color:#dc2626;font-size:1rem;"></i>
+                                <span style="font-size:.82rem;font-weight:700;color:#dc2626;">Devolución aprobada</span>
+                            </div>
+                            <div class="d-flex justify-content-between" style="font-size:.83rem;">
+                                <span style="color:#6b7280;">
+                                    <i class="bi bi-calendar2-check me-1"></i>
+                                    <span th:text="${pago.devolucion.fechaDevolucion}"></span>
+                                </span>
+                                <span style="font-weight:700;color:#dc2626;"
+                                      th:text="${#numbers.formatDecimal(pago.devolucion.importeReembolsado, 1, 2)} + ' € devueltos'"></span>
+                            </div>
+                            <div th:if="${pago.devolucion.motivo != null and !pago.devolucion.motivo.isBlank()}"
+                                 style="font-size:.78rem;color:#9ca3af;margin-top:.3rem;"
+                                 th:text="${pago.devolucion.motivo}"></div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+

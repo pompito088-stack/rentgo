@@ -169,11 +169,11 @@ public class Reserva {
         this.extras = extras;
     }
     /**
-     * Retorna true si la reserva confirmada ya ha pasado su fecha de fin.
+     * Retorna true si la reserva (confirmada o pendiente) ya ha pasado su fecha de fin.
      * Usado en la vista para mostrar el estado "finalizada".
      */
     public boolean isEstaFinalizada() {
-        return "confirmada".equals(estado)
+        return ("confirmada".equals(estado) || "pendiente".equals(estado) || "en_proceso".equals(estado))
                 && fechaFin != null
                 && fechaFin.isBefore(LocalDate.now());
     }

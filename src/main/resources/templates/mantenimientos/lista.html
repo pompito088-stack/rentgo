@@ -43,31 +43,39 @@
             <table class="table table-hover mb-0" id="tablaMant">
                 <thead>
                     <tr>
-                        <th>ID</th><th>Vehiculo</th><th>Motivo</th><th>Fecha Inicio</th><th>Fecha Fin</th><th>Coste</th><th>Estado</th><th>Acciones</th>
+                        <th>#</th><th>Vehículo</th><th>Motivo</th><th>Fecha Inicio</th><th>Fecha Fin</th><th><i class="bi bi-currency-euro me-1"></i>Coste</th><th>Estado</th><th class="text-end">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="m : ${mantenimientos}" th:attr="data-estado=${m.estado}">
-                        <td th:text="${m.id}"></td>
-                        <td th:text="${m.vehiculo.modelo.marca.nombre + ' ' + m.vehiculo.modelo.nombre + ' (' + m.vehiculo.matricula + ')'}"></td>
-                        <td th:text="${m.motivo}"></td>
+                        <td><span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;" th:text="${m.id}"></span></td>
+                        <td>
+                            <div style="font-weight:600;font-size:.88rem;" th:text="${m.vehiculo.modelo.marca.nombre + ' ' + m.vehiculo.modelo.nombre}"></div>
+                            <div style="font-size:.75rem;color:#9ca3af;" th:text="${m.vehiculo.matricula}"></div>
+                        </td>
+                        <td style="color:#6b7280;font-size:.88rem;" th:text="${m.motivo}"></td>
                         <td th:text="${m.fechaInicio}"></td>
                         <td th:text="${m.fechaFin}"></td>
-                        <td th:text="${m.coste + ' €'}"></td>
+                        <td style="font-weight:700;color:var(--teal-700);" th:text="${#numbers.formatDecimal(m.coste, 1, 2)} + ' €'"></td>
                         <td>
                             <span class="badge rounded-pill"
+                                  style="font-size:.78rem;padding:.35em .75em;"
                                   th:classappend="${m.estado == 'finalizado'} ? 'bg-success' :
                                                   (${m.estado == 'pendiente'} ? 'bg-warning text-dark' : 'bg-info')"
-                                  th:text="${m.estado}"></span>
+                                  th:text="${m.estado == 'finalizado'} ? 'Finalizado' :
+                                           (${m.estado == 'pendiente'} ? 'Pendiente' :
+                                           (${m.estado == 'en_proceso'} ? 'En proceso' : ${m.estado}))"></span>
                         </td>
-                        <td>
-                            <a th:href="@{/mantenimientos/editar/{id}(id=${m.id})}" class="btn-action-edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a th:href="@{/mantenimientos/eliminar/{id}(id=${m.id})}" class="btn-action-delete"
-                               onclick="return confirm('¿Eliminar este mantenimiento?')">
-                                <i class="bi bi-trash"></i>
-                            </a>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a th:href="@{/mantenimientos/editar/{id}(id=${m.id})}" class="btn-action-edit">
+                                    <i class="bi bi-pencil me-1"></i>Editar
+                                </a>
+                                <a th:href="@{/mantenimientos/eliminar/{id}(id=${m.id})}" class="btn-action-delete"
+                                   onclick="return confirm('¿Eliminar este mantenimiento?')">
+                                    <i class="bi bi-trash me-1"></i>Eliminar
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     <tr id="sinResultadosMant" class="d-none">

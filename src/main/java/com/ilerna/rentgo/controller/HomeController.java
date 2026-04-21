@@ -44,6 +44,8 @@ public class HomeController {
             model.addAttribute("totalVehiculos", vehiculoService.listarTodos().size());
             model.addAttribute("totalReservas", reservaService.listarTodas().size());
             model.addAttribute("totalSucursales", sucursalService.listarTodas().size());
+            // Auto-finalizar reservas expiradas antes de mostrar el dashboard
+            reservaService.autoFinalizarExpiradas();
             // Actividad reciente: ultimas 5 reservas
             model.addAttribute("ultimasReservas", reservaService.listarUltimas(5));
         }

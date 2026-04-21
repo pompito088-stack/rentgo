@@ -127,6 +127,38 @@
                     <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-lock-fill me-1" style="color:var(--teal-500);"></i>Contraseña cifrada</span>
                     <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-check-circle-fill me-1" style="color:#3b82f6;"></i>Cuenta verificada</span>
                 </div>
+
+                <!-- Carnet de conducir -->
+                <section th:if="${!esAdmin}" style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-top:1.5rem;">
+                    <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1rem;">
+                        <i class="bi bi-credit-card-2-front me-2" style="color:var(--teal-500);"></i>Carnet de conducir
+                    </h2>
+                    <!-- Con foto -->
+                    <div th:if="${usuario.rutaFotoCarnet != null and !#strings.isEmpty(usuario.rutaFotoCarnet)}"
+                         style="text-align:center;">
+                        <img th:src="${usuario.rutaFotoCarnet}"
+                             alt="Carnet de conducir"
+                             style="max-width:100%;max-height:260px;border-radius:12px;border:2px solid #e5e7eb;box-shadow:0 4px 12px rgba(0,0,0,.08);">
+                        <div class="mt-2">
+                            <a th:href="@{/mi-perfil/editar}"
+                               class="btn btn-sm"
+                               style="border:1px solid var(--teal-200);color:var(--teal-700);border-radius:8px;font-size:.82rem;">
+                                <i class="bi bi-arrow-repeat me-1"></i>Actualizar foto
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Sin foto -->
+                    <div th:if="${usuario.rutaFotoCarnet == null or #strings.isEmpty(usuario.rutaFotoCarnet)}"
+                         style="text-align:center;padding:1.5rem 0;">
+                        <i class="bi bi-credit-card-2-front" style="font-size:3rem;color:#d1d5db;"></i>
+                        <p class="mt-2 text-muted" style="font-size:.9rem;">No tienes foto del carnet subida aún.</p>
+                        <a th:href="@{/mi-perfil/editar}"
+                           class="btn btn-sm text-white"
+                           style="background:var(--teal-600);border-radius:8px;font-size:.85rem;">
+                            <i class="bi bi-upload me-1"></i>Subir foto del carnet
+                        </a>
+                    </div>
+                </section>
             </div>
         </div>
     </div>

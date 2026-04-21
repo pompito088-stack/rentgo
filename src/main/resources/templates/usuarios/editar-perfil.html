@@ -4,65 +4,103 @@
 <body class="client-layout">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<main class="container mt-4">
-    <section>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="mb-0">Editar mis datos</h1>
-                <p class="text-muted mb-0">Modifica los datos de tu cuenta.</p>
-            </div>
-            <span class="badge bg-primary fs-6 rounded-pill">Cliente</span>
-        </div>
-
-        <div th:if="${error}" class="alert alert-danger mb-3" th:text="${error}"></div>
-
-        <div class="card border-0 shadow-sm" style="border-radius:12px;">
-            <div class="card-body p-4">
-                <form th:action="@{/mi-perfil/guardar}" th:object="${usuario}" method="post" class="row g-3" novalidate>
-                    <input type="hidden" th:field="*{id}">
-                    <input type="hidden" th:field="*{email}">
-                    <input type="hidden" th:field="*{dni}">
-                    <input type="hidden" th:field="*{password}">
-                    <input type="hidden" th:field="*{tipoUsuario.id}">
-
-                    <div class="col-md-6">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="apellidos" class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" id="apellidos" th:field="*{apellidos}" required>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="telefono" class="form-label">Telefono</label>
-                        <input type="text" class="form-control" id="telefono" th:field="*{telefono}" required>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">Email <small>(no editable)</small></label>
-                        <div class="form-control bg-light" th:text="${usuario.email}"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">DNI <small>(no editable)</small></label>
-                        <div class="form-control bg-light" th:text="${usuario.dni}"></div>
-                    </div>
-                    <div class="col-12">
-                        <label for="direccion" class="form-label">Direccion</label>
-                        <input type="text" class="form-control" id="direccion" th:field="*{direccion}" required>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></div>
-                    </div>
-                    <div class="col-12 d-flex gap-2">
-                        <button type="submit" class="btn text-white" style="background:var(--teal-600)">
-                            <i class="bi bi-save me-1"></i>Guardar cambios
-                        </button>
-                        <a th:href="@{/mi-perfil}" class="btn btn-outline-secondary">Cancelar</a>
-                    </div>
-                </form>
-            </div>
+<main>
+    <!-- Mini hero -->
+    <section style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
+                    <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/mi-perfil}" style="color:rgba(255,255,255,.7);text-decoration:none;">Mi Perfil</a></li>
+                    <li class="breadcrumb-item active" style="color:#fff;">Editar</li>
+                </ol>
+            </nav>
+            <h1 style="font-size:1.6rem;font-weight:800;margin:0;">
+                <i class="bi bi-pencil-square me-2"></i>Editar mis datos
+            </h1>
         </div>
     </section>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div th:if="${error}" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert" style="border-radius:12px;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;">
+                    <form th:action="@{/mi-perfil/guardar}" th:object="${usuario}" method="post"
+                          enctype="multipart/form-data" class="row g-3" novalidate>
+                        <input type="hidden" th:field="*{id}">
+                        <input type="hidden" th:field="*{email}">
+                        <input type="hidden" th:field="*{dni}">
+                        <input type="hidden" th:field="*{password}">
+                        <input type="hidden" th:field="*{tipoUsuario.id}">
+
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" th:field="*{apellidos}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" th:field="*{telefono}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Email <small>(no editable)</small></label>
+                            <div class="form-control bg-light" style="border-radius:8px;" th:text="${usuario.email}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">DNI <small>(no editable)</small></label>
+                            <div class="form-control bg-light" style="border-radius:8px;" th:text="${usuario.dni}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="direccion" th:field="*{direccion}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></div>
+                        </div>
+
+                        <!-- Foto del carnet de conducir -->
+                        <div class="col-12" style="border-top:1px solid #f3f4f6;padding-top:1rem;margin-top:.5rem;">
+                            <label for="carnetFoto" class="form-label fw-600">
+                                <i class="bi bi-credit-card-2-front me-1" style="color:var(--teal-600);"></i>
+                                Foto del carnet de conducir
+                                <small class="text-muted fw-400">(opcional – JPG/PNG, máx. 5 MB)</small>
+                            </label>
+                            <!-- Vista previa de la foto actual -->
+                            <div th:if="${usuario.rutaFotoCarnet != null and !#strings.isEmpty(usuario.rutaFotoCarnet)}"
+                                 class="mb-2">
+                                <img th:src="${usuario.rutaFotoCarnet}" alt="Carnet actual"
+                                     style="max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">
+                                <div style="font-size:.78rem;color:#6b7280;margin-top:.25rem;">
+                                    <i class="bi bi-info-circle me-1"></i>Foto actual. Sube una nueva para reemplazarla.
+                                </div>
+                            </div>
+                            <input type="file" class="form-control" id="carnetFoto" name="carnetFoto" accept="image/*">
+                        </div>
+                        <div class="col-12 d-flex gap-2 pt-2">
+                            <button type="submit" class="btn text-white fw-600 flex-grow-1"
+                                    style="background:linear-gradient(135deg,var(--teal-600),var(--teal-700));border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;box-shadow:0 3px 10px rgba(13,148,136,.25);transition:transform .2s,box-shadow .2s;"
+                                    onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(13,148,136,.35)'"
+                                    onmouseout="this.style.transform='';this.style.boxShadow='0 3px 10px rgba(13,148,136,.25)'">
+                                <i class="bi bi-save me-2"></i>Guardar cambios
+                            </button>
+                            <a th:href="@{/mi-perfil}" class="btn btn-outline-secondary" style="border-radius:10px;padding:.75rem 1.25rem;">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

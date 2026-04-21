@@ -33,18 +33,20 @@
         <section class="admin-table">
             <table class="table table-hover mb-0" id="tablaExtras">
                 <thead>
-                    <tr><th>ID</th><th>Nombre</th><th>Descripcion</th><th>Precio/dia</th><th>Acciones</th></tr>
+                    <tr><th>#</th><th>Nombre</th><th>Descripción</th><th><i class="bi bi-currency-euro me-1"></i>Precio/día</th><th class="text-end">Acciones</th></tr>
                 </thead>
                 <tbody>
                     <tr th:each="extra : ${extras}">
-                        <td th:text="${extra.id}"></td>
+                        <td><span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;" th:text="${extra.id}"></span></td>
                         <td class="fw-500" th:text="${extra.nombre}"></td>
-                        <td th:text="${extra.descripcion}"></td>
-                        <td th:text="${extra.precioDia + ' €'}"></td>
-                        <td>
-                            <a th:href="@{/extras/editar/{id}(id=${extra.id})}" class="btn-action-edit"><i class="bi bi-pencil"></i></a>
-                            <a th:href="@{/extras/eliminar/{id}(id=${extra.id})}" class="btn-action-delete"
-                               onclick="return confirm('¿Eliminar este extra?')"><i class="bi bi-trash"></i></a>
+                        <td style="color:#6b7280;font-size:.88rem;" th:text="${extra.descripcion}"></td>
+                        <td style="font-weight:700;color:var(--teal-700);" th:text="${#numbers.formatDecimal(extra.precioDia, 1, 2)} + ' €'"></td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a th:href="@{/extras/editar/{id}(id=${extra.id})}" class="btn-action-edit"><i class="bi bi-pencil me-1"></i>Editar</a>
+                                <a th:href="@{/extras/eliminar/{id}(id=${extra.id})}" class="btn-action-delete"
+                                   onclick="return confirm('¿Eliminar este extra?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
+                            </div>
                         </td>
                     </tr>
                     <tr id="sinResultadosExtras" class="d-none">
@@ -80,26 +82,48 @@
 <!-- ===== CLIENTE VIEW ===== -->
 <body class="client-layout" th:unless="${esAdmin}">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
-<main class="container mt-4">
-    <section>
-        <h1 class="mb-1">Extras disponibles</h1>
-        <p class="text-muted mb-4">Complementa tu reserva con estos servicios adicionales.</p>
-        <div class="row g-3">
-            <article th:each="extra : ${extras}" class="col-md-4">
-                <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
-                    <div class="card-body text-center p-4">
-                        <i class="bi bi-stars" style="font-size:2rem;color:var(--teal-600)"></i>
-                        <h5 class="mt-2 mb-1" th:text="${extra.nombre}"></h5>
-                        <p class="text-muted small" th:text="${extra.descripcion}"></p>
-                        <p class="fw-bold mb-0" style="color:var(--teal-600);" th:text="${extra.precioDia + ' €/dia'}"></p>
+<main>
+    <!-- Mini hero -->
+    <section style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
+                    <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
+                    <li class="breadcrumb-item active" style="color:#fff;">Extras</li>
+                </ol>
+            </nav>
+            <h1 style="font-size:1.6rem;font-weight:800;margin:0;">
+                <i class="bi bi-stars me-2"></i>Extras disponibles
+            </h1>
+            <p style="opacity:.85;margin:.3rem 0 0;font-size:.92rem;">Complementa tu reserva con estos servicios adicionales.</p>
+        </div>
+    </section>
+
+    <div class="container py-4">
+        <div class="row g-3" th:unless="${#lists.isEmpty(extras)}">
+            <article th:each="extra : ${extras}" class="col-sm-6 col-lg-4">
+                <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;overflow:hidden;height:100%;transition:box-shadow .25s,transform .25s;"
+                     onmouseover="this.style.boxShadow='0 8px 28px rgba(13,148,136,.12)';this.style.transform='translateY(-3px)'"
+                     onmouseout="this.style.boxShadow='';this.style.transform=''">
+                    <div style="padding:1.5rem;text-align:center;">
+                        <div style="width:56px;height:56px;border-radius:14px;background:var(--teal-50);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                            <i class="bi bi-stars" style="font-size:1.5rem;color:var(--teal-600);"></i>
+                        </div>
+                        <h2 style="font-size:1.05rem;font-weight:700;color:#111827;margin-bottom:.3rem;" th:text="${extra.nombre}"></h2>
+                        <p style="font-size:.85rem;color:#6b7280;margin-bottom:.75rem;" th:text="${extra.descripcion}"></p>
+                        <div style="background:var(--teal-50);border-radius:10px;padding:.5rem .75rem;display:inline-block;">
+                            <span style="font-size:1.2rem;font-weight:800;color:var(--teal-600);" th:text="${extra.precioDia + ' €'}"></span>
+                            <span style="font-size:.78rem;color:#9ca3af;font-weight:400;"> / día</span>
+                        </div>
                     </div>
                 </div>
             </article>
-            <div th:if="${#lists.isEmpty(extras)}" class="col-12 text-center text-muted py-5">
-                No hay extras disponibles en este momento.
-            </div>
         </div>
-    </section>
+        <div th:if="${#lists.isEmpty(extras)}" class="text-center py-5">
+            <i class="bi bi-stars" style="font-size:3.5rem;color:#d1d5db;"></i>
+            <p class="mt-3 text-muted" style="font-size:1.05rem;">No hay extras disponibles en este momento.</p>
+        </div>
+    </div>
 </main>
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 <div th:replace="~{fragments/layout :: scripts}"></div>

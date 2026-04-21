@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('RentGo - Cancelar Reserva')}"></head>
+<body class="client-layout">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <!-- Mini hero -->
+    <section style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:2rem 0 1.75rem;color:#fff;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
+                    <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/reservas}" style="color:rgba(255,255,255,.7);text-decoration:none;">Mis Reservas</a></li>
+                    <li class="breadcrumb-item active" style="color:#fff;">Cancelar reserva</li>
+                </ol>
+            </nav>
+            <h1 style="font-size:1.6rem;font-weight:800;margin:0;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Cancelar Reserva #<span th:text="${reserva.id}"></span>
+            </h1>
+        </div>
+    </section>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+
+                <!-- Aviso -->
+                <div class="alert d-flex align-items-start gap-2 mb-4" role="alert"
+                     style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;color:#991b1b;font-size:.9rem;">
+                    <i class="bi bi-exclamation-triangle-fill mt-1" style="flex-shrink:0;font-size:1.1rem;"></i>
+                    <div>
+                        <strong>¿Estás seguro de que deseas cancelar esta reserva?</strong><br>
+                        <span th:text="${politica}"></span>
+                    </div>
+                </div>
+
+                <!-- Resumen de la reserva -->
+                <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
+                    <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
+                        <i class="bi bi-info-circle-fill" style="color:var(--teal-600);"></i>
+                        Resumen de la reserva
+                    </h2>
+
+                    <!-- Vehículo -->
+                    <div class="d-flex align-items-center gap-3 mb-3" style="background:#f9fafb;border-radius:12px;padding:1rem;">
+                        <div style="width:48px;height:48px;border-radius:12px;background:var(--teal-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-car-front-fill" style="font-size:1.3rem;color:var(--teal-600);"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:1.05rem;color:#111827;"
+                                 th:text="${reserva.vehiculo.modelo.marca.nombre + ' ' + reserva.vehiculo.modelo.nombre}"></div>
+                            <div style="font-size:.82rem;color:#6b7280;" th:text="${reserva.vehiculo.matricula + ' · ' + reserva.vehiculo.color}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Fechas -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <div style="font-size:.72rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Recogida</div>
+                            <div style="font-weight:600;color:#374151;" th:text="${reserva.fechaInicio}"></div>
+                            <small class="text-muted" th:text="${reserva.horaInicio + ' h'}"></small>
+                            <div style="font-size:.78rem;color:var(--teal-600);margin-top:.2rem;"
+                                 th:text="${reserva.sucursalRecogida.nombre}"></div>
+                        </div>
+                        <div class="col-6">
+                            <div style="font-size:.72rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Devolución</div>
+                            <div style="font-weight:600;color:#374151;" th:text="${reserva.fechaFin}"></div>
+                            <small class="text-muted" th:text="${reserva.horaFin + ' h'}"></small>
+                            <div style="font-size:.78rem;color:#6b7280;margin-top:.2rem;"
+                                 th:text="${reserva.sucursalDevolucion.nombre}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Extras -->
+                    <div th:if="${reserva.extras != null and !reserva.extras.isEmpty()}" class="mb-3">
+                        <div style="font-size:.72rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;">Extras incluidos</div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span th:each="extra : ${reserva.extras}" class="badge"
+                                  style="background:#f0fdfa;color:var(--teal-700);border:1px solid var(--teal-100);font-size:.78rem;padding:.3rem .6rem;font-weight:600;">
+                                <i class="bi bi-stars me-1"></i><span th:text="${extra.nombre}"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div th:if="${reserva.observaciones != null and !reserva.observaciones.isEmpty()}" class="mb-3">
+                        <div style="font-size:.72rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Observaciones</div>
+                        <p style="font-size:.88rem;color:#374151;margin:0;" th:text="${reserva.observaciones}"></p>
+                    </div>
+                </section>
+
+                <!-- Desglose de devolución -->
+                <section style="background:linear-gradient(135deg,#fef2f2,#fff);border:1.5px solid #fecaca;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;">
+                    <h3 style="font-size:.85rem;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;">
+                        <i class="bi bi-arrow-return-left me-1"></i>Importe a devolver
+                    </h3>
+                    <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
+                        <span class="text-muted">Importe de la reserva</span>
+                        <span class="fw-500" th:text="${#numbers.formatDecimal(reserva.precioTotal, 1, 2)} + ' €'"></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
+                        <span class="text-muted">Devolución del alquiler</span>
+                        <span class="fw-500" style="color:#16a34a;" th:text="${#numbers.formatDecimal(devolucion, 1, 2)} + ' €'"></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2" style="font-size:.88rem;">
+                        <span class="text-muted">Fianza reembolsable</span>
+                        <span class="fw-500" style="color:#16a34a;" th:text="${#numbers.formatDecimal(fianzaDevolucion, 1, 2)} + ' €'"></span>
+                    </div>
+                    <hr style="border-color:#fecaca;margin:.75rem 0;">
+                    <div class="d-flex justify-content-between">
+                        <span style="font-weight:700;color:#991b1b;font-size:1rem;">Total a devolver</span>
+                        <span style="font-size:1.3rem;font-weight:800;color:#16a34a;"
+                              th:text="${#numbers.formatDecimal(totalDevolucion, 1, 2)} + ' €'"></span>
+                    </div>
+                </section>
+
+                <!-- Botones -->
+                <div class="d-flex gap-2">
+                    <form th:action="@{/reservas/cancelar/{id}(id=${reserva.id})}" method="post" class="flex-grow-1">
+                        <button type="submit" class="btn text-white fw-600 w-100"
+                                style="background:linear-gradient(135deg,#dc2626,#b91c1c);border-radius:10px;padding:.9rem 1.75rem;font-size:1.05rem;box-shadow:0 4px 14px rgba(220,38,38,.3);transition:transform .2s,box-shadow .2s;"
+                                onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,.4)'"
+                                onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(220,38,38,.3)'">
+                            <i class="bi bi-x-circle-fill me-2"></i>Cancelar Reserva
+                        </button>
+                    </form>
+                    <a th:href="@{/reservas}" class="btn btn-outline-secondary"
+                       style="border-radius:10px;padding:.9rem 1.25rem;">
+                        Volver
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+

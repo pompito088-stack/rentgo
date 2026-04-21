@@ -10,6 +10,7 @@
     <header class="admin-topbar">
         <h1 class="page-title"><i class="bi bi-speedometer2 me-2 text-teal-600" style="color:var(--teal-600)"></i>Dashboard</h1>
         <div class="topbar-right">
+            <span id="fechaHoraAdmin" style="font-size:.82rem;color:#6b7280;margin-right:.75rem;"></span>
             <span class="topbar-badge"><i class="bi bi-circle-fill me-1" style="font-size:.5rem;color:var(--teal-500)"></i>En línea</span>
             <span style="font-size:.85rem;color:#6b7280;" th:text="${session.usuarioLogueado.nombre}"></span>
         </div>
@@ -145,10 +146,10 @@
                                     style="display:flex;align-items:center;gap:.85rem;padding:.75rem 0;border-bottom:1px solid #f3f4f6;">
                                     <!-- Icono de estado -->
                                     <div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;"
-                                         th:style="${r.estado == 'confirmada'} ? 'background:#f0fdf4;' : (${r.estado == 'pendiente'} ? 'background:#fef9c3;' : (${r.estado == 'cancelada'} ? 'background:#fef2f2;' : 'background:#f1f5f9;'))">
+                                         th:style="${r.estaFinalizada or r.estado == 'finalizada'} ? 'background:#f1f5f9;' : (${r.estado == 'confirmada'} ? 'background:#f0fdf4;' : (${r.estado == 'en_proceso'} ? 'background:#e0f2fe;' : (${r.estado == 'pendiente'} ? 'background:#fef9c3;' : (${r.estado == 'cancelada'} ? 'background:#fef2f2;' : 'background:#f1f5f9;'))))">
                                         <i class="bi"
-                                           th:classappend="${r.estado == 'confirmada'} ? 'bi-check-circle-fill' : (${r.estado == 'pendiente'} ? 'bi-hourglass-split' : (${r.estado == 'cancelada'} ? 'bi-x-circle-fill' : 'bi-flag-fill'))"
-                                           th:style="${r.estado == 'confirmada'} ? 'color:#22c55e;' : (${r.estado == 'pendiente'} ? 'color:#eab308;' : (${r.estado == 'cancelada'} ? 'color:#ef4444;' : 'color:#64748b;'))"></i>
+                                           th:classappend="${r.estaFinalizada or r.estado == 'finalizada'} ? 'bi-flag-fill' : (${r.estado == 'confirmada'} ? 'bi-check-circle-fill' : (${r.estado == 'en_proceso'} ? 'bi-arrow-repeat' : (${r.estado == 'pendiente'} ? 'bi-hourglass-split' : (${r.estado == 'cancelada'} ? 'bi-x-circle-fill' : 'bi-flag-fill'))))"
+                                           th:style="${r.estaFinalizada or r.estado == 'finalizada'} ? 'color:#64748b;' : (${r.estado == 'confirmada'} ? 'color:#22c55e;' : (${r.estado == 'en_proceso'} ? 'color:#0ea5e9;' : (${r.estado == 'pendiente'} ? 'color:#eab308;' : (${r.estado == 'cancelada'} ? 'color:#ef4444;' : 'color:#64748b;'))))"></i>
                                     </div>
                                     <!-- Info -->
                                     <div style="flex:1;min-width:0;">
@@ -164,9 +165,9 @@
                                     <div style="text-align:right;flex-shrink:0;">
                                         <div style="font-size:.92rem;font-weight:700;color:var(--teal-600);" th:text="${r.precioTotal != null ? r.precioTotal + ' €' : '—'}"></div>
                                         <span class="badge rounded-pill mt-1"
-                                              th:classappend="${r.estado == 'confirmada'} ? 'bg-success' : (${r.estado == 'pendiente'} ? 'bg-warning text-dark' : (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))"
+                                              th:classappend="${r.estaFinalizada or r.estado == 'finalizada'} ? 'bg-secondary' : (${r.estado == 'confirmada'} ? 'bg-success' : (${r.estado == 'en_proceso'} ? 'bg-info text-dark' : (${r.estado == 'pendiente'} ? 'bg-warning text-dark' : (${r.estado == 'cancelada'} ? 'bg-danger' : 'bg-secondary'))))"
                                               style="font-size:.68rem;"
-                                              th:text="${r.estado}"></span>
+                                              th:text="${r.estaFinalizada or r.estado == 'finalizada'} ? 'Finalizada' : (${r.estado == 'confirmada'} ? 'Confirmada' : (${r.estado == 'en_proceso'} ? 'En proceso' : (${r.estado == 'pendiente'} ? 'Pendiente' : (${r.estado == 'cancelada'} ? 'Cancelada' : r.estado))))"></span>
                                     </div>
                                 </li>
                             </ul>
@@ -235,9 +236,25 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    // Reloj en tiempo real para el dashboard admin
+    (function() {
+        var el = document.getElementById('fechaHoraAdmin');
+        if (!el) return;
+        function actualizar() {
+            var ahora = new Date();
+            var opciones = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+            var fecha = ahora.toLocaleDateString('es-ES', opciones);
+            var hora = ahora.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            // Capitalizar primera letra
+            fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+            el.innerHTML = '<i class="bi bi-calendar3 me-1"></i>' + fecha + ' · <i class="bi bi-clock me-1"></i>' + hora;
+        }
+        actualizar();
+        setInterval(actualizar, 1000);
+    })();
+</script>
 </body>
-
-<!-- ===== CLIENTE / VISITANTE ===== -->
 <body class="client-layout" th:unless="${esAdmin}">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
@@ -251,7 +268,7 @@
                     <div class="col-lg-7">
                         <div class="hero-badge">
                             <i class="bi bi-check-circle-fill" style="color:var(--teal-400);"></i>
-                            Más de 200 vehículos disponibles en Madrid
+                            Más de 50 vehículos disponibles en toda España
                         </div>
                         <h1>El coche perfecto<br>para cada viaje</h1>
                         <p class="lead mb-4">
@@ -269,11 +286,11 @@
                         <!-- Stats -->
                         <div class="d-flex flex-wrap gap-4 mt-5">
                             <div class="hero-stat">
-                                <div class="stat-num">200+</div>
+                                <div class="stat-num">50+</div>
                                 <div class="stat-txt">Vehículos</div>
                             </div>
                             <div class="hero-stat">
-                                <div class="stat-num">5</div>
+                                <div class="stat-num">15</div>
                                 <div class="stat-txt">Sucursales</div>
                             </div>
                             <div class="hero-stat">
@@ -381,6 +398,46 @@
         <!-- CTA final -->
         <section class="py-5" aria-labelledby="cta-final">
             <div class="container">
+                <!-- Tarjetas de exploración -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <article class="feature-card text-center" style="padding:2rem;">
+                            <div class="feature-icon mx-auto" style="background:var(--teal-50);">
+                                <i class="bi bi-car-front-fill" style="color:var(--teal-600);"></i>
+                            </div>
+                            <h3>Vehículos</h3>
+                            <p>Explora nuestra flota completa de vehículos disponibles para alquilar.</p>
+                            <a th:href="@{/vehiculos}" class="btn btn-sm text-white" style="background:var(--teal-600);border-radius:8px;">
+                                <i class="bi bi-search me-1"></i>Ver vehículos
+                            </a>
+                        </article>
+                    </div>
+                    <div class="col-md-4">
+                        <article class="feature-card text-center" style="padding:2rem;">
+                            <div class="feature-icon mx-auto" style="background:#fef9c3;">
+                                <i class="bi bi-building" style="color:#ca8a04;"></i>
+                            </div>
+                            <h3>Sucursales</h3>
+                            <p>Consulta nuestros puntos de recogida y devolución en Madrid.</p>
+                            <a th:href="@{/sucursales}" class="btn btn-sm text-dark" style="background:#fef9c3;border-radius:8px;">
+                                <i class="bi bi-geo-alt me-1"></i>Ver sucursales
+                            </a>
+                        </article>
+                    </div>
+                    <div class="col-md-4">
+                        <article class="feature-card text-center" style="padding:2rem;">
+                            <div class="feature-icon mx-auto" style="background:#fff7ed;">
+                                <i class="bi bi-stars" style="color:#f59e0b;"></i>
+                            </div>
+                            <h3>Extras</h3>
+                            <p>GPS, sillas infantiles y más servicios para completar tu viaje.</p>
+                            <a th:href="@{/extras}" class="btn btn-sm text-dark" style="background:#fff7ed;border-radius:8px;">
+                                <i class="bi bi-plus-square me-1"></i>Ver extras
+                            </a>
+                        </article>
+                    </div>
+                </div>
+
                 <div class="cta-section">
                     <h2 id="cta-final">¿Listo para reservar?</h2>
                     <p>Crea tu cuenta gratis en segundos y empieza a disfrutar de la mejor flota de Madrid.</p>

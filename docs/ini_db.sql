@@ -16,6 +16,7 @@ CREATE TABLE usuarios(
     dni VARCHAR(9) NOT NULL UNIQUE,
     direccion VARCHAR(200) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    ruta_foto_carnet VARCHAR(255),
     id_tipo INT NOT NULL DEFAULT 1,
     FOREIGN KEY (id_tipo) REFERENCES tipo_usuarios(id)
 );
@@ -95,7 +96,7 @@ CREATE TABLE reservas(
     hora_fin TIME NOT NULL DEFAULT '09:00:00',
     fecha_reserva DATE NOT NULL,
     precio_total DECIMAL(10,2) NOT NULL,
-    estado ENUM('pendiente', 'confirmada', 'cancelada', 'finalizada') NOT NULL,
+    estado ENUM('pendiente', 'confirmada', 'en_proceso', 'cancelada', 'finalizada') NOT NULL,
     observaciones VARCHAR(300),
     id_usuario INT NOT NULL,
     id_vehiculo INT NOT NULL,
@@ -122,9 +123,19 @@ CREATE TABLE pagos(
     importe DECIMAL(10,2) NOT NULL,
     fianza DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     metodo_pago ENUM('tarjeta_credito', 'tarjeta_debito', 'paypal') NOT NULL,
-    estado_pago VARCHAR(20) NOT NULL DEFAULT 'realizado',
+    estado_pago ENUM('realizado', 'reembolsado') NOT NULL DEFAULT 'realizado',
     id_reserva INT NOT NULL UNIQUE,
     FOREIGN KEY (id_reserva) REFERENCES reservas(id)
+);
+
+-- Tabla de devoluciones: trazabilidad completa de reembolsos
+CREATE TABLE devoluciones(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    fecha_devolucion DATE NOT NULL,
+    importe_reembolsado DECIMAL(10,2) NOT NULL,
+    motivo VARCHAR(300),
+    id_pago INT NOT NULL UNIQUE,
+    FOREIGN KEY (id_pago) REFERENCES pagos(id)
 );
 
 CREATE TABLE mantenimientos(

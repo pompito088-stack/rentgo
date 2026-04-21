@@ -15,11 +15,11 @@
         <div class="admin-card p-3 mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
+                    <label for="buscarPago" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar</label>
                     <input type="text" id="buscarPago" class="form-control form-control-sm" placeholder="Cliente, reserva, método..." oninput="filtrarPagos()">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-wallet2 me-1"></i>Método de pago</label>
+                    <label for="filtroMetodo" class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-wallet2 me-1"></i>Método de pago</label>
                     <select id="filtroMetodo" class="form-select form-select-sm" onchange="filtrarPagos()">
                         <option value="">Todos</option>
                         <option value="tarjeta">Tarjeta crédito/débito</option>
@@ -27,7 +27,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarPago').value='';document.getElementById('filtroMetodo').value='';filtrarPagos()">
+                    <button class="btn btn-outline-secondary btn-sm w-100" type="button" onclick="document.getElementById('buscarPago').value='';document.getElementById('filtroMetodo').value='';filtrarPagos()">
                         <i class="bi bi-x-circle me-1"></i>Limpiar
                     </button>
                 </div>
@@ -37,41 +37,78 @@
             </div>
         </div>
 
-        <section class="admin-table">
+        <section class="admin-table" aria-label="Tabla de pagos">
             <table class="table table-hover mb-0" id="tablaPagos">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>#</th>
                         <th>Reserva</th>
                         <th>Cliente</th>
                         <th>Fecha Pago</th>
-                        <th>Importe</th>
-                        <th>Fianza</th>
-                        <th>Metodo</th>
+                        <th><i class="bi bi-currency-euro me-1"></i>Importe</th>
+                        <th><i class="bi bi-shield-check me-1"></i>Fianza</th>
+                        <th>Método</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="pago : ${pagos}" th:attr="data-metodo=${pago.metodoPago}">
-                        <td th:text="${pago.id}"></td>
-                        <td th:text="'#' + ${pago.reserva.id}"></td>
-                        <td th:text="${pago.reserva.usuario.nombre + ' ' + pago.reserva.usuario.apellidos}"></td>
+                        <td><span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;" th:text="${pago.id}"></span></td>
+                        <td>
+                            <span class="badge" style="background:#eff6ff;color:#2563eb;font-weight:600;border:1px solid #bfdbfe;"
+                                  th:text="'#' + ${pago.reserva.id}"></span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--teal-500),var(--teal-700));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;"
+                                      th:text="${pago.reserva.usuario.nombre.substring(0,1).toUpperCase() + pago.reserva.usuario.apellidos.substring(0,1).toUpperCase()}"></span>
+                                <span style="font-weight:500;" th:text="${pago.reserva.usuario.nombre + ' ' + pago.reserva.usuario.apellidos}"></span>
+                            </div>
+                        </td>
                         <td th:text="${pago.fechaPago}"></td>
-                        <td class="fw-500" th:text="${pago.importe + ' €'}"></td>
+                        <td style="font-weight:700;color:var(--teal-700);" th:text="${#numbers.formatDecimal(pago.importe, 1, 2)} + ' €'"></td>
                         <td>
                             <span th:if="${pago.fianza != null and pago.fianza > 0}"
-                                  class="badge" style="background:#fef9c3;color:#92400e;border:1px solid #fde68a;"
-                                  th:text="${pago.fianza + ' €'}"></span>
+                                  class="badge" style="background:#fef9c3;color:#92400e;border:1px solid #fde68a;font-size:.8rem;"
+                                  th:text="${#numbers.formatDecimal(pago.fianza, 1, 2)} + ' €'"></span>
                             <span th:if="${pago.fianza == null or pago.fianza <= 0}" class="text-muted">—</span>
                         </td>
                         <td>
-                            <span th:text="${pago.metodoPago == 'tarjeta_credito' ? 'Tarjeta crédito' :
-                                           (pago.metodoPago == 'tarjeta_debito' ? 'Tarjeta débito' : 'PayPal')}"></span>
+                            <span class="d-inline-flex align-items-center gap-1" style="font-size:.85rem;">
+                                <i th:if="${pago.metodoPago == 'tarjeta_credito' or pago.metodoPago == 'tarjeta_debito'}" class="bi bi-credit-card-fill" style="color:#6366f1;"></i>
+                                <i th:if="${pago.metodoPago == 'paypal'}" class="bi bi-paypal" style="color:#003087;"></i>
+                                <span th:text="${pago.metodoPago == 'tarjeta_credito' ? 'T. Crédito' :
+                                               (pago.metodoPago == 'tarjeta_debito' ? 'T. Débito' : 'PayPal')}"></span>
+                            </span>
                         </td>
                         <td>
-                            <span class="badge rounded-pill bg-success">
-                                <i class="bi bi-check-circle me-1"></i>Realizado
+                            <span class="badge rounded-pill"
+                                  th:classappend="${pago.estadoPago == 'reembolsado'} ? 'bg-danger' : 'bg-success'"
+                                  style="font-size:.78rem;padding:.35em .75em;">
+                                <i class="bi"
+                                   th:classappend="${pago.estadoPago == 'reembolsado'} ? 'bi-arrow-return-left' : 'bi-check-circle'"
+                                   class="me-1"></i>
+                                <span th:text="${pago.estadoPago == 'reembolsado' ? 'Reembolsado' : 'Realizado'}"></span>
                             </span>
+                            <!-- Si ya tiene devolución, mostrar resumen rápido -->
+                            <span th:if="${pago.devolucion != null}"
+                                  class="badge ms-1"
+                                  style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;font-size:.75rem;"
+                                  th:text="${#numbers.formatDecimal(pago.devolucion.importeReembolsado, 1, 2)} + ' € devueltos'"></span>
+                            <a th:href="@{/pagos/editar/{id}(id=${pago.id})}"
+                               class="btn btn-sm ms-1"
+                               style="padding:.2rem .5rem;font-size:.72rem;border:1px solid #d1d5db;border-radius:6px;color:#374151;"
+                               title="Editar estado">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <!-- Botón para crear devolución si no existe y está en realizado -->
+                            <a th:if="${pago.estadoPago == 'realizado' and pago.devolucion == null}"
+                               th:href="@{/devoluciones/nueva(pagoId=${pago.id})}"
+                               class="btn btn-sm ms-1"
+                               style="padding:.2rem .5rem;font-size:.72rem;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#dc2626;"
+                               title="Crear devolución">
+                                <i class="bi bi-arrow-return-left"></i>
+                            </a>
                         </td>
                     </tr>
                     <tr id="sinResultadosPagos" class="d-none">

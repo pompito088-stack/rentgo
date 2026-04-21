@@ -17,7 +17,6 @@
         <div class="admin-card">
             <form th:action="@{/pagos/guardar}" th:object="${pago}" method="post" class="row g-3" novalidate>
                 <input type="hidden" th:field="*{id}">
-                <input type="hidden" name="estadoPago" value="realizado">
 
                 <div class="col-md-6">
                     <label for="reserva" class="form-label">Reserva</label>
@@ -53,16 +52,16 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Estado del Pago</label>
-                    <div class="form-control bg-light d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        <span class="text-success fw-500">Realizado</span>
-                    </div>
+                    <label for="estadoPago" class="form-label">Estado del Pago</label>
+                    <select class="form-select" id="estadoPago" th:field="*{estadoPago}">
+                        <option value="realizado"  th:selected="${pago.estadoPago == 'realizado'}">✅ Realizado</option>
+                        <option value="reembolsado" th:selected="${pago.estadoPago == 'reembolsado'}">↩ Reembolsado</option>
+                    </select>
                 </div>
 
-                <div class="col-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-teal"><i class="bi bi-save me-1"></i>Guardar</button>
-                    <a th:href="@{/pagos}" class="btn btn-outline-secondary">Cancelar</a>
+                <div class="col-12 d-flex gap-2 pt-2">
+                    <button type="submit" class="btn btn-teal-lg"><i class="bi bi-save me-1"></i>Guardar</button>
+                    <a th:href="@{/pagos}" class="btn btn-outline-secondary" style="border-radius:10px;padding:.65rem 1.25rem;">Cancelar</a>
                 </div>
             </form>
         </div>

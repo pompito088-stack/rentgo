@@ -32,16 +32,18 @@
         <section class="admin-table">
             <table class="table table-hover mb-0" id="tablaMarcas">
                 <thead>
-                    <tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr>
+                    <tr><th>#</th><th>Nombre</th><th class="text-end">Acciones</th></tr>
                 </thead>
                 <tbody>
                     <tr th:each="marca : ${marcas}">
-                        <td th:text="${marca.id}"></td>
+                        <td><span class="badge" style="background:var(--teal-100);color:var(--teal-700);font-weight:700;" th:text="${marca.id}"></span></td>
                         <td class="fw-500" th:text="${marca.nombre}"></td>
-                        <td>
-                            <a th:href="@{/marcas/editar/{id}(id=${marca.id})}" class="btn-action-edit"><i class="bi bi-pencil"></i></a>
-                            <a th:href="@{/marcas/eliminar/{id}(id=${marca.id})}" class="btn-action-delete"
-                               onclick="return confirm('¿Eliminar esta marca?')"><i class="bi bi-trash"></i></a>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a th:href="@{/marcas/editar/{id}(id=${marca.id})}" class="btn-action-edit"><i class="bi bi-pencil me-1"></i>Editar</a>
+                                <a th:href="@{/marcas/eliminar/{id}(id=${marca.id})}" class="btn-action-delete"
+                                   onclick="return confirm('¿Eliminar esta marca?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
+                            </div>
                         </td>
                     </tr>
                     <tr id="sinResultadosMarcas" class="d-none">

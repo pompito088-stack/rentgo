@@ -2,6 +2,7 @@ package com.ilerna.rentgo.repository;
 import com.ilerna.rentgo.model.Pago;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 import java.util.Optional;
 /**
  * Repositorio JPA para la entidad Pago.
@@ -9,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
     Optional<Pago> findByReservaId(Integer reservaId);
+    List<Pago> findByReservaUsuarioId(Integer usuarioId);
 }
 
