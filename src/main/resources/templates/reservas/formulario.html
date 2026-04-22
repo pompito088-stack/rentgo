@@ -313,15 +313,41 @@
             return;
         }
 
+        // No permitir reservar en el pasado (fecha+hora inicio < ahora)
+        var horaInicio = document.getElementById('horaInicio').value;
+        var horaFin    = document.getElementById('horaFin').value;
+        if (horaInicio) {
+            var inicioDT = new Date(fechaInicio + 'T' + horaInicio);
+            if (inicioDT.getTime() < Date.now()) {
+                detalle.style.display = 'none';
+                aviso.style.display = 'block';
+                aviso.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>No puedes reservar en el pasado. La fecha y hora de recogida deben ser futuras.';
+                precioInput.value = '';
+                return;
+            }
+        }
+
         var selectedOption = vehiculoSelect.options[vehiculoSelect.selectedIndex];
         var precioDia = parseFloat(selectedOption.getAttribute('data-precio'));
         var fianza = parseFloat(selectedOption.getAttribute('data-fianza') || 0);
         var dias = Math.round((new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
 
-        if (dias <= 0 || isNaN(precioDia)) {
+        // Mismo dia: validar que hora fin > hora inicio y cobrar como 1 dia
+        if (dias === 0) {
+            if (horaInicio && horaFin && horaFin > horaInicio) {
+                dias = 1; // se cobra como un dia completo
+            } else {
+                detalle.style.display = 'none';
+                aviso.style.display = 'block';
+                aviso.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>Para reservas del mismo dia, la hora de devolucion debe ser posterior a la de recogida.';
+                precioInput.value = '';
+                return;
+            }
+        }
+        if (dias < 0 || isNaN(precioDia)) {
             detalle.style.display = 'none';
             aviso.style.display = 'block';
-            aviso.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>La fecha de devolución debe ser posterior a la de recogida.';
+            aviso.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>La fecha de devolución debe ser igual o posterior a la de recogida.';
             precioInput.value = '';
             return;
         }
@@ -364,9 +390,23 @@
 
     document.getElementById('fechaInicio').addEventListener('change', calcularPrecio);
     document.getElementById('fechaFin').addEventListener('change', calcularPrecio);
+    document.getElementById('horaInicio').addEventListener('change', calcularPrecio);
+    document.getElementById('horaFin').addEventListener('change', calcularPrecio);
 
     // Garantía final: al enviar el formulario, recalcular para asegurar precioTotal
     document.getElementById('formReserva').addEventListener('submit', function(e) {
+        // Validar que fecha+hora inicio no esté en el pasado
+        var fi = document.getElementById('fechaInicio').value;
+        var hi = document.getElementById('horaInicio').value;
+        if (fi && hi) {
+            var inicioDT = new Date(fi + 'T' + hi);
+            if (inicioDT.getTime() < Date.now()) {
+                e.preventDefault();
+                alert('No puedes reservar en el pasado. Elige una fecha y hora futuras.');
+                document.getElementById('horaInicio').focus();
+                return;
+            }
+        }
         calcularPrecio();
         var precio = document.getElementById('precioTotal').value;
         if (!precio || parseFloat(precio) <= 0) {
@@ -392,7 +432,7 @@
     }
     calcularPrecio();
 
-    // ── Establecer fecha mínima = hoy (tiempo real) ──
+    // ── Establecer fecha mínima = hoy y hora minima cuando inicio = hoy ──
     (function() {
         var hoy = new Date();
         var yyyy = hoy.getFullYear();
@@ -401,6 +441,26 @@
         var fechaHoy = yyyy + '-' + mm + '-' + dd;
         document.getElementById('fechaInicio').setAttribute('min', fechaHoy);
         document.getElementById('fechaFin').setAttribute('min', fechaHoy);
+
+        function ajustarHoraMinima() {
+            var fi = document.getElementById('fechaInicio').value;
+            var hi = document.getElementById('horaInicio');
+            if (fi === fechaHoy) {
+                // Hora minima = ahora (HH:MM)
+                var ahora = new Date();
+                var hh = String(ahora.getHours()).padStart(2, '0');
+                var min = String(ahora.getMinutes()).padStart(2, '0');
+                var horaMin = hh + ':' + min;
+                hi.setAttribute('min', horaMin);
+                if (hi.value && hi.value < horaMin) {
+                    hi.value = horaMin;
+                }
+            } else {
+                hi.removeAttribute('min');
+            }
+        }
+        document.getElementById('fechaInicio').addEventListener('change', ajustarHoraMinima);
+        ajustarHoraMinima();
     })();
 
     // Asegurar que fecha fin >= fecha inicio

@@ -67,14 +67,19 @@
                             <dt class="col-5 text-muted fw-normal">Plazas / Puertas</dt><dd class="col-7 mb-0" th:text="${v.plazas + ' / ' + v.puertas}"></dd>
                             <dt class="col-5 text-muted fw-normal">Precio/día</dt><dd class="col-7 mb-0 fw-bold" th:text="${v.precioDia + ' €'}"></dd>
                             <dt class="col-5 text-muted fw-normal">Disponibilidad</dt>
-                            <dd class="col-7 mb-0">
-                                <span th:if="${v.disponibilidad == 'disponible'}" class="badge bg-success">Disponible</span>
-                                <span th:if="${v.disponibilidad == 'alquilado'}" class="badge bg-warning text-dark">Alquilado</span>
-                                <span th:if="${v.disponibilidad == 'mantenimiento'}" class="badge bg-danger">Mantenimiento</span>
+                            <dd class="col-7 mb-0" th:with="d=${disponibilidades != null ? disponibilidades.get(v.id) : null}">
+                                <span th:if="${d == null or d.disponible}" class="badge bg-success">Disponible</span>
+                                <span th:if="${d != null and d.estado == 'alquilado'}" class="badge bg-warning text-dark"
+                                      th:title="${'Disponible desde ' + d.disponibleFecha + ' ' + d.disponibleHora}">Alquilado</span>
+                                <span th:if="${d != null and d.estado == 'mantenimiento'}" class="badge bg-danger"
+                                      th:title="${'Disponible desde ' + d.disponibleFecha + ' ' + d.disponibleHora}">Mantenimiento</span>
+                                <small th:if="${d != null and !d.disponible}" class="d-block text-muted mt-1" style="font-size:.72rem;">
+                                    Vuelve el <span th:text="${d.disponibleFecha}"></span> a las <span th:text="${d.disponibleHora}"></span>
+                                </small>
                             </dd>
                         </dl>
                     </div>
-                    <div class="p-3 pt-0 d-flex gap-2">
+                    <div class="p-3 pt-0 d-flex flex-wrap gap-2">
                         <a th:href="@{/vehiculos/detalle/{id}(id=${v.id})}" class="btn-action-view">
                             <i class="bi bi-eye"></i> Ver
                         </a>
@@ -255,6 +260,7 @@
         <!-- Grid de vehículos -->
         <section class="row g-4" id="vehiculosGrid" aria-label="Listado de vehículos disponibles">
             <article th:each="v : ${vehiculos}"
+                     th:with="d=${disponibilidades != null ? disponibilidades.get(v.id) : null}"
                      class="col-sm-6 col-xl-4 vehiculo-item"
                      th:attr="data-categoria=${v.categoriaVehiculo.nombre},
                               data-precio=${v.precioDia},
@@ -262,7 +268,7 @@
                               data-transmision=${v.transmision},
                               data-combustible=${v.combustion},
                               data-plazas=${v.plazas},
-                              data-disponibilidad=${v.disponibilidad}">
+                              data-disponibilidad=${d != null ? d.estado : v.disponibilidad}">
                 <div class="vehicle-card">
                     <!-- Imagen -->
                     <img th:if="${v.rutaFoto != null}" th:src="@{${v.rutaFoto}}"
@@ -296,11 +302,15 @@
                             <span><i class="bi bi-calendar3"></i> <span th:text="${v.anio}"></span></span>
                         </div>
 
-                        <!-- Disponibilidad -->
+                        <!-- Disponibilidad (calculada en tiempo real) -->
                         <div class="mb-2">
-                            <span th:if="${v.disponibilidad == 'disponible'}" class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Disponible</span>
-                            <span th:if="${v.disponibilidad == 'alquilado'}" class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Alquilado</span>
-                            <span th:if="${v.disponibilidad == 'mantenimiento'}" class="badge bg-danger"><i class="bi bi-wrench me-1"></i>En mantenimiento</span>
+                            <span th:if="${d == null or d.disponible}" class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Disponible</span>
+                            <span th:if="${d != null and d.estado == 'alquilado'}" class="badge bg-warning text-dark">
+                                <i class="bi bi-clock me-1"></i>Alquilado · vuelve el <span th:text="${d.disponibleFecha}"></span> a las <span th:text="${d.disponibleHora}"></span>
+                            </span>
+                            <span th:if="${d != null and d.estado == 'mantenimiento'}" class="badge bg-danger">
+                                <i class="bi bi-wrench me-1"></i>En mantenimiento · vuelve el <span th:text="${d.disponibleFecha}"></span> a las <span th:text="${d.disponibleHora}"></span>
+                            </span>
                         </div>
 
                         <!-- Extras si tiene -->
@@ -322,23 +332,27 @@
                            style="background:var(--teal-600);border-radius:8px;flex:1;">
                             <i class="bi bi-eye me-1"></i>Ver detalle
                         </a>
-                        <a th:if="${v.disponibilidad == 'disponible' and session.usuarioLogueado != null}"
+                        <!-- Botón Reservar: solo si está disponible -->
+                        <a th:if="${(d == null or d.disponible) and session.usuarioLogueado != null}"
                            th:href="@{/reservas/nuevo(vehiculoId=${v.id})}"
                            class="btn btn-sm fw-600"
                            style="background:#22c55e;color:#fff;border-radius:8px;flex:1;">
                             <i class="bi bi-calendar-plus me-1"></i>Reservar
                         </a>
-                        <a th:if="${v.disponibilidad == 'disponible' and session.usuarioLogueado == null}"
+                        <a th:if="${(d == null or d.disponible) and session.usuarioLogueado == null}"
                            th:href="@{/login}"
                            class="btn btn-sm fw-600"
                            style="background:#22c55e;color:#fff;border-radius:8px;flex:1;">
                             <i class="bi bi-calendar-plus me-1"></i>Reservar
                         </a>
-                        <span th:unless="${v.disponibilidad == 'disponible'}"
-                              class="btn btn-sm disabled fw-500"
-                              style="background:#f3f4f6;color:#9ca3af;border-radius:8px;flex:1;cursor:not-allowed;">
-                            <i class="bi bi-slash-circle me-1"></i>No disponible
-                        </span>
+                        <button type="button" th:if="${d != null and !d.disponible}"
+                              class="btn btn-sm fw-500" disabled aria-disabled="true"
+                              th:title="${'Disponible desde ' + d.disponibleFecha + ' ' + d.disponibleHora}"
+                              style="background:#e5e7eb;color:#9ca3af;border-radius:8px;flex:1;cursor:not-allowed;border:none;opacity:.7;">
+                            <i class="bi bi-slash-circle me-1"></i>
+                            <span th:if="${d.estado == 'alquilado'}">Alquilado</span>
+                            <span th:if="${d.estado == 'mantenimiento'}">En mantenimiento</span>
+                        </button>
                     </div>
                 </div>
             </article>

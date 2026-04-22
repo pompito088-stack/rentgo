@@ -236,12 +236,18 @@
                             <span style="font-size:.82rem;color:#6b7280;">Total</span>
                             <span style="font-size:1.15rem;font-weight:800;color:var(--teal-600);" th:text="${#numbers.formatDecimal(r.precioTotal, 1, 2)} + ' €'"></span>
                         </div>
-                        <!-- Botón cancelar: solo si está confirmada o en_proceso -->
-                        <div th:if="${r.estado == 'confirmada' or r.estado == 'en_proceso'}" class="mt-2">
+                        <!-- Botón cancelar: solo si la reserva NO ha empezado aún (confirmada/pendiente y no iniciada) -->
+                        <div th:if="${(r.estado == 'confirmada' or r.estado == 'pendiente') and !r.yaIniciada and !r.estaFinalizada}" class="mt-2">
                             <a th:href="@{/reservas/cancelar/{id}(id=${r.id})}" class="btn btn-outline-danger btn-sm w-100"
                                style="border-radius:8px;font-weight:600;font-size:.82rem;">
                                 <i class="bi bi-x-circle me-1"></i>Cancelar reserva
                             </a>
+                        </div>
+                        <!-- Aviso: reserva ya en curso, no se puede cancelar -->
+                        <div th:if="${r.estado == 'en_proceso' or (r.yaIniciada and (r.estado == 'confirmada' or r.estado == 'pendiente'))}" class="mt-2">
+                            <div class="text-center" style="font-size:.75rem;color:#6b7280;background:#f3f4f6;border-radius:8px;padding:.45rem .6rem;">
+                                <i class="bi bi-info-circle me-1"></i>Reserva en curso · no cancelable
+                            </div>
                         </div>
                     </div>
                 </div>

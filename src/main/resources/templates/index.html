@@ -263,9 +263,15 @@
     <section th:if="${usuario == null}">
         <!-- Hero -->
         <div class="hero-section">
-            <div class="container position-relative" style="z-index:1;">
+            <!-- Vídeo de fondo a pantalla completa -->
+            <video class="hero-bg-video" autoplay muted loop playsinline preload="metadata"
+                   aria-hidden="true">
+                <source th:src="@{/img/hero-coche.mp4}" type="video/mp4">
+            </video>
+            <div class="hero-bg-overlay" aria-hidden="true"></div>
+            <div class="container position-relative py-5" style="z-index:2;">
                 <div class="row align-items-center g-5">
-                    <div class="col-lg-7">
+                    <div class="col-lg-8">
                         <div class="hero-badge">
                             <i class="bi bi-check-circle-fill" style="color:var(--teal-400);"></i>
                             Más de 50 vehículos disponibles en toda España
@@ -303,7 +309,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Columna imagen ELIMINADA -->
+                    <!-- Vídeo movido al fondo (.hero-bg-video) -->
                 </div>
             </div>
         </div>

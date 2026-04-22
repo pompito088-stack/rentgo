@@ -54,8 +54,14 @@
                             <div style="font-size:.75rem;color:#9ca3af;" th:text="${m.vehiculo.matricula}"></div>
                         </td>
                         <td style="color:#6b7280;font-size:.88rem;" th:text="${m.motivo}"></td>
-                        <td th:text="${m.fechaInicio}"></td>
-                        <td th:text="${m.fechaFin}"></td>
+                        <td>
+                            <div th:text="${m.fechaInicio}"></div>
+                            <small class="text-muted" th:text="${m.horaInicio + ' h'}"></small>
+                        </td>
+                        <td>
+                            <div th:text="${m.fechaFin}"></div>
+                            <small class="text-muted" th:text="${m.horaFin + ' h'}"></small>
+                        </td>
                         <td style="font-weight:700;color:var(--teal-700);" th:text="${#numbers.formatDecimal(m.coste, 1, 2)} + ' €'"></td>
                         <td>
                             <span class="badge rounded-pill"

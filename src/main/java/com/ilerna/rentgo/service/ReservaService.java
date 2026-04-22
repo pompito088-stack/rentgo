@@ -4,6 +4,8 @@ import com.ilerna.rentgo.repository.ReservaRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 /**
@@ -52,21 +54,51 @@ public class ReservaService {
     }
 
     /**
-     * Auto-finaliza reservas cuya fecha_fin ya ha pasado y siguen en estado
-     * "confirmada" o "pendiente". Se ejecuta al listar reservas para mantener
-     * estados coherentes en tiempo real.
+     * Actualiza automáticamente los estados de las reservas en función de
+     * la fecha + hora actual:
+     *  - "confirmada"/"pendiente"  → "en_proceso"  cuando llega la hora de inicio.
+     *  - "confirmada"/"pendiente"/"en_proceso" → "finalizada" cuando pasa la hora de fin.
+     * Se ejecuta cada vez que se listan reservas para mantener coherencia en tiempo real.
      */
-    public void autoFinalizarExpiradas() {
-        LocalDate hoy = LocalDate.now();
+    public void actualizarEstadosAutomaticamente() {
+        LocalDateTime ahora = LocalDateTime.now();
         List<Reserva> todas = reservaRepository.findAll();
         for (Reserva r : todas) {
-            if (r.getFechaFin() != null && r.getFechaFin().isBefore(hoy)
-                    && ("confirmada".equals(r.getEstado()) || "pendiente".equals(r.getEstado())
-                        || "en_proceso".equals(r.getEstado()))) {
-                r.setEstado("finalizada");
-                reservaRepository.save(r);
+            String estado = r.getEstado();
+            if (estado == null) continue;
+
+            // 1) Finalizar si ya pasó fecha+hora de fin
+            if (r.getFechaFin() != null
+                    && ("confirmada".equals(estado) || "pendiente".equals(estado) || "en_proceso".equals(estado))) {
+                LocalTime hf = r.getHoraFin() != null ? r.getHoraFin() : LocalTime.of(9, 0);
+                LocalDateTime finDt = LocalDateTime.of(r.getFechaFin(), hf);
+                if (finDt.isBefore(ahora) || finDt.isEqual(ahora)) {
+                    r.setEstado("finalizada");
+                    reservaRepository.save(r);
+                    continue;
+                }
+            }
+
+            // 2) Marcar en proceso si ya empezó pero aún no acabó
+            if (r.getFechaInicio() != null
+                    && ("confirmada".equals(estado) || "pendiente".equals(estado))) {
+                LocalTime hi = r.getHoraInicio() != null ? r.getHoraInicio() : LocalTime.of(9, 0);
+                LocalDateTime iniDt = LocalDateTime.of(r.getFechaInicio(), hi);
+                if (!ahora.isBefore(iniDt)) {
+                    r.setEstado("en_proceso");
+                    reservaRepository.save(r);
+                }
             }
         }
+    }
+
+    /**
+     * @deprecated Usar {@link #actualizarEstadosAutomaticamente()}.
+     * Mantenido por compatibilidad con llamadas existentes.
+     */
+    @Deprecated
+    public void autoFinalizarExpiradas() {
+        actualizarEstadosAutomaticamente();
     }
 }
 

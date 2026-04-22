@@ -37,17 +37,38 @@
                         <small class="text-muted">(calculado automáticamente por fechas)</small>
                     </div>
                 </div>
+                <!-- Fecha Inicio -->
                 <div class="col-md-3">
                     <label for="fechaInicio" class="form-label">Fecha Inicio</label>
                     <input type="date" class="form-control" th:classappend="${#fields.hasErrors('fechaInicio')} ? 'is-invalid'"
                            id="fechaInicio" th:field="*{fechaInicio}">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></div>
                 </div>
+                <!-- Hora Inicio -->
+                <div class="col-md-3">
+                    <label for="horaInicio" class="form-label">Hora Inicio</label>
+                    <input type="time" class="form-control" id="horaInicio" name="horaInicio"
+                           th:value="${mantenimiento.horaInicio != null ? mantenimiento.horaInicio : '09:00'}" required>
+                </div>
+                <!-- Fecha Fin -->
                 <div class="col-md-3">
                     <label for="fechaFin" class="form-label">Fecha Fin</label>
                     <input type="date" class="form-control" th:classappend="${#fields.hasErrors('fechaFin')} ? 'is-invalid'"
                            id="fechaFin" th:field="*{fechaFin}">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></div>
+                </div>
+                <!-- Hora Fin -->
+                <div class="col-md-3">
+                    <label for="horaFin" class="form-label">Hora Fin</label>
+                    <input type="time" class="form-control" id="horaFin" name="horaFin"
+                           th:value="${mantenimiento.horaFin != null ? mantenimiento.horaFin : '18:00'}" required>
+                </div>
+                <!-- Aviso mismo día -->
+                <div class="col-12 d-none" id="avisoMismoDia">
+                    <div class="alert alert-warning d-flex align-items-center gap-2 py-2 mb-0" role="alert" style="border-radius:10px;font-size:.85rem;">
+                        <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                        <span id="avisoMismoDiaMensaje"></span>
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <label for="coste" class="form-label">Coste (€)</label>
@@ -71,5 +92,52 @@
     <footer th:replace="~{fragments/layout :: admin-footer}"></footer>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    (function () {
+        var fi = document.getElementById('fechaInicio');
+        var ff = document.getElementById('fechaFin');
+        var hi = document.getElementById('horaInicio');
+        var hf = document.getElementById('horaFin');
+        var aviso = document.getElementById('avisoMismoDia');
+        var avisoMsg = document.getElementById('avisoMismoDiaMensaje');
+
+        function validar() {
+            if (!fi.value || !ff.value) { aviso.classList.add('d-none'); return true; }
+
+            // fechaFin < fechaInicio
+            if (ff.value < fi.value) {
+                avisoMsg.textContent = 'La fecha de fin no puede ser anterior a la de inicio.';
+                aviso.classList.remove('d-none');
+                return false;
+            }
+
+            // Mismo día: horaFin debe ser posterior a horaInicio
+            if (ff.value === fi.value && hi.value && hf.value && hf.value <= hi.value) {
+                avisoMsg.textContent = 'Para mantenimientos del mismo día, la hora de fin debe ser posterior a la hora de inicio.';
+                aviso.classList.remove('d-none');
+                return false;
+            }
+
+            aviso.classList.add('d-none');
+            return true;
+        }
+
+        fi.addEventListener('change', validar);
+        ff.addEventListener('change', validar);
+        hi.addEventListener('change', validar);
+        hf.addEventListener('change', validar);
+
+        // Bloquear envío si hay error
+        document.querySelector('form').addEventListener('submit', function (e) {
+            if (!validar()) {
+                e.preventDefault();
+                aviso.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        // Ejecución inicial (si hay valores al cargar — p. ej. tras error de servidor)
+        validar();
+    })();
+</script>
 </body>
 </html>

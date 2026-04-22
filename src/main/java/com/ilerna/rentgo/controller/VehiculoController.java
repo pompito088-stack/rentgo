@@ -66,7 +66,9 @@ public class VehiculoController {
     @GetMapping
     public String listar(Model model, HttpSession session) {
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
-        model.addAttribute("vehiculos", vehiculoService.listarTodos());
+        var vehiculos = vehiculoService.listarTodos();
+        model.addAttribute("vehiculos", vehiculos);
+        model.addAttribute("disponibilidades", vehiculoService.calcularDisponibilidades(vehiculos));
         model.addAttribute("sucursales", sucursalService.listarTodas());
         model.addAttribute("categorias", categoriaService.listarTodas());
         model.addAttribute("esAdmin", logueado != null && logueado.isAdmin());
@@ -83,6 +85,7 @@ public class VehiculoController {
             model.addAttribute("vehiculoId", id);
             model.addAttribute("estaLogueado", logueado != null);
             model.addAttribute("esAdmin", logueado != null && logueado.isAdmin());
+            model.addAttribute("disponibilidad", vehiculoService.calcularDisponibilidad(id));
             return "vehiculos/detalle";
         }
         return "redirect:/vehiculos";

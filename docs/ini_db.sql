@@ -141,7 +141,9 @@ CREATE TABLE devoluciones(
 CREATE TABLE mantenimientos(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fecha_inicio DATE NOT NULL,
+    hora_inicio TIME NOT NULL DEFAULT '09:00:00',
     fecha_fin DATE NOT NULL,
+    hora_fin TIME NOT NULL DEFAULT '18:00:00',
     motivo VARCHAR(200) NOT NULL,
     coste DECIMAL(10,2) NOT NULL,
     estado ENUM('pendiente', 'en_proceso', 'finalizado') NOT NULL DEFAULT 'pendiente',

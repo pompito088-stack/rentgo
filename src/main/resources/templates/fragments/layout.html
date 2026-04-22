@@ -438,10 +438,30 @@
         /* ─── HERO SECTION ─── */
         .hero-section {
             background: linear-gradient(135deg, var(--teal-800) 0%, var(--teal-600) 60%, #0ea5e9 100%);
-            padding: 5rem 0 4rem;
+            padding: 0;
+            min-height: min(85vh, 56.25vw);  /* proporción 16:9 del vídeo */
+            display: flex;
+            align-items: center;
             color: #fff;
             position: relative;
             overflow: hidden;
+        }
+        /* Vídeo de fondo a todo el ancho */
+        .hero-bg-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 70%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .hero-bg-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(135deg, rgba(15,118,110,.85) 0%, rgba(13,148,136,.65) 55%, rgba(14,165,233,.55) 100%);
         }
         .hero-section::before {
             content: '';
@@ -465,6 +485,24 @@
             line-height: 1.15;
         }
         .hero-section .lead { font-size: 1.1rem; opacity: .9; max-width: 520px; }
+        /* Vídeo del hero (visitante) */
+        .hero-video-wrap {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.1) inset;
+            background: rgba(0,0,0,.25);
+            aspect-ratio: 16 / 10;
+            transform: perspective(1000px) rotateY(-3deg);
+            transition: transform .35s ease;
+        }
+        .hero-video-wrap:hover { transform: perspective(1000px) rotateY(0); }
+        .hero-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
         .hero-badge {
             display: inline-flex; align-items: center; gap: .4rem;
             background: rgba(255,255,255,.15);
@@ -680,6 +718,8 @@
         }
 
         /* ─── RESPONSIVE ─── */
+        /* Tablet grande: ajustes para sidebar admin (entre 992 y 1199 nada cambia) */
+
         /* Móvil y tablet pequeño: sidebar admin fuera de pantalla con hamburger */
         @media (max-width: 991.98px) {
             .admin-burger { display: inline-flex; }
@@ -687,20 +727,116 @@
                 transform: translateX(-100%);
                 transition: transform .25s ease;
                 box-shadow: 4px 0 24px rgba(0,0,0,.2);
+                width: min(86vw, 300px);
             }
             .admin-sidebar.open { transform: translateX(0); }
             .admin-wrapper { margin-left: 0; }
-            .admin-topbar { padding-left: 4rem; }   /* deja hueco para el hamburger */
-            .admin-page-content { padding: 1rem; }
-            .admin-topbar .page-title { font-size: 1rem; }
+            .admin-topbar {
+                padding: .75rem 1rem .75rem 4rem;   /* deja hueco para el hamburger */
+                flex-wrap: wrap;
+                gap: .5rem;
+                row-gap: .35rem;
+            }
+            .admin-topbar .page-title {
+                font-size: .98rem;
+                line-height: 1.2;
+                flex: 1 1 auto;
+                min-width: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .admin-topbar .topbar-right {
+                gap: .5rem;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            .admin-topbar .topbar-right .btn { font-size: .78rem; padding: .35rem .65rem; }
+            .admin-topbar .topbar-badge { font-size: .68rem; padding: .15rem .5rem; }
+            .admin-page-content { padding: 1rem .85rem; }
+            .admin-card { padding: 1.1rem; border-radius: 12px; }
+            /* ── Tablas admin: convertir filas en tarjetas apiladas (sin scroll horizontal) ── */
+            .admin-table {
+                overflow: visible;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .admin-table table,
+            .admin-table thead,
+            .admin-table tbody,
+            .admin-table tr,
+            .admin-table td { display: block; width: 100%; }
+            .admin-table thead { display: none; }       /* etiquetas ocultas: cada celda ya tiene contexto */
+            .admin-table table { min-width: 0 !important; }
+            .admin-table tbody tr {
+                background: #fff !important;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                padding: .85rem 1rem;
+                margin-bottom: .85rem;
+                box-shadow: 0 1px 4px rgba(0,0,0,.05);
+            }
+            .admin-table tbody tr:hover { background: #fff !important; }
+            .admin-table tbody td {
+                padding: .35rem 0 !important;
+                border: none !important;
+                white-space: normal !important;
+                word-break: break-word;
+                font-size: .85rem;
+                text-align: left !important;
+            }
+            /* Acciones: full-width y wrap */
+            .admin-table tbody td .d-inline-flex,
+            .admin-table tbody td .btn-group {
+                display: flex !important;
+                flex-wrap: wrap;
+                gap: .4rem;
+                width: 100%;
+            }
+            .admin-table tbody td .d-inline-flex > *,
+            .admin-table tbody td .btn-group > * {
+                flex: 1 1 auto;
+                justify-content: center;
+            }
+            /* Botones de acción de tarjetas admin: que envuelvan y crezcan */
+            .admin-card .btn-action-edit,
+            .admin-card .btn-action-delete,
+            .admin-card .btn-action-view {
+                flex: 1 1 auto;
+                justify-content: center;
+                padding: .45rem .55rem;
+                font-size: .78rem;
+            }
         }
         /* Móvil pequeño: ajustes finos */
         @media (max-width: 575.98px) {
-            .stat-card { padding: 1rem; }
-            .stat-card .stat-value { font-size: 1.3rem; }
-            .stat-card .stat-icon { width: 42px; height: 42px; font-size: 1.2rem; }
-            .admin-card { padding: 1rem; }
-            .admin-table tbody td, .admin-table thead th { padding: .55rem .6rem; font-size: .78rem; }
+            .admin-topbar { padding: .65rem .8rem .65rem 3.75rem; }
+            .admin-topbar .page-title { font-size: .92rem; }
+            .admin-topbar .topbar-right { width: 100%; justify-content: flex-start; }
+            .admin-page-content { padding: .85rem .65rem; }
+            .stat-card { padding: 1rem; gap: .75rem; }
+            .stat-card .stat-value { font-size: 1.25rem; }
+            .stat-card .stat-label { font-size: .75rem; }
+            .stat-card .stat-icon { width: 42px; height: 42px; font-size: 1.15rem; }
+            .admin-card { padding: .9rem; }
+            .admin-card-header { flex-wrap: wrap; gap: .5rem; }
+            /* Las tablas ya están como tarjetas; ajustes de tamaño */
+            .admin-table tbody tr { padding: .75rem .85rem; }
+            .admin-table tbody td { font-size: .8rem; padding: .3rem 0 !important; }
+            .admin-burger { width: 40px; height: 40px; font-size: 1.25rem; top: .5rem; left: .5rem; border-radius: 9px; }
+            /* Form admin: stack labels y reducir paddings */
+            .admin-card .form-control, .admin-card .form-select { font-size: .85rem; }
+            .admin-card .form-label { font-size: .8rem; }
+            /* Botones de fila card-acciones full width en columnas */
+            .admin-card .btn-action-edit,
+            .admin-card .btn-action-delete,
+            .admin-card .btn-action-view {
+                font-size: .76rem;
+                padding: .42rem .45rem;
+            }
+            /* Hero (cliente) más compacto */
             .hero-section { padding: 3rem 0 2.5rem; }
             .vehicle-card .vc-img, .vehicle-card .vc-img-placeholder { height: 170px; }
             .extra-card { padding: .75rem; }

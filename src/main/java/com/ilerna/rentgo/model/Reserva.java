@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -169,13 +170,25 @@ public class Reserva {
         this.extras = extras;
     }
     /**
-     * Retorna true si la reserva (confirmada o pendiente) ya ha pasado su fecha de fin.
-     * Usado en la vista para mostrar el estado "finalizada".
+     * Retorna true si la reserva (confirmada/pendiente/en_proceso) ya ha pasado
+     * su fecha+hora de fin. Usado en la vista para mostrar el estado "finalizada".
      */
     public boolean isEstaFinalizada() {
-        return ("confirmada".equals(estado) || "pendiente".equals(estado) || "en_proceso".equals(estado))
-                && fechaFin != null
-                && fechaFin.isBefore(LocalDate.now());
+        if (fechaFin == null) return false;
+        if (!("confirmada".equals(estado) || "pendiente".equals(estado) || "en_proceso".equals(estado))) return false;
+        LocalTime hf = (horaFin != null ? horaFin : LocalTime.of(9, 0));
+        return LocalDateTime.of(fechaFin, hf).isBefore(LocalDateTime.now());
+    }
+
+    /**
+     * Retorna true si la reserva ya ha comenzado pero aún no ha finalizado
+     * (según fecha+hora). Útil para la lógica de "en proceso" y para bloquear
+     * la cancelación una vez iniciada.
+     */
+    public boolean isYaIniciada() {
+        if (fechaInicio == null) return false;
+        LocalTime hi = (horaInicio != null ? horaInicio : LocalTime.of(9, 0));
+        return !LocalDateTime.now().isBefore(LocalDateTime.of(fechaInicio, hi));
     }
 
     @Override

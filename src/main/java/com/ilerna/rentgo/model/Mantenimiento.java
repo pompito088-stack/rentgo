@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 /**
  * Entidad que representa la tabla mantenimientos en la base de datos.
  * Registra periodos de indisponibilidad tecnica de un vehiculo.
@@ -18,9 +20,15 @@ public class Mantenimiento {
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
+    @Column(name = "hora_inicio", nullable = false)
+    private LocalTime horaInicio = LocalTime.of(9, 0);
+
     @NotNull(message = "La fecha de fin es obligatoria")
     @Column(name = "fecha_fin", nullable = false)
     private LocalDate fechaFin;
+
+    @Column(name = "hora_fin", nullable = false)
+    private LocalTime horaFin = LocalTime.of(18, 0);
 
     @NotBlank(message = "El motivo es obligatorio")
     @Size(max = 200, message = "El motivo no puede superar 200 caracteres")
@@ -62,6 +70,10 @@ public class Mantenimiento {
     public void setFechaFin(LocalDate fechaFin) {
         this.fechaFin = fechaFin;
     }
+    public LocalTime getHoraInicio() { return horaInicio; }
+    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
+    public LocalTime getHoraFin() { return horaFin; }
+    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
     public String getMotivo() {
         return motivo;
     }
@@ -82,17 +94,21 @@ public class Mantenimiento {
     }
 
     /**
-     * Calcula el estado segun la fecha actual y las fechas del mantenimiento.
-     * pendiente  → hoy es anterior a fechaInicio
-     * en_proceso → hoy esta entre fechaInicio y fechaFin (inclusive)
-     * finalizado → hoy es posterior a fechaFin
+     * Calcula el estado segun la fecha+hora actual y las fechas/horas del mantenimiento.
+     * pendiente  → ahora es anterior a fechaInicio+horaInicio
+     * en_proceso → ahora esta entre inicio y fin
+     * finalizado → ahora es posterior a fechaFin+horaFin
      */
     public String calcularEstadoPorFecha() {
-        LocalDate hoy = LocalDate.now();
         if (fechaInicio == null || fechaFin == null) return "pendiente";
-        if (hoy.isBefore(fechaInicio)) return "pendiente";
-        if (!hoy.isAfter(fechaFin)) return "en_proceso";
-        return "finalizado";
+        LocalTime hi = horaInicio != null ? horaInicio : LocalTime.of(9, 0);
+        LocalTime hf = horaFin != null ? horaFin : LocalTime.of(18, 0);
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ini = LocalDateTime.of(fechaInicio, hi);
+        LocalDateTime fin = LocalDateTime.of(fechaFin, hf);
+        if (ahora.isBefore(ini)) return "pendiente";
+        if (ahora.isAfter(fin)) return "finalizado";
+        return "en_proceso";
     }
     public Vehiculo getVehiculo() {
         return vehiculo;
@@ -105,4 +121,3 @@ public class Mantenimiento {
         return "Mantenimiento #" + id + " - " + motivo + " (" + estado + ")";
     }
 }
-

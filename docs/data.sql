@@ -104,21 +104,21 @@ INSERT INTO vehiculos
      id_categoria_vehiculo, id_modelo, id_sucursal)
 VALUES
 -- Veh 1  Toyota Corolla Cross · SUV · Madrid Centro · 65€/día
-('1111AAA', 2022, 'Blanco Perla',    5, 5, 'ECO', 'automatica', 'hibrido_gasolina',  25000,  65.00, 350.00, NULL, 'disponible', 4,  1, 1),
+('1111AAA', 2022, 'Blanco Perla',    5, 5, 'ECO', 'automatica', 'hibrido_gasolina',  25000,  65.00, 350.00, '/img/vehiculos/toyota_corolla_cross_blanco.png', 'disponible', 4,  1, 1),
 -- Veh 2  VW Golf · Compacto · Madrid Chamartín · 38€/día
-('2222BBB', 2021, 'Gris Platino',    5, 5, 'C',   'manual',     'gasolina',          42000,  38.00, 200.00, NULL, 'disponible', 2,  3, 2),
+('2222BBB', 2021, 'Gris Platino',    5, 5, 'C',   'manual',     'gasolina',          42000,  38.00, 200.00, '/img/vehiculos/volkswagen_golf_gris_platino.png', 'disponible', 2,  3, 2),
 -- Veh 3  Renault Clio · Económico · Madrid Centro · 45€/día
-('3333CCC', 2020, 'Blanco Glaciar',  5, 5, 'C',   'manual',     'gasolina',          55000,  45.00, 150.00, NULL, 'disponible', 1,  9, 1),
+('3333CCC', 2020, 'Blanco Glaciar',  5, 5, 'C',   'manual',     'gasolina',          55000,  45.00, 150.00, '/img/vehiculos/renault_clio_blanco_glaciar.png', 'disponible', 1,  9, 1),
 -- Veh 4  Seat Ibiza · Económico · Madrid Atocha · 28€/día
-('4444DDD', 2021, 'Rojo Pasión',     5, 5, 'C',   'manual',     'gasolina',          38000,  28.00, 130.00, NULL, 'disponible', 1, 11, 3),
+('4444DDD', 2021, 'Rojo Pasión',     5, 5, 'C',   'manual',     'gasolina',          38000,  28.00, 130.00, '/img/vehiculos/seat_ibiza_rojo_pasion.png', 'disponible', 1, 11, 3),
 -- Veh 5  BMW Serie 3 · Premium · Madrid Plaza Castilla · 123€/día
-('5555EEE', 2022, 'Negro Zafiro',    5, 4, 'B',   'automatica', 'gasolina',          18000, 123.00, 700.00, NULL, 'disponible', 8,  5, 6),
+('5555EEE', 2022, 'Negro Zafiro',    5, 4, 'B',   'automatica', 'gasolina',          18000, 123.00, 700.00, '/img/vehiculos/bmw_serie_3_negro_zafiro.png', 'disponible', 8,  5, 6),
 -- Veh 6  Toyota RAV4 · SUV · Madrid Plaza Castilla · 140€/día
-('6666FFF', 2023, 'Plata Metálico',  5, 5, 'ECO', 'automatica', 'hibrido_gasolina',  12000, 140.00, 800.00, NULL, 'disponible', 4,  2, 6),
+('6666FFF', 2023, 'Plata Metálico',  5, 5, 'ECO', 'automatica', 'hibrido_gasolina',  12000, 140.00, 800.00, '/img/vehiculos/toyota_rav4_plata_metalico.png', 'disponible', 4,  2, 6),
 -- Veh 7  VW Polo · Económico · Madrid Chamartín · 52€/día
-('7777GGG', 2022, 'Azul Reef',       5, 5, 'C',   'manual',     'gasolina',          29000,  52.00, 220.00, NULL, 'disponible', 1,  4, 2),
+('7777GGG', 2022, 'Azul Reef',       5, 5, 'C',   'manual',     'gasolina',          29000,  52.00, 220.00, '/img/vehiculos/volkswagen_polo_azul_reef.png', 'disponible', 1,  4, 2),
 -- Veh 8  Renault Captur · Compacto · Madrid Atocha · 55€/día
-('8888HHH', 2021, 'Naranja Energy',  5, 5, 'C',   'manual',     'gasolina',          34000,  55.00, 260.00, NULL, 'disponible', 2, 10, 3),
+('8888HHH', 2021, 'Naranja Energy',  5, 5, 'C',   'manual',     'gasolina',          34000,  55.00, 260.00, '/img/vehiculos/renault_captur_naranja_energy.png', 'disponible', 2, 10, 3),
 -- Veh 9  Hyundai Tucson · SUV · Madrid Barajas T4 · 38€/día
 ('9999JJJ', 2022, 'Azul Galáctico',  5, 5, 'B',   'automatica', 'diesel',            31000,  38.00, 280.00, NULL, 'disponible', 4, 15, 5),
 -- Veh 10 Ford Kuga · Familiar · Madrid Barajas T1 · 60€/día
@@ -228,9 +228,9 @@ VALUES
 -- Veh 47  Volvo XC40 Recharge eléctrico · SUV · Bilbao Aeropuerto · 95€/día
 ('4704DDD', 2024, 'Azul Denim',      5, 5, 'CERO', 'automatica', 'electrico',             9000,  95.00, 550.00, NULL, 'disponible', 4, 23, 14),
 -- Veh 48  Tesla Model Y eléctrico · SUV · Madrid Centro · 135€/día
-('4805EEE', 2024, 'Blanco Perla',    7, 5, 'CERO', 'automatica', 'electrico',             5000, 135.00, 800.00, NULL, 'disponible', 4, 26, 1),
+('4805EEE', 2024, 'Blanco Perla',    7, 5, 'CERO', 'automatica', 'electrico',             5000, 135.00, 800.00, '/img/vehiculos/tesla_model_y_blanco_perla.png', 'disponible', 4, 26, 1),
 -- Veh 49  Mazda CX-5 · SUV · Málaga Aeropuerto · 78€/día
-('4906FFF', 2022, 'Azul Polaris',    5, 5, 'B',    'manual',     'gasolina',             24000,  78.00, 400.00, NULL, 'disponible', 4, 29, 15);
+('4906FFF', 2022, 'Azul Polaris',    5, 5, 'B',    'manual',     'gasolina',             24000,  78.00, 400.00, '/img/vehiculos/mazda_cx-5_azul_polaris.png', 'disponible', 4, 29, 15);
 
 -- ============================================================
 -- RESERVAS DE EJEMPLO (todas finalizadas — fechas en el pasado)

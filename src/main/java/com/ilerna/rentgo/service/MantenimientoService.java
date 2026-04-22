@@ -2,6 +2,7 @@ package com.ilerna.rentgo.service;
 import com.ilerna.rentgo.model.Mantenimiento;
 import com.ilerna.rentgo.repository.MantenimientoRepository;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 /**
@@ -35,5 +36,13 @@ public class MantenimientoService {
     public void eliminar(Integer id) {
         mantenimientoRepository.deleteById(id);
     }
+    /** Comprueba solapamiento de mantenimientos para un vehiculo en un rango de fechas. */
+    public boolean existeSolapamiento(Integer vehiculoId, LocalDate fechaInicio, LocalDate fechaFin) {
+        return !mantenimientoRepository.findMantenimientosSolapados(vehiculoId, fechaInicio, fechaFin).isEmpty();
+    }
+    /** Comprueba solapamiento excluyendo un mantenimiento concreto (para edicion). */
+    public boolean existeSolapamiento(Integer vehiculoId, LocalDate fechaInicio, LocalDate fechaFin, Integer excluirId) {
+        return mantenimientoRepository.findMantenimientosSolapados(vehiculoId, fechaInicio, fechaFin)
+                .stream().anyMatch(m -> !m.getId().equals(excluirId));
+    }
 }
-
