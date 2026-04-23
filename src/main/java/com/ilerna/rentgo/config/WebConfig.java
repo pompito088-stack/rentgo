@@ -24,22 +24,29 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Convierte la ruta relativa a ruta absoluta del sistema de archivos
-        Path uploadDir = Paths.get(uploadPath).toAbsolutePath();
-        Path carnetDir = Paths.get(carnetUploadPath).toAbsolutePath();
+        // Convierte la ruta relativa a ruta absoluta y la normaliza como URI file:///
+        // (Path.toUri() genera el formato correcto en cualquier SO, incluido Windows)
+        Path uploadDir = Paths.get(uploadPath).toAbsolutePath().normalize();
+        Path carnetDir = Paths.get(carnetUploadPath).toAbsolutePath().normalize();
 
-        // Mapea /img/vehiculos/** a la carpeta static/img/vehiculos en disco
-        // Asi Spring sirve los archivos subidos en runtime sin necesidad de reiniciar
+        // Construye la URL con formato file:/// correcto y asegura barra final
+        String uploadLocation = uploadDir.toUri().toString();
+        if (!uploadLocation.endsWith("/")) uploadLocation += "/";
+
+        String carnetLocation = carnetDir.toUri().toString();
+        if (!carnetLocation.endsWith("/")) carnetLocation += "/";
+
+        // Mapea /img/vehiculos/** a la carpeta de subidas en disco (runtime)
+        // con fallback al classpath para las imagenes seed incluidas en el JAR
         registry.addResourceHandler("/img/vehiculos/**")
-                .addResourceLocations("file:" + uploadDir + "/");
+                .addResourceLocations(uploadLocation, "classpath:/static/img/vehiculos/");
 
-        // Mapea /img/carnets/** a la carpeta static/img/carnets en disco
-        // Permite ver las fotos de carnet recien subidas sin reiniciar
+        // Mapea /img/carnets/** a la carpeta de subidas en disco (runtime)
+        // con fallback al classpath para las imagenes seed incluidas en el JAR
         registry.addResourceHandler("/img/carnets/**")
-                .addResourceLocations("file:" + carnetDir + "/");
+                .addResourceLocations(carnetLocation, "classpath:/static/img/carnets/");
 
-        // Mantener los recursos estaticos normales del classpath
-        registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/");
+        // Nota: NO se re-registra "/**" aqui; Spring Boot ya gestiona
+        // los recursos estaticos del classpath (/static, /public, etc.)
     }
 }
