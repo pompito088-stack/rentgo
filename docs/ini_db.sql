@@ -151,11 +151,4 @@ CREATE TABLE mantenimientos(
     FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id)
 );
 
--- Datos iniciales de tipos de usuario
-INSERT INTO tipo_usuarios (nombre) VALUES ('cliente');
-INSERT INTO tipo_usuarios (nombre) VALUES ('admin');
 
--- Usuario administrador del sistema (email con patron %@admin-%)
--- Contrasena: admin123
-INSERT INTO usuarios (nombre, apellidos, email, telefono, dni, direccion, password, id_tipo)
-VALUES ('Admin', 'Sistema RentGo', 'admin@admin-rentgo.com', '600000000', '00000000A', 'Oficina Central RentGo', 'admin123', 2);

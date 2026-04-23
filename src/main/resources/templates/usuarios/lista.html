@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Usuarios')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Usuarios', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 
@@ -13,7 +13,7 @@
     </header>
 
     <main class="admin-page-content">
-        <!-- Barra de búsqueda -->
+        <!-- Barra de busqueda -->
         <div class="admin-card p-3 mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-5">
@@ -46,7 +46,7 @@
                         <th>#</th>
                         <th>Usuario</th>
                         <th>Email</th>
-                        <th>Teléfono</th>
+                        <th>Telefono</th>
                         <th>DNI</th>
                         <th>Rol</th>
                     </tr>

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 /**
  * Entidad que representa la tabla devoluciones.
- * Relación 1:1 con Pago: un pago solo puede tener una devolución asociada.
+ * Relacion 1:1 con Pago: un pago solo puede tener una devolucion asociada.
  * Se crea cuando el admin aprueba el reembolso de un pago cancelado.
  */
 @Entity
@@ -18,7 +18,7 @@ public class Devolucion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "La fecha de devolución es obligatoria")
+    @NotNull(message = "La fecha de devolucion es obligatoria")
     @Column(name = "fecha_devolucion", nullable = false)
     private LocalDate fechaDevolucion;
 
@@ -32,15 +32,15 @@ public class Devolucion {
     private String motivo;
 
     /**
-     * Relación OneToOne con Pago.
-     * Al guardar la devolución también cambiamos el estado del pago a 'reembolsado'.
+     * Relacion OneToOne con Pago.
+     * Al guardar la devolucion tambien cambiamos el estado del pago a 'reembolsado'.
      */
     @OneToOne
     @JoinColumn(name = "id_pago", nullable = false, unique = true)
     @NotNull(message = "El pago asociado es obligatorio")
     private Pago pago;
 
-    // Constructor vacío requerido por JPA
+    // Constructor vacio requerido por JPA
     public Devolucion() {}
 
     // Getters y Setters
@@ -61,7 +61,7 @@ public class Devolucion {
 
     @Override
     public String toString() {
-        return "Devolución #" + id + " - " + importeReembolsado + "€ (" + fechaDevolucion + ")";
+        return "Devolucion #" + id + " - " + importeReembolsado + "€ (" + fechaDevolucion + ")";
     }
 }
 

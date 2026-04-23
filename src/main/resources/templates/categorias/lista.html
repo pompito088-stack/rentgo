@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Categorias')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Categorias', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 <div class="admin-wrapper">
@@ -11,12 +11,12 @@
         </div>
     </header>
     <main class="admin-page-content">
-        <!-- Barra de búsqueda -->
+        <!-- Barra de busqueda -->
         <div class="admin-card p-3 mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-6">
-                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar categoría</label>
-                    <input type="text" id="buscarCat" class="form-control form-control-sm" placeholder="Nombre o descripción..." oninput="filtrarCats()">
+                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;color:#6b7280;"><i class="bi bi-search me-1"></i>Buscar categoria</label>
+                    <input type="text" id="buscarCat" class="form-control form-control-sm" placeholder="Nombre o descripcion..." oninput="filtrarCats()">
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-outline-secondary btn-sm w-100" onclick="document.getElementById('buscarCat').value='';filtrarCats()">
@@ -24,14 +24,14 @@
                     </button>
                 </div>
                 <div class="col-md-4 text-end">
-                    <small class="text-muted"><span id="contCats">0</span> categoría(s)</small>
+                    <small class="text-muted"><span id="contCats">0</span> categoria(s)</small>
                 </div>
             </div>
         </div>
         <section class="admin-table">
             <table class="table table-hover mb-0" id="tablaCats">
                 <thead>
-                    <tr><th>#</th><th>Nombre</th><th>Descripción</th><th class="text-end">Acciones</th></tr>
+                    <tr><th>#</th><th>Nombre</th><th>Descripcion</th><th class="text-end">Acciones</th></tr>
                 </thead>
                 <tbody>
                     <tr th:each="cat : ${categorias}">
@@ -42,7 +42,7 @@
                             <div class="d-inline-flex gap-1">
                                 <a th:href="@{/categorias/editar/{id}(id=${cat.id})}" class="btn-action-edit"><i class="bi bi-pencil me-1"></i>Editar</a>
                                 <a th:href="@{/categorias/eliminar/{id}(id=${cat.id})}" class="btn-action-delete"
-                                   onclick="return confirm('¿Eliminar esta categoría?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
+                                   onclick="return confirm('Eliminar esta categoria?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
                             </div>
                         </td>
                     </tr>

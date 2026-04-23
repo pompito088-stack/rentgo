@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Mi Perfil')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Mi Perfil', null)}"></head>
 <body class="client-layout">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
@@ -39,9 +39,9 @@
                           th:text="${esAdmin ? 'Administrador' : 'Cliente'}"></span>
                 </div>
 
-                <!-- Acciones rápidas -->
+                <!-- Acciones rapidas -->
                 <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;">
-                    <p style="font-size:.75rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;">Acciones rápidas</p>
+                    <p style="font-size:.75rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;">Acciones rapidas</p>
                     <div class="d-flex flex-column gap-2">
                         <a th:if="${!esAdmin}" th:href="@{/mi-perfil/editar}"
                            class="btn btn-sm d-flex align-items-center gap-2"
@@ -56,12 +56,12 @@
                         <a th:href="@{/vehiculos}"
                            class="btn btn-sm d-flex align-items-center gap-2"
                            style="border:1px solid #e5e7eb;color:#374151;border-radius:8px;text-align:left;">
-                            <i class="bi bi-car-front" style="color:var(--teal-500);"></i> Ver vehículos
+                            <i class="bi bi-car-front" style="color:var(--teal-500);"></i> Ver vehiculos
                         </a>
                         <a th:href="@{/logout}"
                            class="btn btn-sm d-flex align-items-center gap-2"
                            style="border:1px solid #fee2e2;color:#dc2626;border-radius:8px;text-align:left;">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                            <i class="bi bi-box-arrow-right"></i> Cerrar sesion
                         </a>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                             <div class="profile-field-value" th:text="${usuario.email}"></div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="profile-field-label">Teléfono</div>
+                            <div class="profile-field-label">Telefono</div>
                             <div class="profile-field-value" th:text="${usuario.telefono}"></div>
                         </div>
                         <div class="col-sm-6">
@@ -112,7 +112,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="profile-field-label">Dirección</div>
+                            <div class="profile-field-label">Direccion</div>
                             <div class="profile-field-value">
                                 <i class="bi bi-geo-alt me-1" style="color:#9ca3af;"></i>
                                 <span th:text="${usuario.direccion}"></span>
@@ -121,10 +121,10 @@
                     </div>
                 </section>
 
-                <!-- Garantías de seguridad -->
+                <!-- Garantias de seguridad -->
                 <div class="d-flex flex-wrap gap-3 mt-3 px-1">
                     <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-shield-lock-fill me-1" style="color:#22c55e;"></i>Datos protegidos</span>
-                    <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-lock-fill me-1" style="color:var(--teal-500);"></i>Contraseña cifrada</span>
+                    <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-lock-fill me-1" style="color:var(--teal-500);"></i>Contrasena cifrada</span>
                     <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-check-circle-fill me-1" style="color:#3b82f6;"></i>Cuenta verificada</span>
                 </div>
 
@@ -151,7 +151,7 @@
                     <div th:if="${usuario.rutaFotoCarnet == null or #strings.isEmpty(usuario.rutaFotoCarnet)}"
                          style="text-align:center;padding:1.5rem 0;">
                         <i class="bi bi-credit-card-2-front" style="font-size:3rem;color:#d1d5db;"></i>
-                        <p class="mt-2 text-muted" style="font-size:.9rem;">No tienes foto del carnet subida aún.</p>
+                        <p class="mt-2 text-muted" style="font-size:.9rem;">No tienes foto del carnet subida aun.</p>
                         <a th:href="@{/mi-perfil/editar}"
                            class="btn btn-sm text-white"
                            style="background:var(--teal-600);border-radius:8px;font-size:.85rem;">

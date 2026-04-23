@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Formulario Mantenimiento')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Formulario Mantenimiento', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 <div class="admin-wrapper">
@@ -34,7 +34,7 @@
                             <span th:if="${est == 'en_proceso'}" class="badge bg-primary">En proceso</span>
                             <span th:if="${est == 'finalizado'}" class="badge bg-success">Finalizado</span>
                         </span>
-                        <small class="text-muted">(calculado automáticamente por fechas)</small>
+                        <small class="text-muted">(calculado automaticamente por fechas)</small>
                     </div>
                 </div>
                 <!-- Fecha Inicio -->
@@ -63,7 +63,7 @@
                     <input type="time" class="form-control" id="horaFin" name="horaFin"
                            th:value="${mantenimiento.horaFin != null ? mantenimiento.horaFin : '18:00'}" required>
                 </div>
-                <!-- Aviso mismo día -->
+                <!-- Aviso mismo dia -->
                 <div class="col-12 d-none" id="avisoMismoDia">
                     <div class="alert alert-warning d-flex align-items-center gap-2 py-2 mb-0" role="alert" style="border-radius:10px;font-size:.85rem;">
                         <i class="bi bi-exclamation-triangle-fill text-warning"></i>
@@ -111,9 +111,9 @@
                 return false;
             }
 
-            // Mismo día: horaFin debe ser posterior a horaInicio
+            // Mismo dia: horaFin debe ser posterior a horaInicio
             if (ff.value === fi.value && hi.value && hf.value && hf.value <= hi.value) {
-                avisoMsg.textContent = 'Para mantenimientos del mismo día, la hora de fin debe ser posterior a la hora de inicio.';
+                avisoMsg.textContent = 'Para mantenimientos del mismo dia, la hora de fin debe ser posterior a la hora de inicio.';
                 aviso.classList.remove('d-none');
                 return false;
             }
@@ -127,7 +127,7 @@
         hi.addEventListener('change', validar);
         hf.addEventListener('change', validar);
 
-        // Bloquear envío si hay error
+        // Bloquear envio si hay error
         document.querySelector('form').addEventListener('submit', function (e) {
             if (!validar()) {
                 e.preventDefault();
@@ -135,7 +135,7 @@
             }
         });
 
-        // Ejecución inicial (si hay valores al cargar — p. ej. tras error de servidor)
+        // Ejecucion inicial (si hay valores al cargar — p. ej. tras error de servidor)
         validar();
     })();
 </script>

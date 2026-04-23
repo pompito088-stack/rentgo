@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Nueva Reserva')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Nueva Reserva', null)}"></head>
 <body class="client-layout">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
@@ -31,21 +31,21 @@
                     <!-- precioTotal SIEMPRE presente y fuera del aside (bug-fix: no se enviaba si el aside estaba oculto) -->
                     <input type="hidden" id="precioTotal" th:field="*{precioTotal}">
 
-                    <!-- BLOQUE 1: Vehículo, fechas y horas -->
+                    <!-- BLOQUE 1: Vehiculo, fechas y horas -->
                     <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
                         <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
                             <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">1</span>
-                            Selecciona el vehículo y fechas
+                            Selecciona el vehiculo y fechas
                         </h2>
                         <div class="row g-3">
-                            <!-- Vehículo -->
+                            <!-- Vehiculo -->
                             <div class="col-12">
-                                <label for="vehiculo" class="form-label">Vehículo</label>
+                                <label for="vehiculo" class="form-label">Vehiculo</label>
                                 <select class="form-select" id="vehiculo" th:field="*{vehiculo.id}" required>
-                                    <option value="">— Seleccionar vehículo —</option>
+                                    <option value="">— Seleccionar vehiculo —</option>
                                     <option th:each="v : ${vehiculos}" th:value="${v.id}"
                                             th:attr="data-precio=${v.precioDia},data-fianza=${v.fianza},data-sucursal=${v.sucursal.id},data-sucursal-nombre=${v.sucursal.nombre + ' (' + v.sucursal.ciudad + ')'}"
-                                            th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre + ' (' + v.matricula + ') · ' + v.precioDia + '€/día'}"></option>
+                                            th:text="${v.modelo.marca.nombre + ' ' + v.modelo.nombre + ' (' + v.matricula + ') · ' + v.precioDia + '€/dia'}"></option>
                                 </select>
                                 <!-- Sucursal de recogida inline -->
                                 <div id="sucursalRecogidaInline" class="mt-2 d-none"
@@ -70,14 +70,14 @@
                             </div>
                             <!-- Fecha y hora fin -->
                             <div class="col-md-6">
-                                <label for="fechaFin" class="form-label">Fecha de devolución</label>
+                                <label for="fechaFin" class="form-label">Fecha de devolucion</label>
                                 <input type="date" class="form-control"
                                        th:classappend="${#fields.hasErrors('fechaFin')} ? 'is-invalid'"
                                        id="fechaFin" th:field="*{fechaFin}">
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></div>
                             </div>
                             <div class="col-md-6">
-                                <label for="horaFin" class="form-label">Hora de devolución</label>
+                                <label for="horaFin" class="form-label">Hora de devolucion</label>
                                 <input type="time" class="form-control" id="horaFin" name="horaFin"
                                        th:value="${reserva.horaFin != null ? reserva.horaFin : '09:00'}"
                                        required>
@@ -89,7 +89,7 @@
                     <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
                         <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
                             <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">2</span>
-                            Sucursales de recogida y devolución
+                            Sucursales de recogida y devolucion
                         </h2>
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -97,14 +97,14 @@
                                     <i class="bi bi-geo-alt-fill me-1" style="color:var(--teal-500);"></i>Sucursal de recogida
                                 </label>
                                 <input type="text" class="form-control" id="sucursalRecogidaTexto"
-                                       readonly placeholder="— Se asigna con el vehículo —"
+                                       readonly placeholder="— Se asigna con el vehiculo —"
                                        style="background:#f3f4f6;cursor:not-allowed;font-weight:600;color:var(--teal-700);">
                                 <input type="hidden" id="sucursalRecogidaHidden" name="sucursalRecogida.id" th:value="${reserva.sucursalRecogida?.id}">
-                                <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Se asigna automáticamente según el vehículo.</small>
+                                <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Se asigna automaticamente segun el vehiculo.</small>
                             </div>
                             <div class="col-md-6">
                                 <label for="sucursalDevolucion" class="form-label">
-                                    <i class="bi bi-geo-alt me-1" style="color:#6b7280;"></i>Sucursal de devolución
+                                    <i class="bi bi-geo-alt me-1" style="color:#6b7280;"></i>Sucursal de devolucion
                                 </label>
                                 <select class="form-select" id="sucursalDevolucion" th:field="*{sucursalDevolucion.id}" required>
                                     <option value="">— Seleccionar sucursal —</option>
@@ -126,7 +126,7 @@
                             <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">3</span>
                             Extras opcionales
                         </h2>
-                        <p style="font-size:.82rem;color:#6b7280;margin-bottom:1.25rem;">Selecciona los extras que desees. El precio se añade por cada día de alquiler.</p>
+                        <p style="font-size:.82rem;color:#6b7280;margin-bottom:1.25rem;">Selecciona los extras que desees. El precio se anade por cada dia de alquiler.</p>
 
                         <div class="row g-3" th:if="${extras != null and !extras.isEmpty()}">
                             <div class="col-md-6" th:each="extra : ${extras}">
@@ -144,7 +144,7 @@
                                         <div class="extra-desc" th:text="${extra.descripcion}"></div>
                                         <div class="extra-price">
                                             <span th:text="${extra.precioDia + ' €'}"></span>
-                                            <span style="font-size:.75rem;font-weight:400;color:#9ca3af;"> / día</span>
+                                            <span style="font-size:.75rem;font-weight:400;color:#9ca3af;"> / dia</span>
                                         </div>
                                     </div>
                                 </label>
@@ -160,54 +160,54 @@
                     <section style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;">
                         <h2 style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;">
                             <span style="width:28px;height:28px;border-radius:50%;background:var(--teal-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;">4</span>
-                            Método de pago
+                            Metodo de pago
                         </h2>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="metodoPago" class="form-label">Método de pago</label>
+                                <label for="metodoPago" class="form-label">Metodo de pago</label>
                                 <select class="form-select" id="metodoPago" name="metodoPago" required>
-                                    <option value="">— Seleccionar método —</option>
+                                    <option value="">— Seleccionar metodo —</option>
                                     <option th:each="m : ${metodosPago}" th:value="${m}"
-                                            th:text="${m == 'tarjeta_credito' ? 'Tarjeta de crédito' :
-                                                      (m == 'tarjeta_debito' ? 'Tarjeta de débito' : 'PayPal')}"></option>
+                                            th:text="${m == 'tarjeta_credito' ? 'Tarjeta de credito' :
+                                                      (m == 'tarjeta_debito' ? 'Tarjeta de debito' : 'PayPal')}"></option>
                                 </select>
                             </div>
                             <input type="hidden" th:field="*{estado}">
                         </div>
                     </section>
 
-                    <!-- Aviso política de cancelación -->
+                    <!-- Aviso politica de cancelacion -->
                     <div class="alert d-flex align-items-start gap-2 mb-3" role="alert"
                          style="background:#fef9c3;border:1px solid #fde68a;border-radius:12px;font-size:.85rem;color:#92400e;">
                         <i class="bi bi-clock-fill mt-1" style="color:#d97706;flex-shrink:0;"></i>
                         <span>
-                            <strong>Política de cancelación:</strong> si cancelas con más de <strong>24 horas</strong> de antelación recibirás el <strong>100% del importe</strong>. Si cancelas con menos de 24 horas, se retendrá el <strong>50%</strong> del importe del alquiler. La fianza siempre se devuelve íntegramente.
+                            <strong>Politica de cancelacion:</strong> si cancelas con mas de <strong>24 horas</strong> de antelacion recibiras el <strong>100% del importe</strong>. Si cancelas con menos de 24 horas, se retendra el <strong>50%</strong> del importe del alquiler. La fianza siempre se devuelve integramente.
                         </span>
                     </div>
 
-                    <!-- RESUMEN PRECIO (siempre visible, se actualiza dinámicamente) -->
+                    <!-- RESUMEN PRECIO (siempre visible, se actualiza dinamicamente) -->
                     <aside id="resumenPrecio" style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1.5px solid var(--teal-100);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;">
                         <h3 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;">
                             <i class="bi bi-receipt me-1" style="color:var(--teal-600);"></i>Resumen del presupuesto
                         </h3>
                         <p id="resumenAviso" style="font-size:.82rem;color:#6b7280;margin:0 0 .75rem;">
-                            <i class="bi bi-info-circle me-1"></i>Selecciona vehículo y fechas para ver el cálculo.
+                            <i class="bi bi-info-circle me-1"></i>Selecciona vehiculo y fechas para ver el calculo.
                         </p>
                         <div id="resumenDetalle" style="display:none;">
                             <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
-                                <span class="text-muted">Precio por día (vehículo)</span>
+                                <span class="text-muted">Precio por dia (vehiculo)</span>
                                 <span id="rPrecioDia" class="fw-500">—</span>
                             </div>
                             <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
-                                <span class="text-muted">Número de días</span>
+                                <span class="text-muted">Numero de dias</span>
                                 <span id="rDias" class="fw-500">—</span>
                             </div>
                             <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;">
-                                <span class="text-muted">Subtotal vehículo</span>
+                                <span class="text-muted">Subtotal vehiculo</span>
                                 <span id="rSubtotalVeh" class="fw-500">—</span>
                             </div>
                             <div class="d-flex justify-content-between mb-1" style="font-size:.88rem;" id="filaExtras">
-                                <span class="text-muted">Extras (<span id="rNumExtras">0</span>) × días</span>
+                                <span class="text-muted">Extras (<span id="rNumExtras">0</span>) × dias</span>
                                 <span id="rExtras" class="fw-500">—</span>
                             </div>
                             <ul id="rListaExtras" class="list-unstyled mb-1" style="font-size:.78rem;color:#6b7280;padding-left:.5rem;"></ul>
@@ -222,7 +222,7 @@
                                 </span>
                                 <span id="rFianza" style="font-size:.95rem;font-weight:700;color:#92400e;">—</span>
                             </div>
-                            <p style="font-size:.75rem;color:#9ca3af;margin-top:.4rem;margin-bottom:.75rem;">La fianza se devuelve al entregar el vehículo en perfectas condiciones.</p>
+                            <p style="font-size:.75rem;color:#9ca3af;margin-top:.4rem;margin-bottom:.75rem;">La fianza se devuelve al entregar el vehiculo en perfectas condiciones.</p>
                             <div class="d-flex justify-content-between" id="filaTotalPagar" style="background:linear-gradient(135deg,var(--teal-600),var(--teal-700));border-radius:10px;padding:.75rem 1rem;">
                                 <span style="font-size:.95rem;font-weight:700;color:#fff;">
                                     <i class="bi bi-credit-card me-1"></i>Total a pagar (alquiler + fianza)
@@ -235,7 +235,7 @@
                     <!-- Aviso legal -->
                     <div class="alert alert-info d-flex align-items-start gap-2 mb-3" role="alert" style="border-radius:12px;font-size:.85rem;">
                         <i class="bi bi-info-circle-fill mt-1" style="color:#3b82f6;flex-shrink:0;"></i>
-                        <span>Al pulsar <strong>Confirmar y Reservar</strong> aceptas las condiciones de alquiler y se procesará el pago del importe total indicado.</span>
+                        <span>Al pulsar <strong>Confirmar y Reservar</strong> aceptas las condiciones de alquiler y se procesara el pago del importe total indicado.</span>
                     </div>
 
                     <!-- Botones -->
@@ -274,7 +274,7 @@
         if (cb && cb.checked) card.classList.add('selected');
     });
 
-    // Auto-asignar sucursal de recogida al seleccionar vehículo
+    // Auto-asignar sucursal de recogida al seleccionar vehiculo
     document.getElementById('vehiculo').addEventListener('change', function() {
         var sel = this.options[this.selectedIndex];
         var sucursalId = sel.getAttribute('data-sucursal');
@@ -347,7 +347,7 @@
         if (dias < 0 || isNaN(precioDia)) {
             detalle.style.display = 'none';
             aviso.style.display = 'block';
-            aviso.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>La fecha de devolución debe ser igual o posterior a la de recogida.';
+            aviso.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>La fecha de devolucion debe ser igual o posterior a la de recogida.';
             precioInput.value = '';
             return;
         }
@@ -361,7 +361,7 @@
             extrasPorDia += precio;
             numExtras++;
             var nombre = cb.closest('.extra-card').querySelector('.extra-name').textContent.trim();
-            listaHtml += '<li>· ' + nombre + ' (' + precio.toFixed(2) + ' €/día)</li>';
+            listaHtml += '<li>· ' + nombre + ' (' + precio.toFixed(2) + ' €/dia)</li>';
         });
 
         var subtotalVeh = precioDia * dias;
@@ -374,7 +374,7 @@
 
         // Render
         document.getElementById('rPrecioDia').textContent = precioDia.toFixed(2) + ' €';
-        document.getElementById('rDias').textContent = dias + ' día(s)';
+        document.getElementById('rDias').textContent = dias + ' dia(s)';
         document.getElementById('rSubtotalVeh').textContent = subtotalVeh.toFixed(2) + ' €';
         document.getElementById('rNumExtras').textContent = numExtras;
         document.getElementById('rExtras').textContent = totalExtras.toFixed(2) + ' €';
@@ -393,9 +393,9 @@
     document.getElementById('horaInicio').addEventListener('change', calcularPrecio);
     document.getElementById('horaFin').addEventListener('change', calcularPrecio);
 
-    // Garantía final: al enviar el formulario, recalcular para asegurar precioTotal
+    // Garantia final: al enviar el formulario, recalcular para asegurar precioTotal
     document.getElementById('formReserva').addEventListener('submit', function(e) {
-        // Validar que fecha+hora inicio no esté en el pasado
+        // Validar que fecha+hora inicio no este en el pasado
         var fi = document.getElementById('fechaInicio').value;
         var hi = document.getElementById('horaInicio').value;
         if (fi && hi) {
@@ -411,7 +411,7 @@
         var precio = document.getElementById('precioTotal').value;
         if (!precio || parseFloat(precio) <= 0) {
             e.preventDefault();
-            alert('Por favor selecciona un vehículo y fechas válidas para calcular el precio.');
+            alert('Por favor selecciona un vehiculo y fechas validas para calcular el precio.');
             document.getElementById('resumenPrecio').scrollIntoView({behavior:'smooth', block:'center'});
         }
     });
@@ -424,7 +424,7 @@
         // Disparar change para rellenar sucursal y precio
         sel.dispatchEvent(new Event('change'));
     } else {
-        // Si hay un vehículo ya seleccionado (ej: recarga por errores de validación), rellenar sucursal
+        // Si hay un vehiculo ya seleccionado (ej: recarga por errores de validacion), rellenar sucursal
         var selVehiculo = document.getElementById('vehiculo');
         if (selVehiculo.value) {
             selVehiculo.dispatchEvent(new Event('change'));
@@ -432,7 +432,7 @@
     }
     calcularPrecio();
 
-    // ── Establecer fecha mínima = hoy y hora minima cuando inicio = hoy ──
+    // ── Establecer fecha minima = hoy y hora minima cuando inicio = hoy ──
     (function() {
         var hoy = new Date();
         var yyyy = hoy.getFullYear();

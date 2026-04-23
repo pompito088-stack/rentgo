@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Devoluciones')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Devoluciones', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 <div class="admin-wrapper">
     <header class="admin-topbar">
         <h1 class="page-title"><i class="bi bi-arrow-return-left me-2" style="color:var(--teal-600)"></i>Devoluciones</h1>
         <div class="topbar-right">
-            <span class="topbar-badge" th:text="${#lists.size(devoluciones)} + ' devolución/es'"></span>
+            <span class="topbar-badge" th:text="${#lists.size(devoluciones)} + ' devolucion/es'"></span>
             <a th:href="@{/devoluciones/nueva}" class="btn btn-teal btn-sm">
-                <i class="bi bi-plus-lg me-1"></i>Nueva devolución
+                <i class="bi bi-plus-lg me-1"></i>Nueva devolucion
             </a>
         </div>
     </header>
     <main class="admin-page-content">
 
-        <!-- Barra de búsqueda -->
+        <!-- Barra de busqueda -->
         <div class="admin-card p-3 mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-5">
@@ -32,7 +32,7 @@
                     </button>
                 </div>
                 <div class="col-md-5 text-end">
-                    <small class="text-muted"><span id="contDev">0</span> devolución/es</small>
+                    <small class="text-muted"><span id="contDev">0</span> devolucion/es</small>
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
                         <th>Pago</th>
                         <th>Reserva</th>
                         <th>Cliente</th>
-                        <th>Fecha Devolución</th>
+                        <th>Fecha Devolucion</th>
                         <th><i class="bi bi-currency-euro me-1"></i>Reembolsado</th>
                         <th>Motivo</th>
                         <th>Acciones</th>
@@ -91,7 +91,7 @@
                                 </a>
                                 <a th:href="@{/devoluciones/eliminar/{id}(id=${dev.id})}"
                                    class="btn-action-delete" title="Eliminar"
-                                   onclick="return confirm('¿Eliminar esta devolución? El pago volverá a estado Realizado.')">
+                                   onclick="return confirm('Eliminar esta devolucion? El pago volvera a estado Realizado.')">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </a>
                             </div>

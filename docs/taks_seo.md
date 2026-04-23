@@ -13,17 +13,17 @@ Las tareas marcadas ✅ ya están implementadas en el proyecto. Las ⏳ están p
 | 1.2 | `<meta name="description">` (130–160 caracteres) | ✅ | `layout.html` (fragment `head`) |
 | 1.3 | `<meta name="keywords">` (uso secundario) | ✅ | `layout.html` |
 | 1.4 | `<meta name="robots" content="index, follow">` | ✅ | `layout.html` |
-| 1.5 | `<link rel="canonical">` por URL | ⏳ | comentado en `layout.html`; usar `th:href="${'/' + #request.requestURI}"` cuando se valide en entorno real |
-| 1.6 | Open Graph (`og:title`, `og:description`, `og:type`, `og:locale`, `og:site_name`, `og:image`) | ⏳ parcial | añadir `og:image` cuando exista logo definitivo |
+| 1.5 | `<link rel="canonical">` por URL | ✅ | `layout.html` usa `${#httpServletRequest.requestURL}` |
+| 1.6 | Open Graph (`og:title`, `og:description`, `og:type`, `og:locale`, `og:site_name`, `og:image`) | ✅ | `layout.html` con `og:image` por defecto + `og:url` |
 | 1.7 | Twitter Card (`summary_large_image`) | ✅ | `layout.html` |
 | 1.8 | `<meta name="theme-color">` (color barra navegador móvil) | ✅ | `layout.html` |
 | 1.9 | Atributo `lang="es"` en `<html>` | ✅ | todas las plantillas usan `lang="es"` |
-| 1.10 | Favicon y apple-touch-icon | ⏳ | crear `/static/favicon.ico` y enlazar |
-| 1.11 | `robots.txt` con sitemap | ⏳ | crear `src/main/resources/static/robots.txt` |
-| 1.12 | `sitemap.xml` dinámico (vehículos, sucursales, categorías) | ⏳ | crear endpoint `/sitemap.xml` |
+| 1.10 | Favicon y apple-touch-icon | ✅ | `static/img/favicon.svg` + links en `layout.html` |
+| 1.11 | `robots.txt` con sitemap | ✅ | `static/robots.txt` |
+| 1.12 | `sitemap.xml` dinámico (vehículos, sucursales, categorías) | ✅ | `SitemapController` en `/sitemap.xml` |
 | 1.13 | Datos estructurados JSON-LD `AutoRental` | ✅ | `layout.html` |
-| 1.14 | JSON-LD `Vehicle` por ficha de vehículo | ⏳ | añadir en `vehiculos/detalle.html` |
-| 1.15 | JSON-LD `BreadcrumbList` | ⏳ | añadir en páginas con breadcrumb |
+| 1.14 | JSON-LD `Vehicle` por ficha de vehículo | ✅ | `vehiculos/detalle.html` |
+| 1.15 | JSON-LD `BreadcrumbList` | ✅ | `vehiculos/detalle.html` (extender al resto progresivamente) |
 | 1.16 | `hreflang` para futuras versiones (EN, CA) | ⏳ | cuando exista i18n |
 
 ---
@@ -37,12 +37,12 @@ Las tareas marcadas ✅ ya están implementadas en el proyecto. Las ⏳ están p
 | 2.3 | `alt` descriptivo en todas las `<img>` | ✅ revisado vehículos; ⏳ revisar `static/img/carnets` |
 | 2.4 | `aria-label` en botones-icono y navegación | ✅ ampliado en hamburger, navbars |
 | 2.5 | `aria-expanded` y `aria-controls` en toggles | ✅ hamburger admin |
-| 2.6 | `aria-current="page"` en link activo del navbar | ⏳ pendiente añadir |
+| 2.6 | `aria-current="page"` en link activo del navbar | ✅ | navbar cliente y sidebar admin |
 | 2.7 | Labels asociados a inputs (`for`/`id`) | ✅ |
 | 2.8 | Contraste mínimo AA (4.5:1) | ✅ paleta teal validada |
-| 2.9 | Foco visible en interactivos (`:focus-visible`) | ⏳ añadir outline custom global |
-| 2.10 | Imágenes con `loading="lazy"` debajo del *fold* | ⏳ añadir en grids de vehículos |
-| 2.11 | `width`/`height` en `<img>` para evitar CLS | ⏳ añadir |
+| 2.9 | Foco visible en interactivos (`:focus-visible`) | ✅ regla global teal en `layout.html` |
+| 2.10 | Imágenes con `loading="lazy"` debajo del *fold* | ✅ aplicado en `vehiculos/lista.html` |
+| 2.11 | `width`/`height` en `<img>` para evitar CLS | ✅ aplicado en lista y detalle de vehículos |
 
 ---
 

@@ -47,8 +47,12 @@ public class Pago {
     /**
      * Relacion inversa con Devolucion (puede ser null si no existe reembolso).
      * mappedBy indica que Devolucion es el lado propietario de la FK.
+     * IMPORTANTE: NO usar cascade ni orphanRemoval aqui. Si se hace, al guardar
+     * un Pago con devolucion = null en memoria, Hibernate borraria la devolucion
+     * existente en BD por considerarla huerfana. La Devolucion se gestiona
+     * exclusivamente desde DevolucionService.
      */
-    @OneToOne(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "pago", fetch = FetchType.EAGER)
     private Devolucion devolucion;
 
     // Constructor vacio (obligatorio para JPA)

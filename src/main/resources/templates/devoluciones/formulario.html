@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Formulario Devolución')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Formulario Devolucion', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 <div class="admin-wrapper">
     <header class="admin-topbar">
         <h1 class="page-title">
             <i class="bi bi-arrow-return-left me-2" style="color:var(--teal-600)"></i>
-            <span th:text="${devolucion.id != null ? 'Editar Devolución' : 'Nueva Devolución'}">Formulario</span>
+            <span th:text="${devolucion.id != null ? 'Editar Devolucion' : 'Nueva Devolucion'}">Formulario</span>
         </h1>
         <div class="topbar-right">
             <a th:href="@{/devoluciones}" class="btn btn-outline-secondary btn-sm">
@@ -22,9 +22,9 @@
             <div class="alert alert-info d-flex align-items-start gap-2 mb-4" role="alert" style="border-radius:10px;font-size:.9rem;">
                 <i class="bi bi-info-circle-fill mt-1"></i>
                 <div>
-                    Al guardar, el pago asociado cambiará automáticamente su estado a
+                    Al guardar, el pago asociado cambiara automaticamente su estado a
                     <strong>Reembolsado</strong>.<br>
-                    Si eliminas la devolución, el pago volverá a <strong>Realizado</strong>.
+                    Si eliminas la devolucion, el pago volvera a <strong>Realizado</strong>.
                 </div>
             </div>
 
@@ -43,12 +43,12 @@
                                          + '  (' + ${#numbers.formatDecimal(p.importe, 1, 2)} + ' €)'">
                         </option>
                     </select>
-                    <div class="form-text text-muted">Solo se muestran pagos sin devolución previa.</div>
+                    <div class="form-text text-muted">Solo se muestran pagos sin devolucion previa.</div>
                 </div>
 
-                <!-- Fecha de devolución -->
+                <!-- Fecha de devolucion -->
                 <div class="col-md-3">
-                    <label for="fechaDevolucion" class="form-label">Fecha de devolución</label>
+                    <label for="fechaDevolucion" class="form-label">Fecha de devolucion</label>
                     <input type="date" class="form-control"
                            th:classappend="${#fields.hasErrors('fechaDevolucion')} ? 'is-invalid'"
                            id="fechaDevolucion" th:field="*{fechaDevolucion}" required>
@@ -72,13 +72,13 @@
                     <textarea class="form-control"
                               th:classappend="${#fields.hasErrors('motivo')} ? 'is-invalid'"
                               id="motivo" th:field="*{motivo}" rows="3"
-                              placeholder="Ej: Cancelación solicitada por el cliente antes del inicio del alquiler."></textarea>
+                              placeholder="Ej: Cancelacion solicitada por el cliente antes del inicio del alquiler."></textarea>
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
                 </div>
 
                 <div class="col-12 d-flex gap-2 pt-2">
                     <button type="submit" class="btn btn-teal-lg">
-                        <i class="bi bi-save me-1"></i>Guardar devolución
+                        <i class="bi bi-save me-1"></i>Guardar devolucion
                     </button>
                     <a th:href="@{/devoluciones}" class="btn btn-outline-secondary"
                        style="border-radius:10px;padding:.65rem 1.25rem;">Cancelar</a>

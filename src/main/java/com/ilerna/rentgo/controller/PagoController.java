@@ -79,7 +79,7 @@ public class PagoController {
                           Model model,
                           HttpSession session) {
         if (noEsAdmin(session)) return "redirect:/login";
-        // Solo forzar "realizado" en pagos NUEVOS; en edición se respeta el estado seleccionado
+        // Solo forzar "realizado" en pagos NUEVOS; en edicion se respeta el estado seleccionado
         // (solo 'realizado' o 'reembolsado' — gestionado desde el formulario o desde Devoluciones)
         if (pago.getId() == null) {
             pago.setEstadoPago("realizado");

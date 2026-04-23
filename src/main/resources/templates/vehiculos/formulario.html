@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Formulario Vehiculo')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Formulario Vehiculo', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 
@@ -60,7 +60,7 @@
 
                 <!-- Anio -->
                 <div class="col-md-3">
-                    <label for="anio" class="form-label">Año</label>
+                    <label for="anio" class="form-label">Ano</label>
                     <input type="number" class="form-control" th:classappend="${#fields.hasErrors('anio')} ? 'is-invalid'"
                            id="anio" th:field="*{anio}" min="1990" max="2030">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('anio')}" th:errors="*{anio}"></div>
@@ -145,7 +145,7 @@
                     <input type="number" step="0.01" class="form-control" th:classappend="${#fields.hasErrors('fianza')} ? 'is-invalid'"
                            id="fianza" th:field="*{fianza}" min="0">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('fianza')}" th:errors="*{fianza}"></div>
-                    <small class="form-text text-muted">Depósito reembolsable al devolver el vehículo.</small>
+                    <small class="form-text text-muted">Deposito reembolsable al devolver el vehiculo.</small>
                 </div>
 
                 <!-- Sucursal -->

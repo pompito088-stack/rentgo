@@ -26,7 +26,7 @@ public class PagoService {
     public Optional<Pago> buscarPorReserva(Integer reservaId) {
         return pagoRepository.findByReservaId(reservaId);
     }
-    /** Busca todos los pagos de un usuario (a través de sus reservas). */
+    /** Busca todos los pagos de un usuario (a traves de sus reservas). */
     public List<Pago> listarPorUsuario(Integer usuarioId) {
         return pagoRepository.findByReservaUsuarioId(usuarioId);
     }

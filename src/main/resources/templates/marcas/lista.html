@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Marcas')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Marcas', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 <div class="admin-wrapper">
@@ -11,7 +11,7 @@
         </div>
     </header>
     <main class="admin-page-content">
-        <!-- Barra de búsqueda -->
+        <!-- Barra de busqueda -->
         <div class="admin-card p-3 mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-6">
@@ -42,7 +42,7 @@
                             <div class="d-inline-flex gap-1">
                                 <a th:href="@{/marcas/editar/{id}(id=${marca.id})}" class="btn-action-edit"><i class="bi bi-pencil me-1"></i>Editar</a>
                                 <a th:href="@{/marcas/eliminar/{id}(id=${marca.id})}" class="btn-action-delete"
-                                   onclick="return confirm('¿Eliminar esta marca?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
+                                   onclick="return confirm('Eliminar esta marca?')"><i class="bi bi-trash me-1"></i>Eliminar</a>
                             </div>
                         </td>
                     </tr>

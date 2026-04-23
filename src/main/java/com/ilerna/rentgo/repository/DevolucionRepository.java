@@ -13,10 +13,10 @@ import java.util.Optional;
 @Repository
 public interface DevolucionRepository extends JpaRepository<Devolucion, Integer> {
 
-    /** Busca la devolución asociada a un pago concreto. */
+    /** Busca la devolucion asociada a un pago concreto. */
     Optional<Devolucion> findByPagoId(Integer pagoId);
 
-    /** Lista las devoluciones de los pagos de un usuario (a través de sus reservas). */
+    /** Lista las devoluciones de los pagos de un usuario (a traves de sus reservas). */
     List<Devolucion> findByPagoReservaUsuarioId(Integer usuarioId);
 }
 

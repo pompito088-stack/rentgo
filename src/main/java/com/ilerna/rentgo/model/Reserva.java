@@ -181,9 +181,9 @@ public class Reserva {
     }
 
     /**
-     * Retorna true si la reserva ya ha comenzado pero aún no ha finalizado
-     * (según fecha+hora). Útil para la lógica de "en proceso" y para bloquear
-     * la cancelación una vez iniciada.
+     * Retorna true si la reserva ya ha comenzado pero aun no ha finalizado
+     * (segun fecha+hora). Util para la logica de "en proceso" y para bloquear
+     * la cancelacion una vez iniciada.
      */
     public boolean isYaIniciada() {
         if (fechaInicio == null) return false;

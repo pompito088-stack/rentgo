@@ -44,7 +44,7 @@ public class ReservaService {
     public Reserva guardar(Reserva reserva) {
         return reservaRepository.save(reserva);
     }
-    /** Obtiene las N reservas más recientes. */
+    /** Obtiene las N reservas mas recientes. */
     public List<Reserva> listarUltimas(int n) {
         return reservaRepository.findAllByOrderByFechaReservaDesc(PageRequest.of(0, n));
     }
@@ -54,7 +54,7 @@ public class ReservaService {
     }
 
     /**
-     * Actualiza automáticamente los estados de las reservas en función de
+     * Actualiza automaticamente los estados de las reservas en funcion de
      * la fecha + hora actual:
      *  - "confirmada"/"pendiente"  → "en_proceso"  cuando llega la hora de inicio.
      *  - "confirmada"/"pendiente"/"en_proceso" → "finalizada" cuando pasa la hora de fin.
@@ -67,7 +67,7 @@ public class ReservaService {
             String estado = r.getEstado();
             if (estado == null) continue;
 
-            // 1) Finalizar si ya pasó fecha+hora de fin
+            // 1) Finalizar si ya paso fecha+hora de fin
             if (r.getFechaFin() != null
                     && ("confirmada".equals(estado) || "pendiente".equals(estado) || "en_proceso".equals(estado))) {
                 LocalTime hf = r.getHoraFin() != null ? r.getHoraFin() : LocalTime.of(9, 0);
@@ -79,7 +79,7 @@ public class ReservaService {
                 }
             }
 
-            // 2) Marcar en proceso si ya empezó pero aún no acabó
+            // 2) Marcar en proceso si ya empezo pero aun no acabo
             if (r.getFechaInicio() != null
                     && ("confirmada".equals(estado) || "pendiente".equals(estado))) {
                 LocalTime hi = r.getHoraInicio() != null ? r.getHoraInicio() : LocalTime.of(9, 0);

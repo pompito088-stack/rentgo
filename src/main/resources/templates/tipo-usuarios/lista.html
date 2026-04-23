@@ -1,6 +1,6 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Tipos de Usuario')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Tipos de Usuario', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 <div class="admin-wrapper">
@@ -30,7 +30,7 @@
                                     <i class="bi bi-pencil me-1"></i>Editar
                                 </a>
                                 <a th:href="@{/tipo-usuarios/eliminar/{id}(id=${tipo.id})}" class="btn-action-delete"
-                                   onclick="return confirm('¿Eliminar este tipo?')">
+                                   onclick="return confirm('Eliminar este tipo?')">
                                     <i class="bi bi-trash me-1"></i>Eliminar
                                 </a>
                             </div>

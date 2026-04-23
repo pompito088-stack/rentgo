@@ -1,23 +1,73 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Detalle Vehículo')}"></head>
+<head th:replace="~{fragments/layout :: head(
+    'Alquila ' + ${vehiculo.modelo.marca.nombre} + ' ' + ${vehiculo.modelo.nombre} + ' desde ' + ${vehiculo.precioDia} + ' EUR/dia | RentGo',
+    'Alquila el ' + ${vehiculo.modelo.marca.nombre} + ' ' + ${vehiculo.modelo.nombre} + ' (' + ${vehiculo.anio} + ', ' + ${vehiculo.combustion} + ', ' + ${vehiculo.transmision} + ') por ' + ${vehiculo.precioDia} + ' EUR/dia en ' + ${vehiculo.sucursal.ciudad} + '. Reserva online en RentGo, sin sorpresas.'
+)}"></head>
 <body class="client-layout">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
+<!-- SEO 1.14 — JSON-LD Vehicle (rich snippet de ficha tecnica) -->
+<script type="application/ld+json" th:inline="text">
+{
+  "@context": "https://schema.org",
+  "@type": "Vehicle",
+  "name": "[(${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre})]",
+  "brand": { "@type": "Brand", "name": "[(${vehiculo.modelo.marca.nombre})]" },
+  "model": "[(${vehiculo.modelo.nombre})]",
+  "vehicleIdentificationNumber": "[(${vehiculo.matricula})]",
+  "vehicleModelDate": "[(${vehiculo.anio})]",
+  "color": "[(${vehiculo.color})]",
+  "fuelType": "[(${vehiculo.combustion})]",
+  "vehicleTransmission": "[(${vehiculo.transmision})]",
+  "numberOfDoors": [(${vehiculo.puertas})],
+  "vehicleSeatingCapacity": [(${vehiculo.plazas})],
+  "mileageFromOdometer": { "@type": "QuantitativeValue", "value": [(${vehiculo.kilometraje})], "unitCode": "KMT" },
+  "image": [(${vehiculo.rutaFoto != null ? '"' + vehiculo.rutaFoto + '"' : 'null'})],
+  "offers": {
+    "@type": "Offer",
+    "price": "[(${vehiculo.precioDia})]",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock",
+    "priceSpecification": {
+      "@type": "UnitPriceSpecification",
+      "price": "[(${vehiculo.precioDia})]",
+      "priceCurrency": "EUR",
+      "unitCode": "DAY"
+    }
+  }
+}
+</script>
+
+<!-- SEO 1.15 — JSON-LD BreadcrumbList -->
+<script type="application/ld+json" th:inline="text">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Inicio",     "item": "[(${baseUrl + '/'})]" },
+    { "@type": "ListItem", "position": 2, "name": "Vehiculos",  "item": "[(${baseUrl + '/vehiculos'})]" },
+    { "@type": "ListItem", "position": 3, "name": "[(${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre})]" }
+  ]
+}
+</script>
+
 <main>
     <!-- Mini hero breadcrumb -->
-    <div style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
+    <header style="background:linear-gradient(135deg,var(--teal-800),var(--teal-600));padding:2rem 0 1.75rem;color:#fff;">
         <div class="container">
-            <nav aria-label="breadcrumb">
+            <nav aria-label="Migas de pan">
                 <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider-color:rgba(255,255,255,.5);">
                     <li class="breadcrumb-item"><a th:href="@{/}" style="color:rgba(255,255,255,.7);text-decoration:none;">Inicio</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/vehiculos}" style="color:rgba(255,255,255,.7);text-decoration:none;">Vehículos</a></li>
-                    <li class="breadcrumb-item active" style="color:#fff;" th:text="${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}"></li>
+                    <li class="breadcrumb-item"><a th:href="@{/vehiculos}" style="color:rgba(255,255,255,.7);text-decoration:none;">Vehiculos</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color:#fff;" th:text="${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}"></li>
                 </ol>
             </nav>
             <h1 style="font-size:1.6rem;font-weight:800;margin:0;" th:text="${vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}"></h1>
         </div>
-    </div>
+    </header>
+
+    <article itemscope itemtype="https://schema.org/Vehicle">
 
     <div class="container py-4">
         <div class="row g-4">
@@ -27,6 +77,7 @@
                 <div style="border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;background:#f9fafb;">
                     <img th:if="${vehiculo.rutaFoto != null}" th:src="@{${vehiculo.rutaFoto}}"
                          class="img-fluid w-100" th:alt="${'Foto de ' + vehiculo.modelo.marca.nombre + ' ' + vehiculo.modelo.nombre}"
+                         loading="eager" decoding="async" width="600" height="320"
                          style="height:320px;object-fit:cover;">
                     <div th:if="${vehiculo.rutaFoto == null}"
                          style="height:320px;display:flex;align-items:center;justify-content:center;">
@@ -34,7 +85,7 @@
                     </div>
                 </div>
 
-                <!-- Extras del vehículo -->
+                <!-- Extras del vehiculo -->
                 <div th:if="${!vehiculo.extras.isEmpty()}"
                      style="margin-top:1rem;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:1.1rem;">
                     <h3 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">
@@ -69,9 +120,9 @@
                 <div style="background:linear-gradient(135deg,var(--teal-50),#fff);border:1px solid var(--teal-100);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
                     <div class="row g-0">
                         <div class="col-6 border-end pe-3">
-                            <div style="font-size:.8rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Precio por día</div>
+                            <div style="font-size:.8rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Precio por dia</div>
                             <div style="font-size:2rem;font-weight:800;color:var(--teal-600);line-height:1.1;">
-                                <span th:text="${vehiculo.precioDia}"></span> <span style="font-size:1rem;font-weight:500;color:#9ca3af;">€/día</span>
+                                <span th:text="${vehiculo.precioDia}"></span> <span style="font-size:1rem;font-weight:500;color:#9ca3af;">€/dia</span>
                             </div>
                         </div>
                         <div class="col-6 ps-3">
@@ -81,24 +132,24 @@
                             </div>
                         </div>
                     </div>
-                    <div style="font-size:.8rem;color:#6b7280;margin-top:.5rem;">IVA y seguro básico incluido · Fianza devuelta al entregar el vehículo</div>
+                    <div style="font-size:.8rem;color:#6b7280;margin-top:.5rem;">IVA y seguro basico incluido · Fianza devuelta al entregar el vehiculo</div>
                 </div>
 
-                <!-- Ficha técnica -->
-                <section aria-label="Ficha técnica">
+                <!-- Ficha tecnica -->
+                <section aria-label="Ficha tecnica">
                     <h2 style="font-size:.85rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.9rem;">
-                        <i class="bi bi-list-check me-2" style="color:var(--teal-500);"></i>Ficha técnica
+                        <i class="bi bi-list-check me-2" style="color:var(--teal-500);"></i>Ficha tecnica
                     </h2>
                     <div class="row g-2 mb-4">
                         <div class="col-6">
                             <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
-                                <div class="profile-field-label">Matrícula</div>
+                                <div class="profile-field-label">Matricula</div>
                                 <div style="font-weight:600;color:#111827;" th:text="${vehiculo.matricula}"></div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
-                                <div class="profile-field-label">Año</div>
+                                <div class="profile-field-label">Ano</div>
                                 <div style="font-weight:600;color:#111827;" th:text="${vehiculo.anio}"></div>
                             </div>
                         </div>
@@ -110,7 +161,7 @@
                         </div>
                         <div class="col-6">
                             <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.7rem 1rem;">
-                                <div class="profile-field-label">Combustión</div>
+                                <div class="profile-field-label">Combustion</div>
                                 <div style="font-weight:600;color:#111827;" th:text="${vehiculo.combustion}"></div>
                             </div>
                         </div>
@@ -135,27 +186,27 @@
                     </div>
                 </section>
 
-                <!-- Botones acción -->
+                <!-- Botones accion -->
                 <div class="d-flex flex-wrap gap-2">
-                    <!-- ADMIN: Editar este vehículo -->
+                    <!-- ADMIN: Editar este vehiculo -->
                     <a th:if="${esAdmin}" th:href="@{/vehiculos/editar/{id}(id=${vehiculo.id})}"
                        class="btn text-white fw-600 flex-grow-1"
                        style="background:#2563eb;border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
-                        <i class="bi bi-pencil-square me-2"></i>Editar este vehículo
+                        <i class="bi bi-pencil-square me-2"></i>Editar este vehiculo
                     </a>
                     <!-- CLIENTE logueado + DISPONIBLE: Reservar -->
                     <a th:if="${!esAdmin and estaLogueado and (disponibilidad == null or disponibilidad.disponible)}"
                        th:href="@{/reservas/nuevo(vehiculoId=${vehiculo.id})}" class="btn text-white fw-600 flex-grow-1"
                        style="background:var(--teal-600);border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
-                        <i class="bi bi-calendar-plus me-2"></i>Reservar este vehículo
+                        <i class="bi bi-calendar-plus me-2"></i>Reservar este vehiculo
                     </a>
                     <!-- VISITANTE + DISPONIBLE: ir a login -->
                     <a th:if="${!esAdmin and !estaLogueado and (disponibilidad == null or disponibilidad.disponible)}"
                        th:href="@{/login}" class="btn text-white fw-600 flex-grow-1"
                        style="background:var(--teal-600);border-radius:10px;padding:.75rem 1.5rem;font-size:1rem;">
-                        <i class="bi bi-calendar-plus me-2"></i>Reservar este vehículo
+                        <i class="bi bi-calendar-plus me-2"></i>Reservar este vehiculo
                     </a>
-                    <!-- NO disponible: botón deshabilitado -->
+                    <!-- NO disponible: boton deshabilitado -->
                     <button type="button" th:if="${!esAdmin and disponibilidad != null and !disponibilidad.disponible}"
                           class="btn fw-600 flex-grow-1" disabled aria-disabled="true"
                           th:title="${'Disponible desde ' + disponibilidad.disponibleFecha + ' ' + disponibilidad.disponibleHora}"
@@ -171,15 +222,16 @@
                     </a>
                 </div>
 
-                <!-- Garantías -->
+                <!-- Garantias -->
                 <div class="d-flex flex-wrap gap-3 mt-3">
                     <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-shield-check-fill me-1" style="color:#22c55e;"></i>Seguro incluido</span>
-                    <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-arrow-left-right me-1" style="color:var(--teal-500);"></i>Devolución flexible</span>
+                    <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-arrow-left-right me-1" style="color:var(--teal-500);"></i>Devolucion flexible</span>
                     <span style="font-size:.78rem;color:#6b7280;"><i class="bi bi-headset me-1" style="color:#3b82f6;"></i>Soporte 24/7</span>
                 </div>
             </div>
         </div>
     </div>
+    </article>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

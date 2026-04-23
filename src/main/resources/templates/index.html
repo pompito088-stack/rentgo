@@ -1,6 +1,6 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Alquiler de Vehículos en Madrid')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Alquiler de coches online en Espana', 'Alquila tu coche en RentGo: SUV, electricos, familiares y deportivos al mejor precio. Reserva online en 3 clics y recoge en cualquiera de nuestras 15 sucursales en Espana.')}"></head>
 
 <!-- ===== ADMIN DASHBOARD ===== -->
 <body class="admin-layout" th:if="${esAdmin}">
@@ -11,14 +11,14 @@
         <h1 class="page-title"><i class="bi bi-speedometer2 me-2 text-teal-600" style="color:var(--teal-600)"></i>Dashboard</h1>
         <div class="topbar-right">
             <span id="fechaHoraAdmin" style="font-size:.82rem;color:#6b7280;margin-right:.75rem;"></span>
-            <span class="topbar-badge"><i class="bi bi-circle-fill me-1" style="font-size:.5rem;color:var(--teal-500)"></i>En línea</span>
+            <span class="topbar-badge"><i class="bi bi-circle-fill me-1" style="font-size:.5rem;color:var(--teal-500)"></i>En linea</span>
             <span style="font-size:.85rem;color:#6b7280;" th:text="${session.usuarioLogueado.nombre}"></span>
         </div>
     </header>
 
     <main class="admin-page-content">
         <!-- Tarjetas de estadisticas -->
-        <section aria-label="Resumen estadísticas" class="row g-3 mb-4">
+        <section aria-label="Resumen estadisticas" class="row g-3 mb-4">
             <!-- Clientes -->
             <div class="col-6 col-xl">
                 <a th:href="@{/usuarios}" style="text-decoration:none;">
@@ -38,7 +38,7 @@
                         <div class="stat-icon" style="background:#f0fdf4;"><i class="bi bi-car-front-fill" style="color:#22c55e;"></i></div>
                         <div>
                             <div class="stat-value" th:text="${totalVehiculos != null ? totalVehiculos : '-'}">-</div>
-                            <div class="stat-label">Vehículos</div>
+                            <div class="stat-label">Vehiculos</div>
                         </div>
                     </div>
                 </a>
@@ -70,15 +70,15 @@
         </section>
 
         <!-- Accesos rapidos -->
-        <section aria-label="Accesos rápidos" class="row g-3">
+        <section aria-label="Accesos rapidos" class="row g-3">
             <div class="col-md-6 col-xl-4">
                 <article class="admin-card h-100">
                     <div class="admin-card-header">
-                        <h2><i class="bi bi-car-front me-2" style="color:var(--teal-600)"></i>Vehículos</h2>
+                        <h2><i class="bi bi-car-front me-2" style="color:var(--teal-600)"></i>Vehiculos</h2>
                         <a th:href="@{/vehiculos/nuevo}" class="btn btn-teal btn-sm"><i class="bi bi-plus-lg me-1"></i>Nuevo</a>
                     </div>
-                    <p class="text-muted small">Añade, edita o elimina vehículos de la flota.</p>
-                    <a th:href="@{/vehiculos}" class="btn btn-outline-teal btn-sm w-100">Ver todos los vehículos</a>
+                    <p class="text-muted small">Anade, edita o elimina vehiculos de la flota.</p>
+                    <a th:href="@{/vehiculos}" class="btn btn-outline-teal btn-sm w-100">Ver todos los vehiculos</a>
                 </article>
             </div>
             <div class="col-md-6 col-xl-4">
@@ -133,7 +133,7 @@
         <!-- Actividad Reciente -->
         <section aria-label="Actividad reciente" class="mt-4">
             <div class="row g-4">
-                <!-- Últimas reservas -->
+                <!-- Ultimas reservas -->
                 <div class="col-lg-8">
                     <article class="admin-card h-100">
                         <div class="admin-card-header">
@@ -180,15 +180,15 @@
                     </article>
                 </div>
 
-                <!-- Acciones rápidas del panel -->
+                <!-- Acciones rapidas del panel -->
                 <div class="col-lg-4">
                     <article class="admin-card h-100">
                         <div class="admin-card-header">
-                            <h2><i class="bi bi-lightning-charge me-2" style="color:var(--teal-600)"></i>Acciones rápidas</h2>
+                            <h2><i class="bi bi-lightning-charge me-2" style="color:var(--teal-600)"></i>Acciones rapidas</h2>
                         </div>
                         <div class="d-grid gap-2">
                             <a th:href="@{/vehiculos/nuevo}" class="btn btn-teal btn-sm">
-                                <i class="bi bi-plus-circle me-2"></i>Añadir vehículo
+                                <i class="bi bi-plus-circle me-2"></i>Anadir vehiculo
                             </a>
                             <a th:href="@{/extras/nuevo}" class="btn btn-outline-teal btn-sm">
                                 <i class="bi bi-stars me-2"></i>Nuevo extra
@@ -207,12 +207,12 @@
                             </a>
                         </div>
 
-                        <!-- Mini métricas rápidas -->
+                        <!-- Mini metricas rapidas -->
                         <hr style="border-color:#f3f4f6;margin:1rem 0;">
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
                             <div style="background:var(--teal-50);border-radius:10px;padding:.6rem .8rem;text-align:center;">
                                 <div style="font-size:1.1rem;font-weight:800;color:var(--teal-700);" th:text="${totalVehiculos != null ? totalVehiculos : '-'}"></div>
-                                <div style="font-size:.7rem;color:var(--teal-600);">Vehículos</div>
+                                <div style="font-size:.7rem;color:var(--teal-600);">Vehiculos</div>
                             </div>
                             <div style="background:#f0fdf4;border-radius:10px;padding:.6rem .8rem;text-align:center;">
                                 <div style="font-size:1.1rem;font-weight:800;color:#16a34a;" th:text="${totalReservas != null ? totalReservas : '-'}"></div>
@@ -263,7 +263,7 @@
     <section th:if="${usuario == null}">
         <!-- Hero -->
         <div class="hero-section">
-            <!-- Vídeo de fondo a pantalla completa -->
+            <!-- Video de fondo a pantalla completa -->
             <video class="hero-bg-video" autoplay muted loop playsinline preload="metadata"
                    aria-hidden="true">
                 <source th:src="@{/img/hero-coche.mp4}" type="video/mp4">
@@ -274,16 +274,16 @@
                     <div class="col-lg-8">
                         <div class="hero-badge">
                             <i class="bi bi-check-circle-fill" style="color:var(--teal-400);"></i>
-                            Más de 50 vehículos disponibles en toda España
+                            Mas de 50 vehiculos disponibles en toda Espana
                         </div>
                         <h1>El coche perfecto<br>para cada viaje</h1>
                         <p class="lead mb-4">
-                            Alquila tu vehículo de forma rápida, segura y sin complicaciones.
+                            Alquila tu vehiculo de forma rapida, segura y sin complicaciones.
                             Elige entre nuestra flota, selecciona fechas y conduce hoy mismo.
                         </p>
                         <div class="d-flex flex-wrap gap-3">
                             <a th:href="@{/vehiculos}" class="hero-cta-primary btn">
-                                <i class="bi bi-car-front me-2"></i>Ver vehículos
+                                <i class="bi bi-car-front me-2"></i>Ver vehiculos
                             </a>
                             <a th:href="@{/registro}" class="hero-cta-secondary btn">
                                 <i class="bi bi-person-plus me-2"></i>Crear cuenta gratis
@@ -293,7 +293,7 @@
                         <div class="d-flex flex-wrap gap-4 mt-5">
                             <div class="hero-stat">
                                 <div class="stat-num">50+</div>
-                                <div class="stat-txt">Vehículos</div>
+                                <div class="stat-txt">Vehiculos</div>
                             </div>
                             <div class="hero-stat">
                                 <div class="stat-num">15</div>
@@ -301,7 +301,7 @@
                             </div>
                             <div class="hero-stat">
                                 <div class="stat-num">98%</div>
-                                <div class="stat-txt">Satisfacción</div>
+                                <div class="stat-txt">Satisfaccion</div>
                             </div>
                             <div class="hero-stat">
                                 <div class="stat-num">24/7</div>
@@ -309,17 +309,17 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Vídeo movido al fondo (.hero-bg-video) -->
+                    <!-- Video movido al fondo (.hero-bg-video) -->
                 </div>
             </div>
         </div>
 
-        <!-- Cómo funciona -->
+        <!-- Como funciona -->
         <section class="py-5" style="background:#f9fafb;" aria-labelledby="como-funciona">
             <div class="container">
                 <header class="text-center mb-5">
-                    <p style="color:var(--teal-600);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;">Simple y rápido</p>
-                    <h2 id="como-funciona" class="fw-800" style="font-size:1.9rem;">¿Cómo funciona RentGo?</h2>
+                    <p style="color:var(--teal-600);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;">Simple y rapido</p>
+                    <h2 id="como-funciona" class="fw-800" style="font-size:1.9rem;">Como funciona RentGo?</h2>
                 </header>
                 <div class="row g-4">
                     <div class="col-md-4">
@@ -328,7 +328,7 @@
                                 <i class="bi bi-search" style="color:#3b82f6;"></i>
                             </div>
                             <h3>1. Explora la flota</h3>
-                            <p>Navega por nuestra amplia selección de vehículos y filtra por categoría, precio o características.</p>
+                            <p>Navega por nuestra amplia seleccion de vehiculos y filtra por categoria, precio o caracteristicas.</p>
                         </article>
                     </div>
                     <div class="col-md-4">
@@ -337,7 +337,7 @@
                                 <i class="bi bi-calendar-check" style="color:var(--teal-600);"></i>
                             </div>
                             <h3>2. Elige fechas y sucursal</h3>
-                            <p>Selecciona las fechas de recogida y devolución, así como la sucursal más conveniente.</p>
+                            <p>Selecciona las fechas de recogida y devolucion, asi como la sucursal mas conveniente.</p>
                         </article>
                     </div>
                     <div class="col-md-4">
@@ -345,8 +345,8 @@
                             <div class="feature-icon" style="background:#fef3c7;">
                                 <i class="bi bi-key-fill" style="color:#f59e0b;"></i>
                             </div>
-                            <h3>3. ¡A conducir!</h3>
-                            <p>Confirma tu reserva y pago en segundos. Recoge tu vehículo en la sucursal y listo.</p>
+                            <h3>3. A conducir!</h3>
+                            <p>Confirma tu reserva y pago en segundos. Recoge tu vehiculo en la sucursal y listo.</p>
                         </article>
                     </div>
                 </div>
@@ -357,7 +357,7 @@
         <section class="py-5" aria-labelledby="ventajas">
             <div class="container">
                 <header class="text-center mb-5">
-                    <p style="color:var(--teal-600);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;">Por qué elegirnos</p>
+                    <p style="color:var(--teal-600);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;">Por que elegirnos</p>
                     <h2 id="ventajas" class="fw-800" style="font-size:1.9rem;">Todo lo que necesitas</h2>
                 </header>
                 <div class="row g-4">
@@ -367,7 +367,7 @@
                                 <i class="bi bi-shield-check" style="color:#22c55e;"></i>
                             </div>
                             <h3>Seguro incluido</h3>
-                            <p>Todos nuestros vehículos disponen de seguro a todo riesgo incluido.</p>
+                            <p>Todos nuestros vehiculos disponen de seguro a todo riesgo incluido.</p>
                         </article>
                     </div>
                     <div class="col-sm-6 col-lg-3">
@@ -394,7 +394,7 @@
                                 <i class="bi bi-headset" style="color:#3b82f6;"></i>
                             </div>
                             <h3>Soporte 24/7</h3>
-                            <p>Nuestro equipo está disponible en todo momento para ayudarte.</p>
+                            <p>Nuestro equipo esta disponible en todo momento para ayudarte.</p>
                         </article>
                     </div>
                 </div>
@@ -404,17 +404,17 @@
         <!-- CTA final -->
         <section class="py-5" aria-labelledby="cta-final">
             <div class="container">
-                <!-- Tarjetas de exploración -->
+                <!-- Tarjetas de exploracion -->
                 <div class="row g-4 mb-5">
                     <div class="col-md-4">
                         <article class="feature-card text-center" style="padding:2rem;">
                             <div class="feature-icon mx-auto" style="background:var(--teal-50);">
                                 <i class="bi bi-car-front-fill" style="color:var(--teal-600);"></i>
                             </div>
-                            <h3>Vehículos</h3>
-                            <p>Explora nuestra flota completa de vehículos disponibles para alquilar.</p>
+                            <h3>Vehiculos</h3>
+                            <p>Explora nuestra flota completa de vehiculos disponibles para alquilar.</p>
                             <a th:href="@{/vehiculos}" class="btn btn-sm text-white" style="background:var(--teal-600);border-radius:8px;">
-                                <i class="bi bi-search me-1"></i>Ver vehículos
+                                <i class="bi bi-search me-1"></i>Ver vehiculos
                             </a>
                         </article>
                     </div>
@@ -424,7 +424,7 @@
                                 <i class="bi bi-building" style="color:#ca8a04;"></i>
                             </div>
                             <h3>Sucursales</h3>
-                            <p>Consulta nuestros puntos de recogida y devolución en Madrid.</p>
+                            <p>Consulta nuestros puntos de recogida y devolucion en Madrid.</p>
                             <a th:href="@{/sucursales}" class="btn btn-sm text-dark" style="background:#fef9c3;border-radius:8px;">
                                 <i class="bi bi-geo-alt me-1"></i>Ver sucursales
                             </a>
@@ -436,7 +436,7 @@
                                 <i class="bi bi-stars" style="color:#f59e0b;"></i>
                             </div>
                             <h3>Extras</h3>
-                            <p>GPS, sillas infantiles y más servicios para completar tu viaje.</p>
+                            <p>GPS, sillas infantiles y mas servicios para completar tu viaje.</p>
                             <a th:href="@{/extras}" class="btn btn-sm text-dark" style="background:#fff7ed;border-radius:8px;">
                                 <i class="bi bi-plus-square me-1"></i>Ver extras
                             </a>
@@ -445,7 +445,7 @@
                 </div>
 
                 <div class="cta-section">
-                    <h2 id="cta-final">¿Listo para reservar?</h2>
+                    <h2 id="cta-final">Listo para reservar?</h2>
                     <p>Crea tu cuenta gratis en segundos y empieza a disfrutar de la mejor flota de Madrid.</p>
                     <div class="d-flex justify-content-center gap-3 flex-wrap">
                         <a th:href="@{/registro}" class="btn hero-cta-primary">
@@ -468,7 +468,7 @@
                      th:text="${usuario.nombre.substring(0,1).toUpperCase()}"></div>
                 <div>
                     <h1 class="mb-0" style="font-size:1.8rem;">Hola, <span th:text="${usuario.nombre}"></span> 👋</h1>
-                    <p class="text-muted mb-0">¿Qué quieres hacer hoy?</p>
+                    <p class="text-muted mb-0">Que quieres hacer hoy?</p>
                 </div>
             </div>
         </header>
@@ -478,10 +478,10 @@
                 <article class="vehicle-card p-0" style="border-top:4px solid var(--teal-500) !important;">
                     <div class="vc-body p-4 text-center">
                         <i class="bi bi-car-front-fill" style="font-size:2.5rem;color:var(--teal-600);"></i>
-                        <h2 class="vc-title mt-3" style="font-size:1.1rem;">Explorar Vehículos</h2>
+                        <h2 class="vc-title mt-3" style="font-size:1.1rem;">Explorar Vehiculos</h2>
                         <p class="text-muted small">Descubre nuestra flota disponible para alquilar.</p>
                         <a th:href="@{/vehiculos}" class="btn btn-sm text-white w-100 mt-2" style="background:var(--teal-600);border-radius:8px;">
-                            <i class="bi bi-search me-1"></i>Ver vehículos
+                            <i class="bi bi-search me-1"></i>Ver vehiculos
                         </a>
                     </div>
                 </article>

@@ -1,6 +1,6 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/layout :: head('RentGo - Formulario Usuario')}"></head>
+<head th:replace="~{fragments/layout :: head('RentGo - Formulario Usuario', null)}"></head>
 <body class="admin-layout">
 <aside th:replace="~{fragments/layout :: admin-sidebar}"></aside>
 <div class="admin-wrapper">
@@ -47,12 +47,12 @@
                            id="email" th:field="*{email}">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
                          th:errors="*{email}"></div>
-                    <small class="form-text text-muted">El tipo se asigna automáticamente según el email</small>
+                    <small class="form-text text-muted">El tipo se asigna automaticamente segun el email</small>
                 </div>
 
                 <!-- Telefono -->
                 <div class="col-md-3">
-                    <label for="telefono" class="form-label">Teléfono</label>
+                    <label for="telefono" class="form-label">Telefono</label>
                     <input type="text" class="form-control"
                            th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'"
                            id="telefono" th:field="*{telefono}" maxlength="9">
@@ -73,7 +73,7 @@
 
                 <!-- Direccion -->
                 <div class="col-md-12">
-                    <label for="direccion" class="form-label">Dirección</label>
+                    <label for="direccion" class="form-label">Direccion</label>
                     <input type="text" class="form-control"
                            th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid'"
                            id="direccion" th:field="*{direccion}">
@@ -83,13 +83,13 @@
 
                 <!-- Contrasena -->
                 <div class="col-md-6">
-                    <label for="password" class="form-label">Contraseña</label>
+                    <label for="password" class="form-label">Contrasena</label>
                     <input type="password" class="form-control"
                            th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
                            id="password" th:field="*{password}">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
                          th:errors="*{password}"></div>
-                    <small class="form-text text-muted">Mínimo 6 caracteres</small>
+                    <small class="form-text text-muted">Minimo 6 caracteres</small>
                 </div>
 
                 <!-- Botones -->

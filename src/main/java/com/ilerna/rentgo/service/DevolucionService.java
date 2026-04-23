@@ -12,7 +12,7 @@ import java.util.Optional;
 
 /**
  * Servicio para la entidad Devolucion.
- * Al guardar una devolución también actualiza el estado del pago a 'reembolsado'.
+ * Al guardar una devolucion tambien actualiza el estado del pago a 'reembolsado'.
  */
 @Service
 public class DevolucionService {
@@ -30,12 +30,12 @@ public class DevolucionService {
         return devolucionRepository.findAll();
     }
 
-    /** Busca una devolución por su ID. */
+    /** Busca una devolucion por su ID. */
     public Optional<Devolucion> buscarPorId(Integer id) {
         return devolucionRepository.findById(id);
     }
 
-    /** Busca la devolución asociada a un pago. */
+    /** Busca la devolucion asociada a un pago. */
     public Optional<Devolucion> buscarPorPago(Integer pagoId) {
         return devolucionRepository.findByPagoId(pagoId);
     }
@@ -46,9 +46,9 @@ public class DevolucionService {
     }
 
     /**
-     * Guarda o actualiza una devolución.
+     * Guarda o actualiza una devolucion.
      * Al crear, marca el pago asociado como 'reembolsado'.
-     * Al eliminar (no en este método) se debería revertir el estado si procede.
+     * Al eliminar (no en este metodo) se deberia revertir el estado si procede.
      */
     @Transactional
     public Devolucion guardar(Devolucion devolucion) {
@@ -63,8 +63,8 @@ public class DevolucionService {
     }
 
     /**
-     * Elimina una devolución por su ID.
-     * Revierte el estado del pago a 'realizado' si no hay otra devolución.
+     * Elimina una devolucion por su ID.
+     * Revierte el estado del pago a 'realizado' si no hay otra devolucion.
      */
     @Transactional
     public void eliminar(Integer id) {

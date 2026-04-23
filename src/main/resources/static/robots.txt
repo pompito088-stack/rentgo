@@ -1,0 +1,21 @@
+# RentGo - robots.txt
+# Permitimos indexar todo el site publico, salvo zonas privadas/admin.
+
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /logout
+Disallow: /registro
+Disallow: /mi-perfil
+Disallow: /reservas
+Disallow: /pagos
+Disallow: /devoluciones
+Disallow: /usuarios
+Disallow: /marcas
+Disallow: /modelos
+Disallow: /categorias
+Disallow: /mantenimientos
+
+# Sitemap dinamico
+Sitemap: https://rentgo.es/sitemap.xml
+

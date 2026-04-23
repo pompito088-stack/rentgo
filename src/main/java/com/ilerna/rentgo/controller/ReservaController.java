@@ -36,6 +36,7 @@ public class ReservaController {
     private final PagoService pagoService;
     private final ExtraService extraService;
     private final MantenimientoService mantenimientoService;
+    private final DevolucionService devolucionService;
 
     public ReservaController(ReservaService reservaService,
                              VehiculoService vehiculoService,
@@ -43,7 +44,8 @@ public class ReservaController {
                              UsuarioService usuarioService,
                              PagoService pagoService,
                              ExtraService extraService,
-                             MantenimientoService mantenimientoService) {
+                             MantenimientoService mantenimientoService,
+                             DevolucionService devolucionService) {
         this.reservaService = reservaService;
         this.vehiculoService = vehiculoService;
         this.sucursalService = sucursalService;
@@ -51,6 +53,7 @@ public class ReservaController {
         this.pagoService = pagoService;
         this.extraService = extraService;
         this.mantenimientoService = mantenimientoService;
+        this.devolucionService = devolucionService;
     }
 
     private boolean noEstaLogueado(HttpSession session) {
@@ -61,7 +64,7 @@ public class ReservaController {
     @GetMapping
     public String listar(Model model, HttpSession session) {
         if (noEstaLogueado(session)) return "redirect:/login";
-        // Auto-actualizar estados (en_proceso / finalizada) en tiempo real según fecha+hora
+        // Auto-actualizar estados (en_proceso / finalizada) en tiempo real segun fecha+hora
         reservaService.actualizarEstadosAutomaticamente();
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
         if (logueado.isAdmin()) {
@@ -192,7 +195,7 @@ public class ReservaController {
             if (vehiculoOpt.isPresent()) {
                 var vehiculoBD = vehiculoOpt.get();
                 reserva.setVehiculo(vehiculoBD);
-                // Sucursal de recogida = la sucursal actual del vehículo
+                // Sucursal de recogida = la sucursal actual del vehiculo
                 reserva.setSucursalRecogida(vehiculoBD.getSucursal());
             }
         }
@@ -287,14 +290,14 @@ public class ReservaController {
         if (noEstaLogueado(session)) return "redirect:/login";
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
 
-        // Mantener estados al día antes de evaluar la cancelación
+        // Mantener estados al dia antes de evaluar la cancelacion
         reservaService.actualizarEstadosAutomaticamente();
 
         var reservaOpt = reservaService.buscarPorId(id);
         if (reservaOpt.isEmpty()) return "redirect:/reservas";
 
         Reserva reserva = reservaOpt.get();
-        // Solo el propietario puede cancelar, y solo si la reserva NO ha empezado aún
+        // Solo el propietario puede cancelar, y solo si la reserva NO ha empezado aun
         // (estado "confirmada" o "pendiente"). Una vez en proceso o finalizada no se puede cancelar.
         if (!reserva.getUsuario().getId().equals(logueado.getId())) return "redirect:/reservas";
         if (!("confirmada".equals(reserva.getEstado()) || "pendiente".equals(reserva.getEstado()))
@@ -302,22 +305,22 @@ public class ReservaController {
             return "redirect:/reservas";
         }
 
-        // Calcular devolución según horas reales hasta el inicio:
+        // Calcular devolucion segun horas reales hasta el inicio:
         //   ≥ 24 h  → 100 %
         //   < 24 h  → 50 %
         BigDecimal devolucion = reserva.getPrecioTotal();
-        String politica = "Cancelación con 24 horas o más de antelación: devolución del 100% del importe del alquiler.";
+        String politica = "Cancelacion con 24 horas o mas de antelacion: devolucion del 100% del importe del alquiler.";
         if (reserva.getFechaInicio() != null) {
             LocalTime hi = reserva.getHoraInicio() != null ? reserva.getHoraInicio() : LocalTime.of(9, 0);
             LocalDateTime inicio = LocalDateTime.of(reserva.getFechaInicio(), hi);
             long horasHastaInicio = java.time.temporal.ChronoUnit.HOURS.between(LocalDateTime.now(), inicio);
             if (horasHastaInicio < 24) {
                 devolucion = reserva.getPrecioTotal().divide(BigDecimal.valueOf(2), 2, java.math.RoundingMode.HALF_UP);
-                politica = "Cancelación con menos de 24 horas de antelación: devolución del 50% del importe del alquiler.";
+                politica = "Cancelacion con menos de 24 horas de antelacion: devolucion del 50% del importe del alquiler.";
             }
         }
 
-        // La fianza siempre se devuelve íntegra
+        // La fianza siempre se devuelve integra
         BigDecimal fianzaDevolucion = BigDecimal.ZERO;
         var pagoOpt = pagoService.buscarPorReserva(reserva.getId());
         if (pagoOpt.isPresent() && pagoOpt.get().getFianza() != null) {
@@ -342,7 +345,7 @@ public class ReservaController {
         if (noEstaLogueado(session)) return "redirect:/login";
         Usuario logueado = (Usuario) session.getAttribute("usuarioLogueado");
 
-        // Asegurar estados al día (por si la reserva ya entró en proceso entre tanto)
+        // Asegurar estados al dia (por si la reserva ya entro en proceso entre tanto)
         reservaService.actualizarEstadosAutomaticamente();
 
         var reservaOpt = reservaService.buscarPorId(id);
@@ -350,7 +353,7 @@ public class ReservaController {
 
         Reserva reserva = reservaOpt.get();
         if (!reserva.getUsuario().getId().equals(logueado.getId())) return "redirect:/reservas";
-        // Solo se permite cancelar si la reserva NO ha empezado aún
+        // Solo se permite cancelar si la reserva NO ha empezado aun
         if (!("confirmada".equals(reserva.getEstado()) || "pendiente".equals(reserva.getEstado()))
                 || reserva.isYaIniciada()) {
             return "redirect:/reservas";
@@ -360,10 +363,41 @@ public class ReservaController {
         reserva.setEstado("cancelada");
         reservaService.guardar(reserva);
 
-        // Actualizar pago a reembolsado
+        // Calcular importe a devolver (mismo criterio que el GET):
+        //   >= 24 h hasta el inicio  -> 100 % alquiler
+        //   <  24 h                   -> 50 %  alquiler
+        // La fianza siempre se devuelve integra.
+        BigDecimal devAlquiler = reserva.getPrecioTotal();
+        String motivoPolitica = "Cancelacion con 24h o mas de antelacion (100% del alquiler)";
+        if (reserva.getFechaInicio() != null) {
+            LocalTime hi = reserva.getHoraInicio() != null ? reserva.getHoraInicio() : LocalTime.of(9, 0);
+            LocalDateTime inicio = LocalDateTime.of(reserva.getFechaInicio(), hi);
+            long horasHastaInicio = java.time.temporal.ChronoUnit.HOURS.between(LocalDateTime.now(), inicio);
+            if (horasHastaInicio < 24) {
+                devAlquiler = reserva.getPrecioTotal().divide(BigDecimal.valueOf(2), 2, java.math.RoundingMode.HALF_UP);
+                motivoPolitica = "Cancelacion con menos de 24h de antelacion (50% del alquiler)";
+            }
+        }
+
+        // Crear la Devolucion asociada al pago (si existe pago y aun no tiene devolucion)
+        final BigDecimal devAlquilerFinal = devAlquiler;
+        final String motivoFinal = motivoPolitica;
         pagoService.buscarPorReserva(id).ifPresent(pago -> {
-            pago.setEstadoPago("reembolsado");
-            pagoService.guardar(pago);
+            if (devolucionService.buscarPorPago(pago.getId()).isEmpty()) {
+                BigDecimal fianza = pago.getFianza() != null ? pago.getFianza() : BigDecimal.ZERO;
+                BigDecimal totalReembolso = devAlquilerFinal.add(fianza);
+
+                com.ilerna.rentgo.model.Devolucion dev = new com.ilerna.rentgo.model.Devolucion();
+                dev.setPago(pago);
+                dev.setFechaDevolucion(LocalDate.now());
+                dev.setImporteReembolsado(totalReembolso);
+                dev.setMotivo(motivoFinal);
+                devolucionService.guardar(dev); // tambien marca el pago como 'reembolsado'
+            } else {
+                // Por seguridad, si ya hay devolucion solo aseguramos el estado
+                pago.setEstadoPago("reembolsado");
+                pagoService.guardar(pago);
+            }
         });
 
         return "redirect:/reservas";

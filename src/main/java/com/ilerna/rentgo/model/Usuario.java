@@ -18,8 +18,9 @@ public class Usuario {
     private String nombre;
 
     @NotBlank(message = "Los apellidos son obligatorios")
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+\\s+[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+$",
-             message = "Debe introducir exactamente dos apellidos separados por un espacio")
+    // Permite letras con tildes, guiones y apostrofes; exige al menos dos palabras separadas por espacio.
+    @Pattern(regexp = "^[\\p{L}'\\-]+(?:\\s+[\\p{L}'\\-]+)+$",
+             message = "Debe introducir al menos dos apellidos separados por un espacio")
     @Size(max = 80, message = "Los apellidos no pueden superar 80 caracteres")
     @Column(name = "apellidos", nullable = false, length = 80)
     private String apellidos;
