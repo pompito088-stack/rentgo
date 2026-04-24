@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -81,10 +82,11 @@ public class MantenimientoController {
             return "mantenimientos/formulario";
         }
 
-        // Validar que fecha fin sea posterior o igual a fecha inicio
-        if (mantenimiento.getFechaFin() != null && mantenimiento.getFechaInicio() != null
-                && mantenimiento.getFechaFin().isBefore(mantenimiento.getFechaInicio())) {
-            result.rejectValue("fechaFin", "error.mantenimiento", "La fecha de fin debe ser igual o posterior a la de inicio.");
+        // Validar que la fecha de inicio no sea anterior a hoy
+        LocalDate hoy = LocalDate.now();
+        if (mantenimiento.getFechaInicio() != null && mantenimiento.getFechaInicio().isBefore(hoy)) {
+            result.rejectValue("fechaInicio", "error.mantenimiento",
+                    "La fecha de inicio no puede ser anterior a la fecha actual.");
             model.addAttribute("vehiculos", vehiculoService.listarTodos());
             return "mantenimientos/formulario";
         }
@@ -95,6 +97,24 @@ public class MantenimientoController {
         }
         if (horaFinStr != null && !horaFinStr.isBlank()) {
             mantenimiento.setHoraFin(LocalTime.parse(horaFinStr));
+        }
+
+        // Si la fecha de inicio es hoy, la hora de inicio no puede ser anterior a la actual
+        if (mantenimiento.getFechaInicio() != null && mantenimiento.getFechaInicio().isEqual(hoy)
+                && mantenimiento.getHoraInicio() != null
+                && mantenimiento.getHoraInicio().isBefore(LocalTime.now())) {
+            result.rejectValue("fechaInicio", "error.mantenimiento",
+                    "Si el mantenimiento empieza hoy, la hora de inicio no puede ser anterior a la hora actual.");
+            model.addAttribute("vehiculos", vehiculoService.listarTodos());
+            return "mantenimientos/formulario";
+        }
+
+        // Validar que fecha fin sea posterior o igual a fecha inicio
+        if (mantenimiento.getFechaFin() != null && mantenimiento.getFechaInicio() != null
+                && mantenimiento.getFechaFin().isBefore(mantenimiento.getFechaInicio())) {
+            result.rejectValue("fechaFin", "error.mantenimiento", "La fecha de fin debe ser igual o posterior a la de inicio.");
+            model.addAttribute("vehiculos", vehiculoService.listarTodos());
+            return "mantenimientos/formulario";
         }
 
         // Si es el mismo dia, la hora fin debe ser posterior a la hora inicio

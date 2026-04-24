@@ -41,7 +41,8 @@
                 <div class="col-md-3">
                     <label for="fechaInicio" class="form-label">Fecha Inicio</label>
                     <input type="date" class="form-control" th:classappend="${#fields.hasErrors('fechaInicio')} ? 'is-invalid'"
-                           id="fechaInicio" th:field="*{fechaInicio}">
+                           id="fechaInicio" th:field="*{fechaInicio}"
+                           th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></div>
                 </div>
                 <!-- Hora Inicio -->
@@ -101,24 +102,55 @@
         var aviso = document.getElementById('avisoMismoDia');
         var avisoMsg = document.getElementById('avisoMismoDiaMensaje');
 
+        // Helpers para obtener fecha y hora actuales en formato HH:MM / YYYY-MM-DD
+        function hoy() {
+            var d = new Date();
+            return d.toISOString().slice(0, 10);
+        }
+        function horaActual() {
+            var d = new Date();
+            return d.toTimeString().slice(0, 5); // HH:MM
+        }
+
+        function mostrarAviso(msg) {
+            avisoMsg.textContent = msg;
+            aviso.classList.remove('d-none');
+        }
+
+        function ocultarAviso() {
+            aviso.classList.add('d-none');
+        }
+
         function validar() {
-            if (!fi.value || !ff.value) { aviso.classList.add('d-none'); return true; }
+            if (!fi.value) { ocultarAviso(); return true; }
+
+            // Fecha inicio no puede ser anterior a hoy
+            if (fi.value < hoy()) {
+                mostrarAviso('La fecha de inicio no puede ser anterior a la fecha actual.');
+                return false;
+            }
+
+            // Si fecha inicio es hoy, la hora de inicio no puede ser anterior a la hora actual
+            if (fi.value === hoy() && hi.value && hi.value < horaActual()) {
+                mostrarAviso('Si el mantenimiento empieza hoy, la hora de inicio no puede ser anterior a la hora actual (' + horaActual() + ').');
+                return false;
+            }
+
+            if (!ff.value) { ocultarAviso(); return true; }
 
             // fechaFin < fechaInicio
             if (ff.value < fi.value) {
-                avisoMsg.textContent = 'La fecha de fin no puede ser anterior a la de inicio.';
-                aviso.classList.remove('d-none');
+                mostrarAviso('La fecha de fin no puede ser anterior a la de inicio.');
                 return false;
             }
 
             // Mismo dia: horaFin debe ser posterior a horaInicio
             if (ff.value === fi.value && hi.value && hf.value && hf.value <= hi.value) {
-                avisoMsg.textContent = 'Para mantenimientos del mismo dia, la hora de fin debe ser posterior a la hora de inicio.';
-                aviso.classList.remove('d-none');
+                mostrarAviso('Para mantenimientos del mismo dia, la hora de fin debe ser posterior a la hora de inicio.');
                 return false;
             }
 
-            aviso.classList.add('d-none');
+            ocultarAviso();
             return true;
         }
 
