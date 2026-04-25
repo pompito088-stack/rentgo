@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 13px;
+    color: #1a1a2e;
+    line-height: 1.7;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ── PORTADA ─────────────────────────────────────────────── */
+  .cover {
+    width: 100%;
+    height: 297mm;
+    background: #0f3460 !important;
+    background-color: #0f3460 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    page-break-after: always;
+    page-break-inside: avoid;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(13,115,119,0.25);
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .cover-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #a8d8ea;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 35px;
+    position: relative; z-index: 1;
+  }
+
+  .cover-logo {
+    font-size: 62px;
+    font-weight: 800;
+    color: #14d9c5 !important;
+    letter-spacing: -2px;
+    position: relative; z-index: 1;
+    margin-bottom: 6px;
+  }
+  .cover-logo span { color: #ffffff !important; }
+
+  .cover-tagline {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 50px;
+    position: relative; z-index: 1;
+    letter-spacing: 1px;
+  }
+
+  .cover-divider {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #14d9c5, #0d7377);
+    border-radius: 2px;
+    margin: 0 auto 40px;
+    position: relative; z-index: 1;
+  }
+
+  .cover-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+
+  .cover-subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 60px;
+    position: relative; z-index: 1;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .cover-meta-item {
+    text-align: center;
+  }
+  .cover-meta-item .label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .cover-meta-item .value {
+    font-size: 13px;
+    color: #14d9c5;
+    font-weight: 600;
+  }
+
+  /* ── INDICE ─────────────────────────────────────────────── */
+  .toc-page {
+    padding: 60px 70px;
+    page-break-after: always;
+    min-height: 100vh;
+  }
+
+  .section-eyebrow {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #0d7377;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .section-heading {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f3460;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .heading-bar {
+    width: 48px; height: 4px;
+    background: linear-gradient(90deg, #0d7377, #14d9c5);
+    border-radius: 2px;
+    margin-bottom: 40px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+  .toc-list li {
+    display: flex;
+    align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px dashed #e0e7ef;
+    gap: 14px;
+  }
+  .toc-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0d7377;
+    background: #e8f7f7;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .toc-text {
+    flex: 1;
+    font-size: 13.5px;
+    color: #1a1a2e;
+    font-weight: 500;
+  }
+  .toc-dots { flex: 1; border-bottom: 1px dotted #c8d6e5; margin: 0 10px; }
+  .toc-page-num {
+    font-size: 12px;
+    color: #7f8c8d;
+    font-weight: 600;
+  }
+
+  /* ── CONTENIDO ────────────────────────────────────────────── */
+  .content-page {
+    padding: 55px 70px;
+    page-break-before: always;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f3460;
+    margin-bottom: 4px;
+  }
+
+  h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0d7377;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e8f7f7;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f3460;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  p { margin-bottom: 12px; color: #2c3e50; }
+
+  ul, ol {
+    padding-left: 20px;
+    margin-bottom: 14px;
+  }
+  li { margin-bottom: 5px; color: #2c3e50; }
+
+  /* Cajas de info */
+  .info-box {
+    background: #f0fbfb;
+    border-left: 4px solid #0d7377;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 18px 0;
+  }
+  .info-box .icon { font-size: 16px; margin-right: 6px; }
+
+  .warn-box {
+    background: #fff8e1;
+    border-left: 4px solid #f39c12;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 18px 0;
+  }
+
+  /* Evitar cortes de página dentro de bloques */
+  table, .steps, .warn-box, .info-box, .diagram-container, .arch-grid {
+    page-break-inside: avoid;
+  }
+
+  /* Mantener h2/h3 con el contenido siguiente */
+  h2, h3 {
+    page-break-after: avoid;
+  }
+
+  /* Bloque compuesto: título + contenido juntos */
+  .keep-together {
+    page-break-inside: avoid;
+  }
+
+  /* Tabla de tecnologías */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 24px;
+    font-size: 12.5px;
+  }
+  thead tr {
+    background: linear-gradient(90deg, #0f3460, #0d7377);
+    color: #fff;
+  }
+  thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  tbody tr:nth-child(even) { background: #f7fafc; }
+  tbody tr:hover { background: #e8f7f7; }
+  tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #edf2f7;
+    color: #2c3e50;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-teal  { background: #e8f7f7; color: #0d7377; }
+  .badge-blue  { background: #e8eaf6; color: #3949ab; }
+  .badge-green { background: #e8f5e9; color: #2e7d32; }
+
+  /* Código */
+  pre {
+    background: #1a1a2e;
+    color: #a8d8ea;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+    margin: 14px 0;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  code {
+    background: #e8f7f7;
+    color: #0d7377;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 11.5px;
+  }
+
+  /* Pasos numerados */
+  .steps { counter-reset: step; margin: 16px 0; }
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    counter-increment: step;
+    background: linear-gradient(135deg, #0d7377, #14d9c5);
+    color: white;
+    font-weight: 700;
+    font-size: 12px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-body h4 { font-size: 13px; color: #0f3460; margin-bottom: 4px; font-weight: 700; }
+  .step-body p  { margin: 0; font-size: 12.5px; color: #555; }
+
+  /* Diagrama */
+  .diagram-container {
+    text-align: center;
+    margin: 20px 0;
+    padding: 16px;
+    background: #fafafa;
+    border: 1px solid #e0e7ef;
+    border-radius: 10px;
+  }
+  .diagram-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  .diagram-caption {
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* Cards arquitectura */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .arch-card {
+    background: #fff;
+    border: 1px solid #e0e7ef;
+    border-radius: 10px;
+    padding: 16px;
+    border-top: 3px solid #0d7377;
+  }
+  .arch-card h4 {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f3460;
+    margin-bottom: 8px;
+  }
+  .arch-card p {
+    font-size: 11.5px;
+    color: #555;
+    margin: 0;
+  }
+
+  /* Footer */
+  .page-footer {
+    position: fixed;
+    bottom: 20px;
+    left: 70px; right: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: #bdc3c7;
+    border-top: 1px solid #ecf0f1;
+    padding-top: 8px;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  @media print {
+    .content-page { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ PORTADA ══════════════════ -->
+<div class="cover">
+  <div class="cover-badge">Proyecto Final DAM · 2025 / 2026</div>
+  <div class="cover-logo">Rent<span>Go</span></div>
+  <div class="cover-tagline">Sistema de Gestión de Alquiler de Vehículos</div>
+  <div class="cover-divider"></div>
+  <div class="cover-title">Documentación Técnica</div>
+  <div class="cover-subtitle">Arquitectura · Backend · Frontend · Base de Datos · Despliegue</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="label">Autor</span>
+      <span class="value">Aaron Nozal Orellana</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Fecha</span>
+      <span class="value">24 de abril de 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ ÍNDICE ══════════════════ -->
+<div class="toc-page">
+  <div class="section-eyebrow">Contenidos</div>
+  <h1 class="section-heading">Índice</h1>
+  <div class="heading-bar"></div>
+
+  <ul class="toc-list">
+    <li>
+      <span class="toc-num">1</span>
+      <span class="toc-text">Descripción del Proyecto</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">3</span>
+    </li>
+    <li>
+      <span class="toc-num">2</span>
+      <span class="toc-text">Tecnologías Utilizadas</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">4</span>
+    </li>
+    <li>
+      <span class="toc-num">3</span>
+      <span class="toc-text">Arquitectura del Sistema</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">5</span>
+    </li>
+    <li>
+      <span class="toc-num">4</span>
+      <span class="toc-text">Instrucciones de Despliegue</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">6</span>
+    </li>
+    <li>
+      <span class="toc-num">5</span>
+      <span class="toc-text">Diagrama de Clases</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">7</span>
+    </li>
+    <li>
+      <span class="toc-num">6</span>
+      <span class="toc-text">Modelo Entidad-Relación (ER)</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">8</span>
+    </li>
+    <li>
+      <span class="toc-num">7</span>
+      <span class="toc-text">Diagramas de Secuencia</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">9</span>
+    </li>
+  </ul>
+</div>
+
+<!-- ══════════════════ 1. DESCRIPCIÓN ══════════════════ -->
+<div class="content-page">
+  <div class="section-eyebrow">Sección 1</div>
+  <h1 class="section-heading">Descripción del Proyecto</h1>
+  <div class="heading-bar"></div>
+
+  <p>
+    <strong>RentGo</strong> es una aplicación web de gestión integral de alquiler de vehículos, desarrollada como Trabajo de Fin de Grado del ciclo superior de Desarrollo de Aplicaciones Multiplataforma (DAM).
+  </p>
+  <p>
+    El sistema permite a los clientes consultar el catálogo de vehículos disponibles, realizar reservas online, gestionar sus pagos y ver el historial de alquileres. Los administradores disponen de un panel completo para gestionar toda la operativa del negocio.
+  </p>
+
+  <div class="info-box">
+    <span class="icon">🚗</span>
+    <strong>Objetivo principal:</strong> digitalizar y automatizar la gestión de una empresa de alquiler de vehículos, mejorando la experiencia del cliente y optimizando la operativa interna.
+  </div>
+
+  <h2>Funcionalidades Principales</h2>
+
+  <h3>👤 Portal Cliente</h3>
+  <ul>
+    <li>Registro y autenticación de usuarios</li>
+    <li>Exploración del catálogo de vehículos con filtros por categoría, precio y disponibilidad</li>
+    <li>Proceso de reserva con selección de fechas, horas y extras opcionales</li>
+    <li>Gestión de pagos (tarjeta, PayPal)</li>
+    <li>Historial de reservas y devoluciones</li>
+    <li>Edición del perfil de usuario y carnet de conducir</li>
+  </ul>
+
+  <h3>🔧 Panel de Administración</h3>
+  <ul>
+    <li>CRUD completo de: vehículos, marcas, modelos, categorías, sucursales y extras</li>
+    <li>Gestión de reservas: aprobación, cancelación y seguimiento</li>
+    <li>Planificación de mantenimientos con validación de fechas y solapamiento</li>
+    <li>Gestión de usuarios y tipos de usuario</li>
+    <li>Control de pagos y devoluciones</li>
+  </ul>
+
+  <h2>Alcance del Sistema</h2>
+  <table>
+    <thead><tr><th>Módulo</th><th>Entidades</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Usuarios y Autenticación</td><td>Usuario, TipoUsuario</td><td><span class="badge badge-green">✔ Completo</span></td></tr>
+      <tr><td>Catálogo de Vehículos</td><td>Vehiculo, Marca, Modelo, Categoría</td><td><span class="badge badge-green">✔ Completo</span></td></tr>
+      <tr><td>Reservas</td><td>Reserva, Extra, ReservaExtra</td><td><span class="badge badge-green">✔ Completo</span></td></tr>
+      <tr><td>Pagos y Devoluciones</td><td>Pago, Devolucion</td><td><span class="badge badge-green">✔ Completo</span></td></tr>
+      <tr><td>Mantenimientos</td><td>Mantenimiento</td><td><span class="badge badge-green">✔ Completo</span></td></tr>
+      <tr><td>Sucursales</td><td>Sucursal</td><td><span class="badge badge-green">✔ Completo</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════ 2. TECNOLOGÍAS ══════════════════ -->
+<div class="content-page">
+  <div class="section-eyebrow">Sección 2</div>
+  <h1 class="section-heading">Tecnologías Utilizadas</h1>
+  <div class="heading-bar"></div>
+
+  <h2>Stack Tecnológico</h2>
+  <table>
+    <thead>
+      <tr><th>Capa</th><th>Tecnología</th><th>Versión</th><th>Rol</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Lenguaje</strong></td>
+        <td>Java</td>
+        <td>25</td>
+        <td>Lenguaje principal del backend</td>
+      </tr>
+      <tr>
+        <td><strong>Framework</strong></td>
+        <td>Spring Boot</td>
+        <td>4.0.4</td>
+        <td>Framework web MVC y gestión de componentes</td>
+      </tr>
+      <tr>
+        <td><strong>ORM</strong></td>
+        <td>Spring Data JPA + Hibernate</td>
+        <td>—</td>
+        <td>Mapeo objeto-relacional y acceso a datos</td>
+      </tr>
+      <tr>
+        <td><strong>Base de Datos</strong></td>
+        <td>MySQL</td>
+        <td>8.0</td>
+        <td>Almacenamiento persistente de datos</td>
+      </tr>
+      <tr>
+        <td><strong>Motor de Plantillas</strong></td>
+        <td>Thymeleaf</td>
+        <td>3.x</td>
+        <td>Renderizado server-side del HTML</td>
+      </tr>
+      <tr>
+        <td><strong>CSS Framework</strong></td>
+        <td>Bootstrap</td>
+        <td>5.3</td>
+        <td>Diseño responsive y componentes UI</td>
+      </tr>
+      <tr>
+        <td><strong>Validación</strong></td>
+        <td>Jakarta Bean Validation</td>
+        <td>3.x</td>
+        <td>Validación de formularios y entidades</td>
+      </tr>
+      <tr>
+        <td><strong>Build</strong></td>
+        <td>Apache Maven</td>
+        <td>3.x</td>
+        <td>Gestión de dependencias y compilación</td>
+      </tr>
+      <tr>
+        <td><strong>Contenedor</strong></td>
+        <td>Docker + Docker Compose</td>
+        <td>—</td>
+        <td>Contenerización y orquestación</td>
+      </tr>
+      <tr>
+        <td><strong>Proxy inverso</strong></td>
+        <td>Nginx</td>
+        <td>1.29</td>
+        <td>Enrutamiento de peticiones HTTP/HTTPS</td>
+      </tr>
+      <tr>
+        <td><strong>Control de versiones</strong></td>
+        <td>Git + GitHub</td>
+        <td>—</td>
+        <td>Repositorio y versionado del código</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Dependencias Maven Clave</h2>
+  <pre>spring-boot-starter-web          → Servidor web embebido (Tomcat)
+spring-boot-starter-thymeleaf    → Motor de plantillas HTML
+spring-boot-starter-data-jpa     → Capa de persistencia con Hibernate
+spring-boot-starter-validation   → Validación con anotaciones
+mysql-connector-j                → Driver JDBC para MySQL
+spring-boot-devtools             → Recarga automática en desarrollo</pre>
+
+  <h2>Herramientas de Desarrollo</h2>
+  <ul>
+    <li><strong>IntelliJ IDEA</strong> — IDE principal</li>
+    <li><strong>MySQL Workbench</strong> — Diseño y administración de la base de datos</li>
+    <li><strong>Postman</strong> — Pruebas de endpoints HTTP</li>
+    <li><strong>draw.io</strong> — Elaboración de diagramas técnicos</li>
+    <li><strong>GitHub</strong> — Repositorio remoto y control de versiones</li>
+  </ul>
+</div>
+
+<!-- ══════════════════ 3. ARQUITECTURA ══════════════════ -->
+<div class="content-page">
+  <div class="section-eyebrow">Sección 3</div>
+  <h1 class="section-heading">Arquitectura del Sistema</h1>
+  <div class="heading-bar"></div>
+
+  <p>RentGo sigue el patrón de arquitectura <strong>MVC (Modelo-Vista-Controlador)</strong> implementado sobre Spring Boot, con una separación clara en capas que facilita el mantenimiento y la escalabilidad.</p>
+
+  <h2>Patrón MVC en Spring Boot</h2>
+  <div class="arch-grid">
+    <div class="arch-card">
+      <h4>🗂️ Modelo (Model)</h4>
+      <p>Entidades JPA que representan las tablas de la base de datos. Cada entidad mapea directamente una tabla mediante anotaciones como <code>@Entity</code>, <code>@Table</code> y <code>@Column</code>. Ejemplos: <code>Vehiculo</code>, <code>Reserva</code>, <code>Usuario</code>.</p>
+    </div>
+    <div class="arch-card">
+      <h4>👁️ Vista (View)</h4>
+      <p>Plantillas HTML procesadas por Thymeleaf. Se dividen en templates reutilizables (fragments) y páginas específicas por módulo. Bootstrap 5 proporciona el diseño responsive.</p>
+    </div>
+    <div class="arch-card">
+      <h4>🎮 Controlador (Controller)</h4>
+      <p>Clases anotadas con <code>@Controller</code> que reciben las peticiones HTTP, invocan los servicios necesarios, añaden datos al modelo y retornan el nombre de la vista Thymeleaf.</p>
+    </div>
+    <div class="arch-card">
+      <h4>⚙️ Servicio (Service)</h4>
+      <p>Capa intermedia con la lógica de negocio. Clases anotadas con <code>@Service</code> que encapsulan las operaciones sobre los repositorios y aplican validaciones de negocio.</p>
+    </div>
+  </div>
+
+  <h2>Flujo de una Petición HTTP</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Petición del Navegador</h4>
+        <p>El usuario interactúa con la UI. El navegador envía una petición HTTP al servidor (GET o POST).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Nginx (Proxy Inverso)</h4>
+        <p>En producción, Nginx recibe la petición y la redirige al contenedor Spring Boot en el puerto 8080.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>DispatcherServlet → Controller</h4>
+        <p>Spring MVC enruta la petición al método del controlador correspondiente según la URL y el método HTTP.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Service → Repository → MySQL</h4>
+        <p>El controlador llama al servicio, que utiliza el repositorio JPA para consultar o modificar la base de datos.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Thymeleaf renderiza la respuesta</h4>
+        <p>El controlador añade los datos al <code>Model</code> y retorna el nombre de la plantilla. Thymeleaf genera el HTML final.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Estructura de Paquetes</h2>
+  <pre>com.ilerna.rentgo/
+├── controller/    → Controladores MVC (uno por entidad)
+├── model/         → Entidades JPA
+├── repository/    → Interfaces JpaRepository
+├── service/       → Lógica de negocio
+└── config/        → WebConfig (recursos estáticos, etc.)</pre>
+</div>
+
+<!-- ══════════════════ 4. DESPLIEGUE ══════════════════ -->
+<div class="content-page">
+  <div class="section-eyebrow">Sección 4</div>
+  <h1 class="section-heading">Instrucciones de Despliegue</h1>
+  <div class="heading-bar"></div>
+
+  <h2>Requisitos Previos</h2>
+  <ul>
+    <li>Java 25+ instalado en el sistema</li>
+    <li>MySQL 8.0 en ejecución (local o Docker)</li>
+    <li>Maven 3.x o usar el wrapper incluido (<code>./mvnw</code>)</li>
+    <li>Docker y Docker Compose (para despliegue en servidor)</li>
+    <li>Git para clonar el repositorio</li>
+  </ul>
+
+  <h2>Despliegue en Local (Desarrollo)</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Clonar el repositorio</h4>
+        <p><code>git clone https://github.com/pompito088-stack/rentgo.git</code></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Crear la base de datos</h4>
+        <p>Ejecutar en MySQL: primero <code>ini_db.sql</code> (crea las tablas) y luego <code>data.sql</code> (carga los datos).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Configurar application.properties</h4>
+        <p>Ajustar la URL de la base de datos, usuario y contraseña en <code>src/main/resources/application.properties</code>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Compilar y ejecutar</h4>
+        <p><code>./mvnw spring-boot:run</code> — La aplicación arranca en <code>http://localhost:8080</code></p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Despliegue en Servidor (Producción con Docker)</h2>
+  <div class="keep-together">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Conectar al servidor por SSH</h4>
+          <p><code>ssh usuario@servidor -p 2213</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Clonar / actualizar el repositorio</h4>
+          <p><code>git clone https://github.com/pompito088-stack/rentgo.git</code> o <code>git pull origin main</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Levantar los contenedores</h4>
+          <p><code>docker compose up -d --build</code> — Construye la imagen y arranca app + MySQL.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Cargar los datos iniciales en Docker</h4>
+          <p><code>docker exec -i rentgo-db mysql -u root -ppassword rentgo &lt; ini_db.sql</code><br>
+             <code>docker exec -i rentgo-db mysql -u root -ppassword rentgo &lt; data.sql</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Nginx enruta el tráfico</h4>
+          <p>El proxy inverso Nginx redirige las peticiones del dominio público al puerto 8080 del contenedor Spring Boot.</p>
+        </div>
+      </div>
+    </div>
+    <div class="warn-box">
+      <strong>⚠️ Nota importante:</strong> Las imágenes de vehículos y carnets se sirven desde el volumen Docker montado en <code>/app/img/</code>. Asegúrate de que las imágenes estén presentes en el servidor antes del primer arranque.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ 5. DIAGRAMA CLASES ══════════════════ -->
+<div class="content-page">
+  <div class="section-eyebrow">Sección 5</div>
+  <h1 class="section-heading">Diagrama de Clases</h1>
+  <div class="heading-bar"></div>
+
+  <p>El siguiente diagrama muestra las principales entidades del sistema y sus relaciones, reflejando la estructura de clases Java anotadas con JPA.</p>
+
+  <div class="diagram-container">
+    <img src="diagrama_de_clases_rentgo.drawio.png" alt="Diagrama de Clases RentGo">
+    <div class="diagram-caption">Figura 1 — Diagrama de Clases del sistema RentGo</div>
+  </div>
+
+  <h2>Relaciones Principales</h2>
+  <table>
+    <thead><tr><th>Entidad Origen</th><th>Relación</th><th>Entidad Destino</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td>Vehiculo</td><td>ManyToOne</td><td>Modelo</td><td>Un vehículo pertenece a un modelo</td></tr>
+      <tr><td>Modelo</td><td>ManyToOne</td><td>Marca</td><td>Un modelo pertenece a una marca</td></tr>
+      <tr><td>Vehiculo</td><td>ManyToOne</td><td>CategoriaVehiculo</td><td>Un vehículo tiene una categoría</td></tr>
+      <tr><td>Reserva</td><td>ManyToOne</td><td>Usuario</td><td>Una reserva la hace un usuario</td></tr>
+      <tr><td>Reserva</td><td>ManyToOne</td><td>Vehiculo</td><td>Una reserva es sobre un vehículo</td></tr>
+      <tr><td>Reserva</td><td>ManyToMany</td><td>Extra</td><td>Una reserva puede tener varios extras</td></tr>
+      <tr><td>Pago</td><td>OneToOne</td><td>Reserva</td><td>Cada reserva tiene un pago asociado</td></tr>
+      <tr><td>Devolucion</td><td>OneToOne</td><td>Pago</td><td>Una devolución se asocia a un pago</td></tr>
+      <tr><td>Mantenimiento</td><td>ManyToOne</td><td>Vehiculo</td><td>Un mantenimiento afecta a un vehículo</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════ 6. MODELO ER ══════════════════ -->
+<div class="content-page">
+  <div class="section-eyebrow">Sección 6</div>
+  <h1 class="section-heading">Modelo Entidad-Relación (ER)</h1>
+  <div class="heading-bar"></div>
+
+  <p>El modelo ER representa el esquema de la base de datos relacional utilizada por RentGo, implementada en MySQL 8. Cada entidad corresponde a una tabla y las relaciones se implementan mediante claves foráneas.</p>
+
+  <div class="diagram-container">
+    <img src="modelo_er_rentgo.drawio (1).png" alt="Modelo ER RentGo">
+    <div class="diagram-caption">Figura 2 — Modelo Entidad-Relación de la base de datos RentGo</div>
+  </div>
+
+  <h2>Modelo Relacional</h2>
+  <div class="diagram-container">
+    <img src="modelo_relacional.png" alt="Modelo Relacional RentGo">
+    <div class="diagram-caption">Figura 3 — Modelo Relacional de la base de datos RentGo</div>
+  </div>
+
+  <h2>Tablas Principales</h2>
+  <div class="keep-together">
+  <table>
+    <thead><tr><th>Tabla</th><th>PK</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td><code>usuarios</code></td><td>id_usuario</td><td>Clientes y administradores del sistema</td></tr>
+      <tr><td><code>vehiculos</code></td><td>id_vehiculo</td><td>Flota de vehículos disponibles para alquilar</td></tr>
+      <tr><td><code>reservas</code></td><td>id_reserva</td><td>Reservas realizadas por los clientes</td></tr>
+      <tr><td><code>pagos</code></td><td>id_pago</td><td>Pagos asociados a cada reserva</td></tr>
+      <tr><td><code>devoluciones</code></td><td>id_devolucion</td><td>Reembolsos por cancelaciones</td></tr>
+      <tr><td><code>mantenimientos</code></td><td>id_mantenimiento</td><td>Planificación de mantenimientos de vehículos</td></tr>
+      <tr><td><code>sucursales</code></td><td>id_sucursal</td><td>Oficinas de recogida y devolución</td></tr>
+      <tr><td><code>extras</code></td><td>id_extra</td><td>Servicios adicionales contratables</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ══════════════════ 7. SECUENCIA ══════════════════ -->
+<div class="content-page">
+  <div class="section-eyebrow">Sección 7</div>
+  <h1 class="section-heading">Diagramas de Secuencia</h1>
+  <div class="heading-bar"></div>
+
+  <p>Los diagramas de secuencia muestran la interacción entre los actores del sistema y los componentes internos para los flujos más importantes.</p>
+
+  <h2>Secuencia: Flujo del Cliente</h2>
+  <div class="diagram-container">
+    <img src="diagrama_secuencia_cliente.drawio.png" alt="Diagrama de Secuencia Cliente">
+    <div class="diagram-caption">Figura 4 — Diagrama de secuencia del flujo del cliente (registro → reserva → pago)</div>
+  </div>
+
+  <h2>Secuencia: Flujo del Administrador</h2>
+  <div class="diagram-container">
+    <img src="diagrama_secuencia_admin.drawio.png" alt="Diagrama de Secuencia Admin">
+    <div class="diagram-caption">Figura 5 — Diagrama de secuencia del flujo del administrador (gestión de reservas y mantenimientos)</div>
+  </div>
+
+  <h2>Descripción de los Flujos</h2>
+  <div class="keep-together">
+  <h3>Flujo Cliente — Proceso de Reserva</h3>
+  <ol>
+    <li>El cliente accede al catálogo y selecciona un vehículo disponible.</li>
+    <li>Elige fechas de inicio y fin, horas de recogida y devolución.</li>
+    <li>Añade extras opcionales (GPS, silla infantil, seguro premium...).</li>
+    <li>Confirma la reserva; el sistema verifica disponibilidad y crea el registro.</li>
+    <li>Se genera el pago y el vehículo queda marcado como no disponible en esas fechas.</li>
+    <li>El cliente recibe confirmación en su área personal.</li>
+  </ol>
+  <h3>Flujo Administrador — Gestión de Mantenimientos</h3>
+  <ol>
+    <li>El admin accede al panel de mantenimientos.</li>
+    <li>Selecciona el vehículo y las fechas/horas del mantenimiento.</li>
+    <li>El sistema valida que la fecha no sea anterior a hoy y que no haya solapamiento con reservas activas.</li>
+    <li>Si pasa la validación, el mantenimiento queda registrado y el vehículo bloqueado para esas fechas.</li>
+    <li>El estado del mantenimiento se calcula automáticamente: <em>pendiente</em>, <em>en proceso</em> o <em>finalizado</em>.</li>
+  </ol>
+  </div>
+</div>
+
+</body>
+</html>
+

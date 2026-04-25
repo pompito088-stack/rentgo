@@ -83,7 +83,17 @@
         }
 
         /* ── Reset / base ── */
+        html, body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            max-width: 100%;
+            overflow-x: hidden;   /* evita scroll horizontal en movil */
+        }
         body { font-family: 'Inter', sans-serif; min-height: 100vh; }
+        /* Defensivo: nada debe forzar el viewport mas ancho que la pantalla */
+        img, video, table, pre, iframe { max-width: 100%; }
+        pre, code { white-space: pre-wrap; word-break: break-word; }
+        .container, .container-fluid { max-width: 100%; }
 
         /* SEO 2.9 — Foco accesible global (solo cuando viene por teclado) */
         :focus { outline: none; }
